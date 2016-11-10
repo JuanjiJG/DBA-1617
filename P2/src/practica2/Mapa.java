@@ -9,7 +9,7 @@ import javafx.util.Pair;
 
 /**
  *
- * @author NeN
+ * @author Emilio Chica Jiménez, Miguel Angel Torres López
  */
 public class Mapa {
     public Pair<Integer,Integer> getPosicionObjetivo(){

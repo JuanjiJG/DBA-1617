@@ -7,7 +7,7 @@ package practica2;
 
 /**
  *
- * @author NeN
+ * @author 
  */
 public class Agente {
     

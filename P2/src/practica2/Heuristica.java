@@ -14,7 +14,7 @@ import javafx.util.Pair;
 
 /**
  *
- * @author NeN
+ * @author Emilio Chica Jiménez, Miguel Angel Torres López
  */
 public class Heuristica {
     private static double calcularDistanciaEuclidea(Pair<Integer,Integer> posicion_objetivo,Pair<Integer,Integer> posicion_posible){
@@ -126,23 +126,7 @@ public class Heuristica {
             }
             actions.add(acciones_posibles[indice]);
         }
-        
-        
-        /*//Nos aseguramos de las casillas que tengamos restantes sean negativas
-        List<Pair<Integer,Integer>> indices_casillas_negativas = new ArrayList();
-        
-        for(int i=0;i<8;++i){
-            if(casillas[i]<0){
-                indices_casillas_negativas.add(new Pair(i,casillas[i]));
-            }
-        }
-        //Ordenamos el array de casillas negativas
-        Collections.sort(indices_casillas_negativas, new Compara_Casillas());
-        for(int i=0;i<indices_casillas_negativas.size();++i){
-            int indice = indices_casillas_negativas.get(i).getKey();
-            actions[indice] = acciones_posibles[indice];
-        }*/
-        
+       
         return actions;
     }
 }
