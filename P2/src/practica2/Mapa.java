@@ -5,10 +5,16 @@
  */
 package practica2;
 
+import javafx.util.Pair;
+
 /**
  *
  * @author NeN
  */
 public class Mapa {
-    
+    public Pair<Integer,Integer> getPosicionObjetivo(){
+        return new Pair<Integer,Integer>(0,0);
+    }
+    public Integer[][] devolverMapa(){
+    return null;}
 }
