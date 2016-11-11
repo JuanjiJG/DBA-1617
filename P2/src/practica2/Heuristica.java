@@ -14,21 +14,30 @@ import javafx.util.Pair;
 
 /**
  *
- * @author Emilio Chica Jiménez, Miguel Angel Torres López
+ * @author Emilio Chica Jiménez
+ * @author Miguel Angel Torres López
  */
 public class Heuristica {
+    
     private static double calcularDistanciaEuclidea(Pair<Integer,Integer> posicion_objetivo,Pair<Integer,Integer> posicion_posible){
         double d=0;
         d = Math.sqrt(((posicion_objetivo.getValue() - posicion_posible.getValue())*(posicion_objetivo.getValue() - posicion_posible.getValue()))+((posicion_objetivo.getKey() - posicion_objetivo.getKey())*(posicion_objetivo.getKey() - posicion_objetivo.getKey())));
         return d;
     }
-    public static acciones calcularSiguienteMovimiento(Mapa mapa,Pair<Integer,Integer> posicion_coche){
-        acciones accion=acciones.MovE;
-        ArrayList<acciones> acciones_posibles = comprobarAccionesPosibles(mapa,posicion_coche);
+    
+    public static Acciones calcularSiguienteMovimiento(Mapa mapa,Pair<Integer,Integer> posicion_coche){
+        
+        Acciones accion = Acciones.MovE;
+        ArrayList<Acciones> acciones_posibles = comprobarAccionesPosibles(mapa,posicion_coche);
+        
         if(acciones_posibles.size()>1){
+            
             ArrayList<Double> distancias = new ArrayList();
+            
             for(int i=0;i<acciones_posibles.size();++i){
+                
                 Pair<Integer,Integer> posicion_posible =  new Pair(0,0);
+                
                 switch(acciones_posibles.get(i)){
                     case MovSW:
                         posicion_posible= new Pair(posicion_coche.getKey()+1,posicion_coche.getValue()-1);
@@ -55,27 +64,35 @@ public class Heuristica {
                         posicion_posible= new Pair(posicion_coche.getKey()+1,posicion_coche.getValue()+1);
                         break;
                 }
-                 distancias.add(calcularDistanciaEuclidea(mapa.getPosicionObjetivo(),posicion_posible));
+                
+                distancias.add(calcularDistanciaEuclidea(mapa.getPosicionObjetivo(),posicion_posible));
             }
+            
             int indice_mejor_accion=-1;
             double min_distancia=distancias.get(0);
+            
             for(int j=0;j<distancias.size();++j){
+                
                 if(min_distancia>distancias.get(j)){
+                    
                     min_distancia = distancias.get(j);
                     indice_mejor_accion = j;
                 }
             }
+            
             accion = acciones_posibles.get(indice_mejor_accion);
-        }else
-        {
+        }
+        else{
             accion=acciones_posibles.get(0);
         }
-        return accion;
         
+        return accion;
     }
-    public static ArrayList<acciones> comprobarAccionesPosibles(Mapa mapa,Pair<Integer,Integer> posicion_coche){
-        ArrayList<acciones> actions=new ArrayList();
-        acciones[] acciones_posibles ={acciones.MovSW,acciones.MovS,acciones.MovW,acciones.MovNW,acciones.MovN,acciones.MovNE,acciones.MovE,acciones.MovSE}; 
+    
+    public static ArrayList<Acciones> comprobarAccionesPosibles(Mapa mapa,Pair<Integer,Integer> posicion_coche){
+        
+        ArrayList<Acciones> actions=new ArrayList();
+        Acciones[] acciones_posibles ={Acciones.MovSW,Acciones.MovS,Acciones.MovW,Acciones.MovNW,Acciones.MovN,Acciones.MovNE,Acciones.MovE,Acciones.MovSE}; 
         Integer[][] mapa_actual=mapa.devolverMapa();
         
         int []casillas = new int[8];
@@ -89,29 +106,30 @@ public class Heuristica {
         casillas[7]=mapa_actual[posicion_coche.getKey()+1][posicion_coche.getValue()+1];
         
         if(posicion_coche.getKey() != 500 && posicion_coche.getValue() != 0 && (casillas[0]==0 || casillas[0]==2)){
-                actions.add(acciones.MovSW);
+                actions.add(Acciones.MovSW);
         }
         if(posicion_coche.getKey() != 500 && (casillas[1]==0 || casillas[1]==2)){
-                 actions.add(acciones.MovS);
+                 actions.add(Acciones.MovS);
         }
         if(posicion_coche.getValue() != 0 && (casillas[2]==0 || casillas[2]==2)){
-                 actions.add(acciones.MovW);
+                 actions.add(Acciones.MovW);
         }
         if(posicion_coche.getKey() != 0 && posicion_coche.getValue() != 0 && (casillas[3]==0 || casillas[3]==2)){
-                 actions.add(acciones.MovNW);
+                 actions.add(Acciones.MovNW);
         }   
         if(posicion_coche.getKey() != 0 && (casillas[4]==0 || casillas[4]==2)){
-                 actions.add(acciones.MovN);
+                 actions.add(Acciones.MovN);
         }
         if(posicion_coche.getKey() != 0 && posicion_coche.getValue() != 500 && (casillas[5]==0 || casillas[5]==2)){
-                 actions.add(acciones.MovNE);
+                 actions.add(Acciones.MovNE);
         }
         if(posicion_coche.getValue() != 500 && (casillas[6]==0 || casillas[6]==2)){
-                 actions.add(acciones.MovE);
+                 actions.add(Acciones.MovE);
         }
         if(posicion_coche.getKey() != 500 && posicion_coche.getValue() != 500 && (casillas[7]==0 || casillas[7]==2)){
-                 actions.add(acciones.MovSE);
+                 actions.add(Acciones.MovSE);
         }
+        
         //Solo cogemos las acciones con casilla negativa en el caso en el que no tengamos otra opción
         if(actions.size()==0){
             int indice=-1;
@@ -124,6 +142,7 @@ public class Heuristica {
                      }
                  }
             }
+            
             actions.add(acciones_posibles[indice]);
         }
        

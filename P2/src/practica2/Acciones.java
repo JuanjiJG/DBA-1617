@@ -7,8 +7,9 @@ package practica2;
 
 /**
  *
- * @author Emilio Chica Jiménez, Miguel Angel Torres López
+ * @author Emilio Chica Jiménez
+ * @author Miguel Angel Torres López
  */
-public enum acciones {
-    MovS, MovN, MovW, MovE,MovSW,MovSE,MovNW,MovNE,refuel,login,logout
+public enum Acciones {
+    MovS, MovN, MovW, MovE, MovSW, MovSE, MovNW, MovNE, refuel, login, logout
 }
