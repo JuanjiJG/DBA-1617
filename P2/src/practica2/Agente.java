@@ -9,6 +9,10 @@ import com.eclipsesource.json.*;
 import es.upv.dsic.gti_ia.core.*;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.util.Pair;
 
 /**
@@ -18,6 +22,7 @@ import javafx.util.Pair;
 public class Agente extends SingleAgent {
     
     private static final int NUM_PERCEPCIONES = 100;
+    
     private Pair<Integer, Integer> posicion;
     private String percepcion;
     private boolean pisando_objetivo;
@@ -25,25 +30,78 @@ public class Agente extends SingleAgent {
     private int cont_bateria;
     private boolean objetivo_detectado;
     private String server_key;
+    private String mundo_elegido;
+    private Mapa map;
+    private Heuristica heuristic;
     
     /**
      * Constructor de la clase Agente
-     * @param aid
+     * @param aid El ID del agente
+     * @param mundo String que indica el mundo al que se va a conectar el agente
      * @throws Exception 
      * @author Juan José Jiménez García
      */
-    public Agente(AgentID aid) throws Exception {
+    public Agente(AgentID aid, String mundo) throws Exception {
         
         super(aid);
+        this.mundo_elegido = mundo;
     }
     
     /**
-     * Método execute del agente
+     * Inicialización de las variables antes de la ejecución del agente
+     * @author Juan José Jiménez García
+     */
+    @Override
+    public void init() {
+        
+        System.out.println("Inicializando estado del agente...");
+        
+        this.map = new Mapa();
+        this.map.inicializarMapa();
+        
+        this.heuristic = new Heuristica();
+        
+        this.objetivo_detectado = false;
+        this.pisando_objetivo = false;
+        this.crashed = false;
+        this.posicion = new Pair(0,0);
+        this.percepcion = "";
+        this.server_key = "";
+        this.cont_bateria = 0;
+    }
+    
+    /**
+     * Método que ejecutará el agente cuando se inicie
      * @author Juan José Jiménez García
      */
     @Override
     public void execute() {
         
+        System.out.println("Ejecutando el agente...");
+        
+        // Aquí hay que implementar el funcionamiento del agente y todo el grueso del sistema
+        // Este método puede llamar a otros métodos que formen parte del comportamiento
+    }
+    
+    /**
+     * Método que se ejecutará cuando el agente vaya a finalizar su ejecución
+     * @author Juan José Jiménez García
+     */
+    @Override
+    public void finalize() {
+        
+        System.out.println("Finalizando ejecución y estado del agente...");
+        
+        try {
+            // Por ejemplo, aquí se puede hacer la generacion de la imagen png de la traza
+            this.procesarTraza();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Agente.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Agente.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        super.finalize();
     }
     
     /**
@@ -66,7 +124,7 @@ public class Agente extends SingleAgent {
                 data[i] = (byte) ja.get(i).asInt();
             }
             
-            FileOutputStream fos = new FileOutputStream("mitraza.png");
+            FileOutputStream fos = new FileOutputStream(this.mundo_elegido + " - " + new SimpleDateFormat("yyyy-MM-dd-hh:mm").format(new Date()) + ".png");
             fos.write(data);
             fos.close();
             System.out.println("Traza guardada");

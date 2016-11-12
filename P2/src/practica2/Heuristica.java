@@ -93,7 +93,7 @@ public class Heuristica {
         
         ArrayList<Acciones> actions=new ArrayList();
         Acciones[] acciones_posibles ={Acciones.MovSW,Acciones.MovS,Acciones.MovW,Acciones.MovNW,Acciones.MovN,Acciones.MovNE,Acciones.MovE,Acciones.MovSE}; 
-        Integer[][] mapa_actual=mapa.devolverMapa();
+        int[][] mapa_actual = mapa.devolverMapa();
         
         int []casillas = new int[8];
         casillas[0] = mapa_actual[posicion_coche.getKey()+1][posicion_coche.getValue()-1];

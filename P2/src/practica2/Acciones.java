@@ -6,7 +6,7 @@
 package practica2;
 
 /**
- *
+ * Enumerado para las distintas acciones que puede hacer un agente
  * @author Emilio Chica Jiménez
  * @author Miguel Angel Torres López
  */
