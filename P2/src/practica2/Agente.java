@@ -242,7 +242,7 @@ public class Agente extends SingleAgent {
                 data[i] = (byte) ja.get(i).asInt();
             }
             
-            FileOutputStream fos = new FileOutputStream(this.mundo_elegido + " - " + new SimpleDateFormat("yyyy-MM-dd-hh:mm").format(new Date()) + ".png");
+            FileOutputStream fos = new FileOutputStream(this.mundo_elegido + " - " + new SimpleDateFormat("yyyy-MM-dd-hh-mm").format(new Date()) + ".png");
             fos.write(data);
             fos.close();
             System.out.println("Traza guardada");
