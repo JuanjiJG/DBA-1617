@@ -12,6 +12,7 @@ import javafx.util.Pair;
  * @author Emilio Chica Jiménez
  * @author Miguel Angel Torres López
  * @author Juan José Jiménez García
+ * @author Antonio Javier Benitez Guijarro
  */
 public class Mapa {
     
