@@ -254,13 +254,17 @@ public class Agente extends SingleAgent {
      * Método para el procesamiento de la traza de imagen
      * @author Miguel Angel Torres López
      * @author Antonio Javier Benítez Guijarro
-     * @progress PENDIENTE
-     * @throws java.lang.InterruptedException
-     * @throws java.io.IOException
      */
     public boolean comprobarBateria(Acciones accion){
     
-        return false;
+        if(cont_bateria<=5)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
     
     
