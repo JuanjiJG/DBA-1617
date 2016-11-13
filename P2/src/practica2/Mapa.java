@@ -34,6 +34,7 @@ public class Mapa {
         this.matriz_radar = new int[TAMANIO_RADAR][TAMANIO_RADAR];
         this.posicion_objetivo = new Pair(0,0);
         antiguedad=-1;
+        this.inicializarMapa();
     }
     
     /**
@@ -54,23 +55,51 @@ public class Mapa {
      * @author Antonio Javier Benítez Guijarro
      */
     public void actualizarMapa(int[][] matriz_radar, Pair<Integer, Integer> posicion) {
-        int posicion_inicial_i=posicion.getKey()-2;
-        int posicion_inicial_j=posicion.getValue()-2;
+        //System.out.println("Debug: he entrado en actualizar mapa");
+        int posicion_inicial_j=posicion.getKey()-2;
+        int posicion_inicial_i=posicion.getValue()-2;
+        
+        
+        //System.out.println("Debug: antes del primer for de actualizar mapa");
         
         for(int i=0;i<5;i++)
         {
             for(int j=0;j<5;j++)
             {
-                if(matriz_mapa[posicion_inicial_i+i][posicion_inicial_j+j]==3)
+                //System.out.println("Debug: He entrado en el segundo for de actualizar mapa");
+                if((posicion_inicial_i+i)>=0 && (posicion_inicial_i+i)<500 && (posicion_inicial_j+j)>=0 && (posicion_inicial_j+j)<500)
                 {
-                    matriz_mapa[posicion_inicial_i+i][posicion_inicial_j+j]=matriz_radar[i][j];
+                    //System.out.println("Debug: He entrado en el primer if del segundo for de actualizar mapa");
+                    //System.out.println("Debug matriz mapa:"+matriz_mapa[posicion_inicial_i+i][posicion_inicial_j+j]);
+                    if(matriz_mapa[posicion_inicial_i+i][posicion_inicial_j+j]==3)
+                    {
+                        //System.out.println("Debug: He entrado en el segundo if del segundo for de actualizar mapa");
+                        matriz_mapa[posicion_inicial_i+i][posicion_inicial_j+j]=matriz_radar[i][j];
+                    }
                 }
             }
         }
-        if(matriz_mapa[posicion.getKey()][posicion.getValue()]!=2)
+        
+        if(matriz_mapa[posicion.getValue()][posicion.getKey()]!=2)
         {
-            matriz_mapa[posicion.getKey()][posicion.getValue()]=antiguedad;
+            matriz_mapa[posicion.getValue()][posicion.getKey()]=antiguedad;
         }
+        
+        for(int i=0;i<5;i++)
+        {
+            for(int j=0;j<5;j++)
+            {
+                //System.out.println("Debug: He entrado en el segundo for de actualizar mapa");
+                if((posicion_inicial_i+i)>=0 && (posicion_inicial_i+i)<500 && (posicion_inicial_j+j)>=0 && (posicion_inicial_j+j)<500)
+                {
+                    //System.out.println("Debug: He entrado en el primer if del segundo for de actualizar mapa");
+                    //System.out.println("Debug matriz mapa:"+matriz_mapa[posicion_inicial_i+i][posicion_inicial_j+j]);
+                    System.out.print(matriz_mapa[posicion_inicial_i+i][posicion_inicial_j+j]+" ");
+                }
+            }
+            System.out.println();
+        }
+        
     }
     
     public boolean pisandoObjetivo(Pair<Integer, Integer> posicion){
@@ -153,5 +182,9 @@ public class Mapa {
 
     public int getAntiguedad() {
         return antiguedad;
+    }
+    
+    public void decrementarAntiguedad(){
+        this.antiguedad--;
     }
 }

@@ -6,10 +6,6 @@
 package practica2;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Stack;
 import javafx.util.Pair;
 
 /**
@@ -19,18 +15,34 @@ import javafx.util.Pair;
  */
 public class Heuristica {
     
-    private static double calcularDistanciaEuclidea(Pair<Integer,Integer> posicion_objetivo,Pair<Integer,Integer> posicion_posible){
+    private boolean objetivo_detectado;
+    
+    public Heuristica(){
+        objetivo_detectado=false;
+    }
+    
+    private double calcularDistanciaEuclidea(Pair<Integer,Integer> posicion_objetivo,Pair<Integer,Integer> posicion_posible){
         double d=0;
         d = Math.sqrt(((posicion_objetivo.getValue() - posicion_posible.getValue())*(posicion_objetivo.getValue() - posicion_posible.getValue()))+((posicion_objetivo.getKey() - posicion_objetivo.getKey())*(posicion_objetivo.getKey() - posicion_objetivo.getKey())));
         return d;
     }
     
-    public static Acciones calcularSiguientemoveimiento(Mapa mapa,Pair<Integer,Integer> posicion_coche){
+    public Acciones calcularSiguienteMovimiento(Mapa mapa,Pair<Integer,Integer> posicion_coche){
         
+        //System.out.println("Debug: he entrado en calcular siguiente movimiento");
         Acciones accion = Acciones.moveE;
-        ArrayList<Acciones> acciones_posibles = comprobarAccionesPosibles(mapa,posicion_coche);
         
-        if(acciones_posibles.size()>1){
+        if(!objetivo_detectado)
+        {
+            ArrayList<Acciones> acciones_posibles = comprobarAccionesPosibles(mapa,posicion_coche);
+            
+            accion=acciones_posibles.get(0);
+        }
+        else
+        {
+            ArrayList<Acciones> acciones_posibles = comprobarAccionesPosibles(mapa,posicion_coche);
+            
+            if(acciones_posibles.size()>1){
             
             ArrayList<Double> distancias = new ArrayList();
             
@@ -81,38 +93,90 @@ public class Heuristica {
             }
             
             accion = acciones_posibles.get(indice_mejor_accion);
-        }
-        else{
-            accion=acciones_posibles.get(0);
+            }
+            else{
+                accion=acciones_posibles.get(0);
+            }
         }
         
         return accion;
     }
     
-    public static ArrayList<Acciones> comprobarAccionesPosibles(Mapa mapa,Pair<Integer,Integer> posicion_coche){
+    public ArrayList<Acciones> comprobarAccionesPosibles(Mapa mapa,Pair<Integer,Integer> posicion_coche){
         
         ArrayList<Acciones> actions=new ArrayList();
         Acciones[] acciones_posibles ={Acciones.moveSW,Acciones.moveS,Acciones.moveW,Acciones.moveNW,Acciones.moveN,Acciones.moveNE,Acciones.moveE,Acciones.moveSE}; 
         int[][] mapa_actual = mapa.devolverMapa();
+        //System.out.println("Debug: He obtenido el mapa en el metodo comprobar acciones");
         
-        int []casillas = new int[8];
-        casillas[0] = mapa_actual[posicion_coche.getKey()+1][posicion_coche.getValue()-1];
-        casillas[1]=mapa_actual[posicion_coche.getKey()+1][posicion_coche.getValue()];
-        casillas[2]=mapa_actual[posicion_coche.getKey()][posicion_coche.getValue()-1];;
-        casillas[3]=mapa_actual[posicion_coche.getKey()-1][posicion_coche.getValue()-1];
-        casillas[4]=mapa_actual[posicion_coche.getKey()-1][posicion_coche.getValue()];
-        casillas[5]=mapa_actual[posicion_coche.getKey()-1][posicion_coche.getValue()+1];
-        casillas[6]=mapa_actual[posicion_coche.getKey()][posicion_coche.getValue()+1];
-        casillas[7]=mapa_actual[posicion_coche.getKey()+1][posicion_coche.getValue()+1];
+        int[] casillas = new int[8];
+        
+        if((posicion_coche.getKey()+1)<500 && (posicion_coche.getValue()-1)>0)
+            casillas[0] = mapa_actual[posicion_coche.getKey()+1][posicion_coche.getValue()-1];
+        else
+            casillas[0]=1;
+        
+        if((posicion_coche.getKey()+1)<500)
+            casillas[1]=mapa_actual[posicion_coche.getKey()+1][posicion_coche.getValue()];
+        else
+            casillas[1]=1;
+        
+        if((posicion_coche.getValue()-1)>0)
+            casillas[2]=mapa_actual[posicion_coche.getKey()][posicion_coche.getValue()-1];
+        else
+            casillas[2]=1;
+        
+        if((posicion_coche.getValue()-1)>0 && (posicion_coche.getKey()-1)>0)
+            casillas[3]=mapa_actual[posicion_coche.getKey()-1][posicion_coche.getValue()-1];
+        else
+            casillas[3]=1;
+        
+        if((posicion_coche.getKey()-1)>0)
+            casillas[4]=mapa_actual[posicion_coche.getKey()-1][posicion_coche.getValue()];
+        else
+            casillas[4]=1;
+        
+        if((posicion_coche.getKey()-1)>0 && (posicion_coche.getValue()+1)<500)
+            casillas[5]=mapa_actual[posicion_coche.getKey()-1][posicion_coche.getValue()+1];
+        else
+            casillas[5]=1;
+        
+        if((posicion_coche.getValue()+1)<500)
+            casillas[6]=mapa_actual[posicion_coche.getKey()][posicion_coche.getValue()+1];
+        else
+            casillas[6]=1;
+        
+        if((posicion_coche.getValue()+1)<500 && (posicion_coche.getKey()+1)<500)
+            casillas[7]=mapa_actual[posicion_coche.getKey()+1][posicion_coche.getValue()+1];
+        else
+            casillas[7]=1;
+        
+        boolean aux_objetivo_encontrado=false;
+        Acciones aux_accion;
         
         if(posicion_coche.getKey() != 500 && posicion_coche.getValue() != 0 && (casillas[0]==0 || casillas[0]==2)){
-                actions.add(Acciones.moveSW);
+            if(casillas[0]==2)
+            {
+                objetivo_detectado=true;
+                aux_accion=Acciones.moveSW;
+            }
+            actions.add(Acciones.moveSW);
         }
         if(posicion_coche.getKey() != 500 && (casillas[1]==0 || casillas[1]==2)){
-                 actions.add(Acciones.moveS);
+            if(casillas[1]==2)
+            {
+                aux_objetivo_encontrado=true;
+                aux_accion=Acciones.moveS;
+            }
+            actions.add(Acciones.moveS);
         }
         if(posicion_coche.getValue() != 0 && (casillas[2]==0 || casillas[2]==2)){
-                 actions.add(Acciones.moveW);
+            if(casillas[0]==2)
+            {
+                aux_objetivo_encontrado=true;
+                aux_accion=Acciones.moveW;
+            }
+            actions.add(Acciones.moveW);
         }
         if(posicion_coche.getKey() != 0 && posicion_coche.getValue() != 0 && (casillas[3]==0 || casillas[3]==2)){
                  actions.add(Acciones.moveNW);

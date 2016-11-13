@@ -30,7 +30,6 @@ public class Agente extends SingleAgent {
     private boolean pisando_objetivo;
     private boolean crashed;
     private int cont_bateria;
-    private boolean objetivo_detectado;
     private String server_key;
     private int mundo_elegido;
     private Mapa map;
@@ -61,9 +60,8 @@ public class Agente extends SingleAgent {
         this.map = new Mapa();
         this.map.inicializarMapa();
         
-        this.heuristic = new Heuristica();
+        this.heuristic=new Heuristica();
         
-        this.objetivo_detectado = false;
         this.pisando_objetivo = false;
         this.crashed = false;
         this.posicion = new Pair(0,0);
@@ -97,24 +95,31 @@ public class Agente extends SingleAgent {
                 { 
                     recibirMensajeDelServidor();
                 }
-                
+                //System.out.println("Debug: Antes de comprobar bateria");
                 if(comprobarBateria())
                 {
+                    System.out.println("Debug: voy a recargar la bateria");
                     cont_bateria=100;
                     enviarMensajeAlServidor(Acciones.refuel);
                 }
                 else
                 {
+                    //System.out.println("Debug: antes de if pisando objetivo");
                     if(map.pisandoObjetivo(posicion))
                     {
+                        //System.out.println("Debug: se supone que está en el objetivo");
                         pisando_objetivo=true;
                     }
                     else
                     {
+                        //System.out.println("Debug: antes de actualizar mapa");
                         map.actualizarMapa(map.getMatrizRadar(), posicion);
-                        Acciones siguiente_accion=heuristic.calcularSiguientemoveimiento(map, posicion);
+                        //System.out.println("Debug: antes de escoger siguiente movimiento");
+                        Acciones siguiente_accion=heuristic.calcularSiguienteMovimiento(map, posicion);
+                        System.out.println("Debug: esta es la accion que voy a hacer: "+siguiente_accion);
                         enviarMensajeAlServidor(siguiente_accion);
                         cont_bateria--;
+                        map.decrementarAntiguedad();
                     }
                 }
             }
