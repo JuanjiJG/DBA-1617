@@ -10,11 +10,8 @@ import es.upv.dsic.gti_ia.core.*;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.util.Pair;
 
 /**
@@ -24,6 +21,7 @@ import javafx.util.Pair;
 public class Agente extends SingleAgent {
     
     private static final int NUM_PERCEPCIONES = 100;
+	private static final String AGENT_NAME = "GugelCarRedForest";
     
     private Pair<Integer, Integer> posicion;
     private String percepcion;
@@ -127,10 +125,12 @@ public class Agente extends SingleAgent {
 				case "result":
 					String result = json.getString("result", "UNKNOW RESPONSE");
 					
-					if (!result.equals("OK")) {
+					if (result.startsWith("BAD_") || result.equals("CRASHED")) {
 						crashed = true;
 						System.out.println("ERROR: " + result);
 					}
+					else if (!result.equals("OK"))
+						server_key = result;
 					
 					break;
 				
@@ -172,7 +172,6 @@ public class Agente extends SingleAgent {
      * @author Juan José Jiménez García
 	 * @author Gregorio Carvajal Expósito
 	 * @param injson Objeto json que contiene la traza
-     * @throws java.lang.InterruptedException
      * @throws java.io.IOException
      */
     public void procesarTraza(JsonObject injson) throws IOException {
@@ -199,6 +198,33 @@ public class Agente extends SingleAgent {
             System.err.println("Error procesando la traza");
         }
     }
+	
+	/**
+	 * Metodo para generar la cadena JSON adecuada, lista para mandarla al 
+	 * servidor
+	 * 
+	 * @author Gregorio Carvajal Expósito
+	 * @param accion Accion que queremos parsear a JSON
+	 * @return Un String en JSON
+	 */
+	public String parsearAccion(Acciones accion) {
+		JsonObject json = new JsonObject();
+		json.add("command", accion.toString());
+		
+		switch (accion) {
+			case login:
+				json.add("world", "map"+mundo_elegido);
+				json.add("radar", AGENT_NAME);
+				json.add("gps", AGENT_NAME);
+				break;
+			
+			default:
+				json.add("key", server_key);
+				break;
+		}
+		
+		return json.toString();
+	}
     
      /**
      * Método para el procesamiento de la traza de imagen

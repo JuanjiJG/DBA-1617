@@ -11,5 +11,5 @@ package practica2;
  * @author Miguel Angel Torres López
  */
 public enum Acciones {
-    MovS, MovN, MovW, MovE, MovSW, MovSE, MovNW, MovNE, refuel, login, logout
+    moveS, moveN, moveW, moveE, moveSW, moveSE, moveNW, moveNE, refuel, login, logout
 }

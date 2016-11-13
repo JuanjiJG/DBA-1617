@@ -25,9 +25,9 @@ public class Heuristica {
         return d;
     }
     
-    public static Acciones calcularSiguienteMovimiento(Mapa mapa,Pair<Integer,Integer> posicion_coche){
+    public static Acciones calcularSiguientemoveimiento(Mapa mapa,Pair<Integer,Integer> posicion_coche){
         
-        Acciones accion = Acciones.MovE;
+        Acciones accion = Acciones.moveE;
         ArrayList<Acciones> acciones_posibles = comprobarAccionesPosibles(mapa,posicion_coche);
         
         if(acciones_posibles.size()>1){
@@ -39,28 +39,28 @@ public class Heuristica {
                 Pair<Integer,Integer> posicion_posible =  new Pair(0,0);
                 
                 switch(acciones_posibles.get(i)){
-                    case MovSW:
+                    case moveSW:
                         posicion_posible= new Pair(posicion_coche.getKey()+1,posicion_coche.getValue()-1);
                         break;
-                    case MovS:
+                    case moveS:
                         posicion_posible= new Pair(posicion_coche.getKey()+1,posicion_coche.getValue());
                         break;
-                    case MovW:
+                    case moveW:
                         posicion_posible= new Pair(posicion_coche.getKey(),posicion_coche.getValue()-1);
                         break;
-                    case MovNW:
+                    case moveNW:
                         posicion_posible= new Pair(posicion_coche.getKey()-1,posicion_coche.getValue()-1);
                         break;
-                    case MovN:
+                    case moveN:
                         posicion_posible= new Pair(posicion_coche.getKey()-1,posicion_coche.getValue());
                         break;
-                    case MovNE:
+                    case moveNE:
                         posicion_posible= new Pair(posicion_coche.getKey()-1,posicion_coche.getValue()+1);
                         break;
-                    case MovE:
+                    case moveE:
                         posicion_posible= new Pair(posicion_coche.getKey(),posicion_coche.getValue()+1);
                         break;
-                    case MovSE:
+                    case moveSE:
                         posicion_posible= new Pair(posicion_coche.getKey()+1,posicion_coche.getValue()+1);
                         break;
                 }
@@ -92,7 +92,7 @@ public class Heuristica {
     public static ArrayList<Acciones> comprobarAccionesPosibles(Mapa mapa,Pair<Integer,Integer> posicion_coche){
         
         ArrayList<Acciones> actions=new ArrayList();
-        Acciones[] acciones_posibles ={Acciones.MovSW,Acciones.MovS,Acciones.MovW,Acciones.MovNW,Acciones.MovN,Acciones.MovNE,Acciones.MovE,Acciones.MovSE}; 
+        Acciones[] acciones_posibles ={Acciones.moveSW,Acciones.moveS,Acciones.moveW,Acciones.moveNW,Acciones.moveN,Acciones.moveNE,Acciones.moveE,Acciones.moveSE}; 
         int[][] mapa_actual = mapa.devolverMapa();
         
         int []casillas = new int[8];
@@ -106,28 +106,28 @@ public class Heuristica {
         casillas[7]=mapa_actual[posicion_coche.getKey()+1][posicion_coche.getValue()+1];
         
         if(posicion_coche.getKey() != 500 && posicion_coche.getValue() != 0 && (casillas[0]==0 || casillas[0]==2)){
-                actions.add(Acciones.MovSW);
+                actions.add(Acciones.moveSW);
         }
         if(posicion_coche.getKey() != 500 && (casillas[1]==0 || casillas[1]==2)){
-                 actions.add(Acciones.MovS);
+                 actions.add(Acciones.moveS);
         }
         if(posicion_coche.getValue() != 0 && (casillas[2]==0 || casillas[2]==2)){
-                 actions.add(Acciones.MovW);
+                 actions.add(Acciones.moveW);
         }
         if(posicion_coche.getKey() != 0 && posicion_coche.getValue() != 0 && (casillas[3]==0 || casillas[3]==2)){
-                 actions.add(Acciones.MovNW);
+                 actions.add(Acciones.moveNW);
         }   
         if(posicion_coche.getKey() != 0 && (casillas[4]==0 || casillas[4]==2)){
-                 actions.add(Acciones.MovN);
+                 actions.add(Acciones.moveN);
         }
         if(posicion_coche.getKey() != 0 && posicion_coche.getValue() != 500 && (casillas[5]==0 || casillas[5]==2)){
-                 actions.add(Acciones.MovNE);
+                 actions.add(Acciones.moveNE);
         }
         if(posicion_coche.getValue() != 500 && (casillas[6]==0 || casillas[6]==2)){
-                 actions.add(Acciones.MovE);
+                 actions.add(Acciones.moveE);
         }
         if(posicion_coche.getKey() != 500 && posicion_coche.getValue() != 500 && (casillas[7]==0 || casillas[7]==2)){
-                 actions.add(Acciones.MovSE);
+                 actions.add(Acciones.moveSE);
         }
         
         //Solo cogemos las acciones con casilla negativa en el caso en el que no tengamos otra opción
