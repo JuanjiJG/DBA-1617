@@ -21,10 +21,9 @@ public class Main {
         Scanner keyboard = new Scanner(System.in);
         
         System.out.println("Introduce el nº del mapa que quieres explorar (del 1 al 10):");
-        int numero = keyboard.nextInt();
-        String mundo = "map" + numero;
+        int mundo = keyboard.nextInt();
         
-        if (mundo != null) {
+        
             
             Agente gugel = null;
             
@@ -41,7 +40,7 @@ public class Main {
             
             // Iniciamos el agente
             gugel.start();
-        }
+
         
     }
 }

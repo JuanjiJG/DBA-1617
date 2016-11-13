@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.util.Pair;
 
 /**
@@ -30,7 +32,7 @@ public class Agente extends SingleAgent {
     private int cont_bateria;
     private boolean objetivo_detectado;
     private String server_key;
-    private String mundo_elegido;
+    private int mundo_elegido;
     private Mapa map;
     private Heuristica heuristic;
     
@@ -41,7 +43,7 @@ public class Agente extends SingleAgent {
      * @throws Exception 
      * @author Juan José Jiménez García
      */
-    public Agente(AgentID aid, String mundo) throws Exception {
+    public Agente(AgentID aid, int mundo) throws Exception {
         
         super(aid);
         this.mundo_elegido = mundo;
@@ -77,10 +79,53 @@ public class Agente extends SingleAgent {
     @Override
     public void execute() {
         
-        System.out.println("Ejecutando el agente...");
-        
-        // Aquí hay que implementar el funcionamiento del agente y todo el grueso del sistema
-        // Este método puede llamar a otros métodos que formen parte del comportamiento
+        try {
+            System.out.println("Ejecutando el agente...");
+            enviarMensajeAlServidor(Acciones.login);
+            
+            for(int i=0;i<3;i++)
+            { 
+                recibirMensajeDelServidor();
+            }
+            
+            cont_bateria=100;
+            enviarMensajeAlServidor(Acciones.refuel);
+            
+            while(pisando_objetivo==false /*&& map.getAntiguedad()>=-1610612736*/){ //-1610612736 es 3/4 del valor minimo de una variable tipo entero. Indica que se ha recorrido el mapa varias veces sin encotrar la solucion
+                
+                for(int i=0;i<3;i++)
+                { 
+                    recibirMensajeDelServidor();
+                }
+                
+                if(comprobarBateria())
+                {
+                    cont_bateria=100;
+                    enviarMensajeAlServidor(Acciones.refuel);
+                }
+                else
+                {
+                    if(map.pisandoObjetivo(posicion))
+                    {
+                        pisando_objetivo=true;
+                    }
+                    else
+                    {
+                        map.actualizarMapa(map.getMatrizRadar(), posicion);
+                        Acciones siguiente_accion=heuristic.calcularSiguientemoveimiento(map, posicion);
+                        enviarMensajeAlServidor(siguiente_accion);
+                        cont_bateria--;
+                    }
+                }
+            }
+            
+            this.finalize();
+            
+            // Aquí hay que implementar el funcionamiento del agente y todo el grueso del sistema
+            // Este método puede llamar a otros métodos que formen parte del comportamiento
+        } catch (IOException ex) {
+            Logger.getLogger(Agente.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     /**
@@ -92,16 +137,20 @@ public class Agente extends SingleAgent {
         
         System.out.println("Finalizando ejecución y estado del agente...");
         
-		/*
+		
         try {
-            // Por ejemplo, aquí se puede hacer la generacion de la imagen png de la traza
-            this.procesarTraza();
-        } catch (InterruptedException ex) {
-            Logger.getLogger(Agente.class.getName()).log(Level.SEVERE, null, ex);
+            if(crashed==false)
+            {
+                enviarMensajeAlServidor(Acciones.logout);
+                for(int i=0;i<2;i++)
+                {
+                    recibirMensajeDelServidor();
+                }
+            }
         } catch (IOException ex) {
             Logger.getLogger(Agente.class.getName()).log(Level.SEVERE, null, ex);
         }
-        */
+        
 		
         super.finalize();
     }
@@ -230,12 +279,14 @@ public class Agente extends SingleAgent {
      * Método para el procesamiento de la traza de imagen
      * @author Miguel Angel Torres López
      * @author Antonio Javier Benítez Guijarro
-     * @progress PENDIENTE
-     * @throws java.lang.InterruptedException
-     * @throws java.io.IOException
      */
     public void enviarMensajeAlServidor(Acciones accion){
-    
+        
+        ACLMessage outbox = new ACLMessage();
+        outbox.setSender(this.getAid());
+        outbox.setReceiver(new AgentID("Furud"));
+        outbox.setContent(parsearAccion(accion));
+        this.send(outbox);
     }
     
     /**
@@ -243,11 +294,21 @@ public class Agente extends SingleAgent {
      * @author Miguel Angel Torres López
      * @author Antonio Javier Benítez Guijarro
      * @progress PENDIENTE
-     * @throws java.lang.InterruptedException
-     * @throws java.io.IOException
      */
-    public void recibirMensajeDelServidor(Acciones accion){
-    
+    public void recibirMensajeDelServidor() throws IOException{
+        ACLMessage inbox= new ACLMessage();
+        try {
+            inbox = this.receiveACLMessage();
+            System.out.println("\nDebug: "+inbox.getContent());
+            parsearPercepcion(inbox.getContent());
+            if(crashed==true)
+            {
+                System.out.println("Deslogueando del servidor");
+                this.finalize();
+            }
+        } catch (InterruptedException ex) {
+            System.out.println("No se recibio correctamente el mensaje");
+        }
     }
     
     /**
@@ -255,7 +316,7 @@ public class Agente extends SingleAgent {
      * @author Miguel Angel Torres López
      * @author Antonio Javier Benítez Guijarro
      */
-    public boolean comprobarBateria(Acciones accion){
+    public boolean comprobarBateria(){
     
         if(cont_bateria<=5)
         {

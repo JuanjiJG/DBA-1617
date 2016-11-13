@@ -33,6 +33,7 @@ public class Mapa {
         this.matriz_mapa = new int[TAMANIO_MAPA][TAMANIO_MAPA];
         this.matriz_radar = new int[TAMANIO_RADAR][TAMANIO_RADAR];
         this.posicion_objetivo = new Pair(0,0);
+        antiguedad=-1;
     }
     
     /**
@@ -52,7 +53,7 @@ public class Mapa {
      * @author Miguel Ángel Torres López
      * @author Antonio Javier Benítez Guijarro
      */
-    public void actualizarMapa(Integer[][] matriz_radar, Pair<Integer, Integer> posicion) {
+    public void actualizarMapa(int[][] matriz_radar, Pair<Integer, Integer> posicion) {
         int posicion_inicial_i=posicion.getKey()-2;
         int posicion_inicial_j=posicion.getValue()-2;
         
@@ -66,7 +67,21 @@ public class Mapa {
                 }
             }
         }
-        matriz_mapa[posicion.getKey()][posicion.getValue()]=antiguedad;
+        if(matriz_mapa[posicion.getKey()][posicion.getValue()]!=2)
+        {
+            matriz_mapa[posicion.getKey()][posicion.getValue()]=antiguedad;
+        }
+    }
+    
+    public boolean pisandoObjetivo(Pair<Integer, Integer> posicion){
+        if(matriz_mapa[posicion.getKey()][posicion.getValue()]==2)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
     
     /**
@@ -112,5 +127,31 @@ public class Mapa {
         }
         
         return encontrado;
+    }
+    
+    /**
+     * Método para encontrar el objetivo en una matriz radar
+     * @param radar La matriz de 5x5 casillas en la que buscar el objetivo
+     * @return Un booleano indicando si ha encontrado el objetivo o no
+     * @author Miguel Angel Torres Lopez
+     * @author Antonio Javier Benitez Guijarro
+     */
+    public void setRadar(int[][] radar_percibido) {
+        for(int i=0;i<5;i++)
+        {
+            for(int j=0;j<5;j++)
+            {
+                matriz_radar[i][j]=radar_percibido[i][j];
+            }
+        }
+    }
+    
+    public int[][] getMatrizRadar()
+    {
+        return matriz_radar;
+    }
+
+    public int getAntiguedad() {
+        return antiguedad;
     }
 }
