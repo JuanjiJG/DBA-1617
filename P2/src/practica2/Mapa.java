@@ -61,9 +61,9 @@ public class Mapa {
         
         //System.out.println("Debug: antes del primer for de actualizar mapa");
         
-        for(int i=0;i<5;i++)
+        for(int i=0;i<TAMANIO_RADAR;i++)
         {
-            for(int j=0;j<5;j++)
+            for(int j=0;j<TAMANIO_RADAR;j++)
             {
                 //System.out.println("Debug: He entrado en el segundo for de actualizar mapa");
                 if((posicion_inicial_i+i)>=0 && (posicion_inicial_i+i)<500 && (posicion_inicial_j+j)>=0 && (posicion_inicial_j+j)<500)
@@ -84,9 +84,9 @@ public class Mapa {
             matriz_mapa[posicion.getValue()][posicion.getKey()]=antiguedad;
         }
         
-        for(int i=0;i<5;i++)
+        for(int i=0;i<TAMANIO_RADAR;i++)
         {
-            for(int j=0;j<5;j++)
+            for(int j=0;j<TAMANIO_RADAR;j++)
             {
                 //System.out.println("Debug: He entrado en el segundo for de actualizar mapa");
                 if((posicion_inicial_i+i)>=0 && (posicion_inicial_i+i)<500 && (posicion_inicial_j+j)>=0 && (posicion_inicial_j+j)<500)
@@ -165,9 +165,9 @@ public class Mapa {
      * @author Antonio Javier Benitez Guijarro
      */
     public void setRadar(int[][] radar_percibido) {
-        for(int i=0;i<5;i++)
+        for(int i=0;i<TAMANIO_RADAR;i++)
         {
-            for(int j=0;j<5;j++)
+            for(int j=0;j<TAMANIO_RADAR;j++)
             {
                 matriz_radar[i][j]=radar_percibido[i][j];
             }
