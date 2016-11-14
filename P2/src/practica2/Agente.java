@@ -22,7 +22,7 @@ import javafx.util.Pair;
  */
 public class Agente extends SingleAgent {
     
-    private static final int NUM_PERCEPCIONES = 100;
+    private static final int NUM_PERCEPCIONES = 3;
 	private static final String AGENT_NAME = "GugelCarRedForest";
     
     private Pair<Integer, Integer> posicion;
@@ -81,7 +81,7 @@ public class Agente extends SingleAgent {
             System.out.println("Ejecutando el agente...");
             enviarMensajeAlServidor(Acciones.login);
             
-            for(int i=0;i<3;i++)
+            for(int i=0;i<NUM_PERCEPCIONES;i++)
             { 
                 recibirMensajeDelServidor();
             }
@@ -91,7 +91,7 @@ public class Agente extends SingleAgent {
             
             while(pisando_objetivo==false /*&& map.getAntiguedad()>=-1610612736*/){ //-1610612736 es 3/4 del valor minimo de una variable tipo entero. Indica que se ha recorrido el mapa varias veces sin encotrar la solucion
                 
-                for(int i=0;i<3;i++)
+                for(int i=0;i<NUM_PERCEPCIONES;i++)
                 { 
                     recibirMensajeDelServidor();
                 }
@@ -113,10 +113,10 @@ public class Agente extends SingleAgent {
                     else
                     {
                         //System.out.println("Debug: antes de actualizar mapa");
-                        map.actualizarMapa(map.getMatrizRadar(), posicion);
+                        map.actualizarMapa(posicion);
                         //System.out.println("Debug: antes de escoger siguiente movimiento");
                         Acciones siguiente_accion=heuristic.calcularSiguienteMovimiento(map, posicion);
-                        System.out.println("Debug: esta es la accion que voy a hacer: "+siguiente_accion);
+                        System.out.println("Debug: esta es la accion que voy a hacer: "+siguiente_accion.toString());
                         enviarMensajeAlServidor(siguiente_accion);
                         cont_bateria--;
                         map.decrementarAntiguedad();

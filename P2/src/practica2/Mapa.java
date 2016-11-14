@@ -49,12 +49,11 @@ public class Mapa {
     
     /**
      * Método para actualizar la matriz mapa de conocimiento del mundo
-     * @param matriz_radar Matriz de radar de 5x5 con la que actualizar el mapa
      * @param posicion La posición en la que se encuentra el agente
      * @author Miguel Ángel Torres López
      * @author Antonio Javier Benítez Guijarro
      */
-    public void actualizarMapa(int[][] matriz_radar, Pair<Integer, Integer> posicion) {
+    public void actualizarMapa(Pair<Integer, Integer> posicion) {
         //System.out.println("Debug: he entrado en actualizar mapa");
         int posicion_inicial_j=posicion.getKey()-2;
         int posicion_inicial_i=posicion.getValue()-2;
