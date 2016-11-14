@@ -89,10 +89,8 @@ public class Agente extends SingleAgent {
             cont_bateria=100;
             enviarMensajeAlServidor(Acciones.refuel);
             
-            while(pisando_objetivo==false){ //-1610612736 es 3/4 del valor minimo de una variable tipo entero. Indica que se ha recorrido el mapa varias veces sin encotrar la solucion
-                System.out.println("Debug: Antiguedad: "+map.getAntiguedad() );
-                if(map.getAntiguedad()==-5000)
-                    break;
+            while(pisando_objetivo==false /*&& map.getAntiguedad()>=-1610612736*/){ //-1610612736 es 3/4 del valor minimo de una variable tipo entero. Indica que se ha recorrido el mapa varias veces sin encotrar la solucion
+                
                 for(int i=0;i<NUM_PERCEPCIONES;i++)
                 { 
                     recibirMensajeDelServidor();
@@ -100,7 +98,7 @@ public class Agente extends SingleAgent {
                 //System.out.println("Debug: Antes de comprobar bateria");
                 if(comprobarBateria())
                 {
-                    //System.out.println("Debug: voy a recargar la bateria");
+                    System.out.println("Debug: voy a recargar la bateria");
                     cont_bateria=100;
                     enviarMensajeAlServidor(Acciones.refuel);
                 }
@@ -118,7 +116,7 @@ public class Agente extends SingleAgent {
                         map.actualizarMapa(posicion);
                         //System.out.println("Debug: antes de escoger siguiente movimiento");
                         Acciones siguiente_accion=heuristic.calcularSiguienteMovimiento(map, posicion);
-                        //System.out.println("Debug: esta es la accion que voy a hacer: "+siguiente_accion.toString());
+                        System.out.println("Debug: esta es la accion que voy a hacer: "+siguiente_accion.toString());
                         enviarMensajeAlServidor(siguiente_accion);
                         cont_bateria--;
                         map.decrementarAntiguedad();
@@ -306,7 +304,7 @@ public class Agente extends SingleAgent {
         ACLMessage inbox= new ACLMessage();
         try {
             inbox = this.receiveACLMessage();
-            //System.out.println("\nDebug: "+inbox.getContent());
+            System.out.println("\nDebug: "+inbox.getContent());
             parsearPercepcion(inbox.getContent());
             if(crashed==true)
             {

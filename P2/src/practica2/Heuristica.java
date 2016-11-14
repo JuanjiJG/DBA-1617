@@ -104,8 +104,8 @@ public class Heuristica {
         ArrayList<Acciones> actions = new ArrayList();
         Acciones[] acciones_posibles = {Acciones.moveSW, Acciones.moveS, Acciones.moveW, Acciones.moveNW, Acciones.moveN, Acciones.moveNE, Acciones.moveE, Acciones.moveSE};
         int[][] mapa_actual = mapa.devolverMapa();
-       /* System.out.println("Debug: IMRPIMIENDO EL MAPA DESPUES DE ACTUALIZAR");
-        mapa.imprimirMapa(posicion_coche);*/
+        System.out.println("Debug: IMRPIMIENDO EL MAPA DESPUES DE ACTUALIZAR");
+        mapa.imprimirMapa(posicion_coche);
         //System.out.println("Debug: He obtenido el mapa en el metodo comprobar acciones");
 
         int[] casillas = new int[8];
@@ -182,10 +182,10 @@ public class Heuristica {
         if (posicion_coche.getValue() != 500 && posicion_coche.getKey() != 500 && (casillas[7] == 0 || casillas[7] == 2)) {
             actions.add(Acciones.moveSE);
         }*/
-      /*System.out.print("CASILLAS\n");
+      System.out.print("CASILLAS\n");
       for (int i = 0; i < casillas.length; ++i){
           System.out.print(casillas[i]+" ");
-      }*/
+      }
       if (casillas[0] == 0 || casillas[0] == 2) {
             actions.add(Acciones.moveSW);
         }
