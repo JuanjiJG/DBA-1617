@@ -21,6 +21,7 @@ public class Mapa {
     
     private int[][] matriz_mapa;
     private int[][] matriz_radar;
+    //Si la posicion es null significa que no hemos encontrado el objetivo aún.
     private Pair<Integer, Integer> posicion_objetivo;
     private int antiguedad;
     
@@ -32,7 +33,7 @@ public class Mapa {
         
         this.matriz_mapa = new int[TAMANIO_MAPA][TAMANIO_MAPA];
         this.matriz_radar = new int[TAMANIO_RADAR][TAMANIO_RADAR];
-        this.posicion_objetivo = new Pair(0,0);
+        this.posicion_objetivo = null;
         antiguedad=-1;
         this.inicializarMapa();
     }
@@ -43,7 +44,6 @@ public class Mapa {
      * @author Juan José Jiménez García
      */
     public Pair<Integer,Integer> getPosicionObjetivo() {
-        
         return this.posicion_objetivo;
     }
     
@@ -55,8 +55,8 @@ public class Mapa {
      */
     public void actualizarMapa(Pair<Integer, Integer> posicion) {
         //System.out.println("Debug: he entrado en actualizar mapa");
-        int posicion_inicial_j=posicion.getKey()-2;
-        int posicion_inicial_i=posicion.getValue()-2;
+        int posicion_inicial_x=posicion.getKey()-2;
+        int posicion_inicial_y=posicion.getValue()-2;
         
         
         //System.out.println("Debug: antes del primer for de actualizar mapa");
@@ -66,14 +66,17 @@ public class Mapa {
             for(int j=0;j<TAMANIO_RADAR;j++)
             {
                 //System.out.println("Debug: He entrado en el segundo for de actualizar mapa");
-                if((posicion_inicial_i+i)>=0 && (posicion_inicial_i+i)<500 && (posicion_inicial_j+j)>=0 && (posicion_inicial_j+j)<500)
+                if((posicion_inicial_y+i)>=0 && (posicion_inicial_y+i)<500 && (posicion_inicial_x+j)>=0 && (posicion_inicial_x+j)<500)
                 {
+                    if(matriz_mapa[posicion_inicial_y+i][posicion_inicial_x+j] == 2){
+                        this.posicion_objetivo= new Pair(posicion_inicial_x,posicion_inicial_y);
+                    }
                     //System.out.println("Debug: He entrado en el primer if del segundo for de actualizar mapa");
                     //System.out.println("Debug matriz mapa:"+matriz_mapa[posicion_inicial_i+i][posicion_inicial_j+j]);
-                    if(matriz_mapa[posicion_inicial_i+i][posicion_inicial_j+j]==3)
+                    if(matriz_mapa[posicion_inicial_y+i][posicion_inicial_x+j]==3)
                     {
                         //System.out.println("Debug: He entrado en el segundo if del segundo for de actualizar mapa");
-                        matriz_mapa[posicion_inicial_i+i][posicion_inicial_j+j]=matriz_radar[i][j];
+                        matriz_mapa[posicion_inicial_y+i][posicion_inicial_x+j]=matriz_radar[i][j];
                     }
                 }
             }
@@ -89,11 +92,11 @@ public class Mapa {
             for(int j=0;j<TAMANIO_RADAR;j++)
             {
                 //System.out.println("Debug: He entrado en el segundo for de actualizar mapa");
-                if((posicion_inicial_i+i)>=0 && (posicion_inicial_i+i)<500 && (posicion_inicial_j+j)>=0 && (posicion_inicial_j+j)<500)
+                if((posicion_inicial_y+i)>=0 && (posicion_inicial_y+i)<500 && (posicion_inicial_x+j)>=0 && (posicion_inicial_x+j)<500)
                 {
                     //System.out.println("Debug: He entrado en el primer if del segundo for de actualizar mapa");
                     //System.out.println("Debug matriz mapa:"+matriz_mapa[posicion_inicial_i+i][posicion_inicial_j+j]);
-                    System.out.print(matriz_mapa[posicion_inicial_i+i][posicion_inicial_j+j]+" ");
+                    System.out.print(matriz_mapa[posicion_inicial_y+i][posicion_inicial_x+j]+" ");
                 }
             }
             System.out.println();
@@ -141,7 +144,7 @@ public class Mapa {
      * @return Un booleano indicando si ha encontrado el objetivo o no
      * @author Juan José Jiménez García
      */
-    public boolean buscarObjetivo(int[][] radar) {
+   /* public boolean buscarObjetivo(int[][] radar) {
         
         boolean encontrado = false;
         
@@ -155,7 +158,7 @@ public class Mapa {
         }
         
         return encontrado;
-    }
+    }*/
     
     /**
      * Método para encontrar el objetivo en una matriz radar
