@@ -16,7 +16,7 @@ import javafx.util.Pair;
  */
 public class Mapa {
     
-    private static final int TAMANIO_MAPA = 500;
+    private static final int TAMANIO_MAPA = 504;
     private static final int TAMANIO_RADAR = 5;
     
     private int[][] matriz_mapa;
@@ -55,8 +55,8 @@ public class Mapa {
      */
     public void actualizarMapa(Pair<Integer, Integer> posicion) {
         //System.out.println("Debug: he entrado en actualizar mapa");
-        int posicion_inicial_x=posicion.getKey()-2;
-        int posicion_inicial_y=posicion.getValue()-2;
+        int posicion_inicial_x=posicion.getKey();
+        int posicion_inicial_y=posicion.getValue();
         
         
         //System.out.println("Debug: antes del primer for de actualizar mapa");
@@ -66,10 +66,10 @@ public class Mapa {
             for(int j=0;j<TAMANIO_RADAR;j++)
             {
                 //System.out.println("Debug: He entrado en el segundo for de actualizar mapa");
-                if((posicion_inicial_y+i)>=0 && (posicion_inicial_y+i)<500 && (posicion_inicial_x+j)>=0 && (posicion_inicial_x+j)<500)
-                {
+                //if((posicion_inicial_y+i)>=0 && (posicion_inicial_y+i)<500 && (posicion_inicial_x+j)>=0 && (posicion_inicial_x+j)<500)
+               // {
                     if(matriz_mapa[posicion_inicial_y+i][posicion_inicial_x+j] == 2){
-                        this.posicion_objetivo= new Pair(posicion_inicial_x,posicion_inicial_y);
+                        this.posicion_objetivo= new Pair(posicion_inicial_x+2,posicion_inicial_y+2);
                     }
                     //System.out.println("Debug: He entrado en el primer if del segundo for de actualizar mapa");
                     //System.out.println("Debug matriz mapa:"+matriz_mapa[posicion_inicial_i+i][posicion_inicial_j+j]);
@@ -78,13 +78,13 @@ public class Mapa {
                         //System.out.println("Debug: He entrado en el segundo if del segundo for de actualizar mapa");
                         matriz_mapa[posicion_inicial_y+i][posicion_inicial_x+j]=matriz_radar[i][j];
                     }
-                }
+                //}
             }
         }
         
-        if(matriz_mapa[posicion.getValue()][posicion.getKey()]!=2)
+        if(matriz_mapa[posicion.getValue()+2][posicion.getKey()+2]!=2)
         {
-            matriz_mapa[posicion.getValue()][posicion.getKey()]=antiguedad;
+            matriz_mapa[posicion.getValue()+2][posicion.getKey()+2]=antiguedad;
         }
         
         for(int i=0;i<TAMANIO_RADAR;i++)
@@ -92,20 +92,37 @@ public class Mapa {
             for(int j=0;j<TAMANIO_RADAR;j++)
             {
                 //System.out.println("Debug: He entrado en el segundo for de actualizar mapa");
-                if((posicion_inicial_y+i)>=0 && (posicion_inicial_y+i)<500 && (posicion_inicial_x+j)>=0 && (posicion_inicial_x+j)<500)
-                {
+                //if((posicion_inicial_y+i)>=0 && (posicion_inicial_y+i)<500 && (posicion_inicial_x+j)>=0 && (posicion_inicial_x+j)<500)
+               // {
                     //System.out.println("Debug: He entrado en el primer if del segundo for de actualizar mapa");
                     //System.out.println("Debug matriz mapa:"+matriz_mapa[posicion_inicial_i+i][posicion_inicial_j+j]);
                     System.out.print(matriz_mapa[posicion_inicial_y+i][posicion_inicial_x+j]+" ");
-                }
+               // }
             }
             System.out.println();
         }
         
     }
-    
+    public void imprimirMapa(Pair<Integer, Integer> posicion){
+        int posicion_inicial_x=posicion.getKey()-2;
+        int posicion_inicial_y=posicion.getValue()-2;
+         for(int i=0;i<TAMANIO_RADAR;i++)
+        {
+            for(int j=0;j<TAMANIO_RADAR;j++)
+            {
+                //System.out.println("Debug: He entrado en el segundo for de actualizar mapa");
+                //if((posicion_inicial_y+i)>=0 && (posicion_inicial_y+i)<500 && (posicion_inicial_x+j)>=0 && (posicion_inicial_x+j)<500)
+               // {
+                    //System.out.println("Debug: He entrado en el primer if del segundo for de actualizar mapa");
+                    //System.out.println("Debug matriz mapa:"+matriz_mapa[posicion_inicial_i+i][posicion_inicial_j+j]);
+                    System.out.print(matriz_mapa[posicion_inicial_y+i][posicion_inicial_x+j]+" ");
+               // }
+            }
+            System.out.println();
+        }
+    }
     public boolean pisandoObjetivo(Pair<Integer, Integer> posicion){
-        if(matriz_mapa[posicion.getKey()][posicion.getValue()]==2)
+        if(matriz_mapa[posicion.getValue()+2][posicion.getKey()+2]==2)
         {
             return true;
         }
