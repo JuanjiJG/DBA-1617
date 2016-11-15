@@ -21,79 +21,78 @@ public class Heuristica {
         objetivo_detectado = false;
     }
 
-    private double calcularDistanciaEuclidea(Pair<Integer, Integer> posicion_objetivo, Pair<Integer, Integer> posicion_posible) {
+    public double calcularDistanciaEuclidea(Pair<Integer, Integer> posicion_objetivo, Pair<Integer, Integer> posicion_posible) {
         double d = 0;
         //x == getKey(), y == getValue()
         int x1 = posicion_objetivo.getKey();
-        int y1 = posicion_objetivo.getValue();
         int x2 = posicion_posible.getKey();
+        int y1 = posicion_objetivo.getValue();
         int y2 = posicion_posible.getValue();
-        d = Math.sqrt( Math.pow((x1-x2),2) + Math.pow((y1-y2),2) );
+        d = Math.sqrt(((x1 - x2)*(x1 - x2)) + ((y1 - y2)*(y1 - y2)));
         return d;
     }
 
     public Acciones calcularSiguienteMovimiento(Mapa mapa, Pair<Integer, Integer> posicion_coche_aux) {
-        Pair<Integer, Integer> posicion_coche = new Pair(posicion_coche_aux.getKey()+2,posicion_coche_aux.getValue()+2);
+        Pair<Integer, Integer> posicion_coche = new Pair(posicion_coche_aux.getKey()+2, posicion_coche_aux.getValue()+2);
         //System.out.println("Debug: he entrado en calcular siguiente movimiento");
         Acciones accion = Acciones.moveE;
         ArrayList<Acciones> acciones_posibles = comprobarAccionesPosibles(mapa, posicion_coche);
         if (mapa.getPosicionObjetivo() == null) {
+            System.out.println("Debug: No he encontrado el objetivo y sigo con " + acciones_posibles.get(0));
             accion = acciones_posibles.get(0);
-        } else {
-            if (acciones_posibles.size() > 1) {
+        } else if (acciones_posibles.size() > 1) {
 
-                ArrayList<Double> distancias = new ArrayList();
+            ArrayList<Double> distancias = new ArrayList();
 
-                for (int i = 0; i < acciones_posibles.size(); ++i) {
+            for (int i = 0; i < acciones_posibles.size(); ++i) {
 
-                    Pair<Integer, Integer> posicion_posible = new Pair(0, 0);
-
-                    switch (acciones_posibles.get(i)) {
-                        case moveSW:
-                            posicion_posible = new Pair(posicion_coche.getKey() + 1, posicion_coche.getValue() - 1);
-                            break;
-                        case moveS:
-                            posicion_posible = new Pair(posicion_coche.getKey() + 1, posicion_coche.getValue());
-                            break;
-                        case moveW:
-                            posicion_posible = new Pair(posicion_coche.getKey(), posicion_coche.getValue() - 1);
-                            break;
-                        case moveNW:
-                            posicion_posible = new Pair(posicion_coche.getKey() - 1, posicion_coche.getValue() - 1);
-                            break;
-                        case moveN:
-                            posicion_posible = new Pair(posicion_coche.getKey() - 1, posicion_coche.getValue());
-                            break;
-                        case moveNE:
-                            posicion_posible = new Pair(posicion_coche.getKey() - 1, posicion_coche.getValue() + 1);
-                            break;
-                        case moveE:
-                            posicion_posible = new Pair(posicion_coche.getKey(), posicion_coche.getValue() + 1);
-                            break;
-                        case moveSE:
-                            posicion_posible = new Pair(posicion_coche.getKey() + 1, posicion_coche.getValue() + 1);
-                            break;
-                    }
-
-                    distancias.add(calcularDistanciaEuclidea(mapa.getPosicionObjetivo(), posicion_posible));
+                Pair<Integer, Integer> posicion_posible = new Pair(0, 0);
+                
+                switch (acciones_posibles.get(i)) {
+                    case moveSW:
+                        posicion_posible = new Pair(posicion_coche.getKey() - 1, posicion_coche.getValue() + 1);
+                        break;
+                    case moveS:
+                        posicion_posible = new Pair(posicion_coche.getKey(), posicion_coche.getValue()+1);
+                        break;
+                    case moveW:
+                        posicion_posible = new Pair(posicion_coche.getKey()-1, posicion_coche.getValue());
+                        break;
+                    case moveNW:
+                        posicion_posible = new Pair(posicion_coche.getKey() - 1, posicion_coche.getValue() - 1);
+                        break;
+                    case moveN:
+                        posicion_posible = new Pair(posicion_coche.getKey(), posicion_coche.getValue()-1);
+                        break;
+                    case moveNE:
+                        posicion_posible = new Pair(posicion_coche.getKey() + 1, posicion_coche.getValue() - 1);
+                        break;
+                    case moveE:
+                        posicion_posible = new Pair(posicion_coche.getKey(), posicion_coche.getValue() + 1);
+                        break;
+                    case moveSE:
+                        posicion_posible = new Pair(posicion_coche.getKey() + 1, posicion_coche.getValue() + 1);
+                        break;
                 }
-
-                int indice_mejor_accion = -1;
-                double min_distancia = distancias.get(0);
-
-                for (int j = 0; j < distancias.size(); ++j) {
-
-                    if (min_distancia > distancias.get(j)) {
-
-                        min_distancia = distancias.get(j);
-                        indice_mejor_accion = j;
-                    }
-                }
-
-                accion = acciones_posibles.get(indice_mejor_accion);
-            } else {
-                accion = acciones_posibles.get(0);
+                distancias.add(calcularDistanciaEuclidea(mapa.getPosicionObjetivo(), posicion_posible));
+                System.out.println("\nDebug: Accion posible: "+ acciones_posibles.get(i)+ " Distancia a " + posicion_posible.toString() + " distancia: "+distancias.get(i)+" El objetivo esta: " + mapa.getPosicionObjetivo());
             }
+
+            int indice_mejor_accion = -1;
+            double min_distancia = distancias.get(0);
+
+            for (int j = 0; j < distancias.size(); ++j) {
+
+                if (min_distancia > distancias.get(j)) {
+
+                    min_distancia = distancias.get(j);
+                    indice_mejor_accion = j;
+                }
+            }
+
+            accion = acciones_posibles.get(indice_mejor_accion);
+        } else {
+            accion = acciones_posibles.get(0);
         }
 
         return accion;
@@ -104,89 +103,24 @@ public class Heuristica {
         ArrayList<Acciones> actions = new ArrayList();
         Acciones[] acciones_posibles = {Acciones.moveSW, Acciones.moveS, Acciones.moveW, Acciones.moveNW, Acciones.moveN, Acciones.moveNE, Acciones.moveE, Acciones.moveSE};
         int[][] mapa_actual = mapa.devolverMapa();
-        System.out.println("Debug: IMRPIMIENDO EL MAPA DESPUES DE ACTUALIZAR");
-        mapa.imprimirMapa(posicion_coche);
-        //System.out.println("Debug: He obtenido el mapa en el metodo comprobar acciones");
 
         int[] casillas = new int[8];
 
-        //if ((posicion_coche.getKey() + 1) < 500 && (posicion_coche.getValue() - 1) > 0) {
-            casillas[0] = mapa_actual[posicion_coche.getValue() + 1][posicion_coche.getKey() - 1];
-     /*   } else {
-            casillas[0] = 1;
-        }*/
+        casillas[0] = mapa_actual[posicion_coche.getValue() + 1][posicion_coche.getKey() - 1];
+        casillas[1] = mapa_actual[posicion_coche.getValue() + 1][posicion_coche.getKey()];
+        casillas[2] = mapa_actual[posicion_coche.getValue()][posicion_coche.getKey() - 1];
+        casillas[3] = mapa_actual[posicion_coche.getValue() - 1][posicion_coche.getKey() - 1];
+        casillas[4] = mapa_actual[posicion_coche.getValue() - 1][posicion_coche.getKey()];
+        casillas[5] = mapa_actual[posicion_coche.getValue() - 1][posicion_coche.getKey() + 1];
+        casillas[6] = mapa_actual[posicion_coche.getValue()][posicion_coche.getKey() + 1];
+        casillas[7] = mapa_actual[posicion_coche.getValue() + 1][posicion_coche.getKey() + 1];
 
-       // if ((posicion_coche.getKey() + 1) < 500) {
-            casillas[1] = mapa_actual[posicion_coche.getValue() + 1][posicion_coche.getKey()];
-        /*} else {
-            casillas[1] = 1;
-        }*/
-
-       // if ((posicion_coche.getValue() - 1) > 0) {
-            casillas[2] = mapa_actual[posicion_coche.getValue()][posicion_coche.getKey() - 1];
-        /*} else {
-            casillas[2] = 1;
-        }*/
-
-        //if ((posicion_coche.getValue() - 1) > 0 && (posicion_coche.getKey() - 1) > 0) {
-            casillas[3] = mapa_actual[posicion_coche.getValue() - 1][posicion_coche.getKey() - 1];
-       /* } else {
-            casillas[3] = 1;
-        }*/
-
-        //if ((posicion_coche.getKey() - 1) > 0) {
-            casillas[4] = mapa_actual[posicion_coche.getValue() - 1][posicion_coche.getKey()];
-       /* } else {
-            casillas[4] = 1;
-        }*/
-
-        //if ((posicion_coche.getKey() - 1) > 0 && (posicion_coche.getValue() + 1) < 500) {
-            casillas[5] = mapa_actual[posicion_coche.getValue() - 1][posicion_coche.getKey() + 1];
-        /*} else {
-            casillas[5] = 1;
-        }*/
-
-        //if ((posicion_coche.getValue() + 1) < 500) {
-            casillas[6] = mapa_actual[posicion_coche.getValue()][posicion_coche.getKey() + 1];
-        /*} else {
-            casillas[6] = 1;
-        }*/
-
-        //if ((posicion_coche.getValue() + 1) < 500 && (posicion_coche.getKey() + 1) < 500) {
-            casillas[7] = mapa_actual[posicion_coche.getValue() + 1][posicion_coche.getKey() + 1];
-        /*} else {
-            casillas[7] = 1;
-        }*/
         //x == getKey(), y == getValue()
-      /*  if (posicion_coche.getValue() != 500 && posicion_coche.getKey() != 0 && (casillas[0] == 0 || casillas[0] == 2)) {
-            actions.add(Acciones.moveSW);
+        System.out.print("CASILLAS\n");
+        for (int i = 0; i < casillas.length; ++i) {
+            System.out.print(casillas[i] + " ");
         }
-        if (posicion_coche.getValue() != 500 && (casillas[1] == 0 || casillas[1] == 2)) {
-            actions.add(Acciones.moveS);
-        }
-        if (posicion_coche.getKey() != 0 && (casillas[2] == 0 || casillas[2] == 2)) {
-            actions.add(Acciones.moveW);
-        }
-        if (posicion_coche.getValue() != 0 && posicion_coche.getKey() != 0 && (casillas[3] == 0 || casillas[3] == 2)) {
-            actions.add(Acciones.moveNW);
-        }
-        if (posicion_coche.getValue() != 0 && (casillas[4] == 0 || casillas[4] == 2)) {
-            actions.add(Acciones.moveN);
-        }
-        if (posicion_coche.getValue() != 0 && posicion_coche.getKey() != 500 && (casillas[5] == 0 || casillas[5] == 2)) {
-            actions.add(Acciones.moveNE);
-        }
-        if (posicion_coche.getKey() != 500 && (casillas[6] == 0 || casillas[6] == 2)) {
-            actions.add(Acciones.moveE);
-        }
-        if (posicion_coche.getValue() != 500 && posicion_coche.getKey() != 500 && (casillas[7] == 0 || casillas[7] == 2)) {
-            actions.add(Acciones.moveSE);
-        }*/
-      System.out.print("CASILLAS\n");
-      for (int i = 0; i < casillas.length; ++i){
-          System.out.print(casillas[i]+" ");
-      }
-      if (casillas[0] == 0 || casillas[0] == 2) {
+        if (casillas[0] == 0 || casillas[0] == 2) {
             actions.add(Acciones.moveSW);
         }
         if (casillas[1] == 0 || casillas[1] == 2) {

@@ -8,6 +8,7 @@ package practica2;
 import es.upv.dsic.gti_ia.core.AgentID;
 import es.upv.dsic.gti_ia.core.AgentsConnection;
 import java.util.Scanner;
+import javafx.util.Pair;
 
 /**
  * Clase Main para comenzar la ejecución de nuestro agente
@@ -23,6 +24,8 @@ public class Main {
         System.out.println("Introduce el nº del mapa que quieres explorar (del 1 al 10):");
         int mundo = keyboard.nextInt();
         
+       //Heuristica p = new Heuristica();
+       // System.out.println(p.calcularDistanciaEuclidea(new Pair(53,46), new Pair(52,47)));
         
             
             Agente gugel = null;
@@ -40,7 +43,7 @@ public class Main {
             
             // Iniciamos el agente
             gugel.start();
-
+        
         
     }
 }

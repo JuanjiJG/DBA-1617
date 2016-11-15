@@ -66,19 +66,19 @@ public class Mapa {
             for(int j=0;j<TAMANIO_RADAR;j++)
             {
                 //System.out.println("Debug: He entrado en el segundo for de actualizar mapa");
-                //if((posicion_inicial_y+i)>=0 && (posicion_inicial_y+i)<500 && (posicion_inicial_x+j)>=0 && (posicion_inicial_x+j)<500)
-               // {
-                    if(matriz_mapa[posicion_inicial_y+i][posicion_inicial_x+j] == 2){
-                        this.posicion_objetivo= new Pair(posicion_inicial_x+2,posicion_inicial_y+2);
-                    }
                     //System.out.println("Debug: He entrado en el primer if del segundo for de actualizar mapa");
                     //System.out.println("Debug matriz mapa:"+matriz_mapa[posicion_inicial_i+i][posicion_inicial_j+j]);
+                
+                    //Nos interesa que primero actualice el mapa y despues compruebe si hay un 2
                     if(matriz_mapa[posicion_inicial_y+i][posicion_inicial_x+j]==3)
                     {
                         //System.out.println("Debug: He entrado en el segundo if del segundo for de actualizar mapa");
                         matriz_mapa[posicion_inicial_y+i][posicion_inicial_x+j]=matriz_radar[i][j];
                     }
-                //}
+                    //Compruebo si hay un 2
+                    if(matriz_mapa[posicion_inicial_y+i][posicion_inicial_x+j] == 2){
+                        this.posicion_objetivo= new Pair(posicion_inicial_x+2,posicion_inicial_y+2);
+                    }
             }
         }
         
@@ -91,35 +91,11 @@ public class Mapa {
         {
             for(int j=0;j<TAMANIO_RADAR;j++)
             {
-                //System.out.println("Debug: He entrado en el segundo for de actualizar mapa");
-                //if((posicion_inicial_y+i)>=0 && (posicion_inicial_y+i)<500 && (posicion_inicial_x+j)>=0 && (posicion_inicial_x+j)<500)
-               // {
-                    //System.out.println("Debug: He entrado en el primer if del segundo for de actualizar mapa");
-                    //System.out.println("Debug matriz mapa:"+matriz_mapa[posicion_inicial_i+i][posicion_inicial_j+j]);
                     System.out.print(matriz_mapa[posicion_inicial_y+i][posicion_inicial_x+j]+" ");
-               // }
             }
             System.out.println();
         }
         
-    }
-    public void imprimirMapa(Pair<Integer, Integer> posicion){
-        int posicion_inicial_x=posicion.getKey()-2;
-        int posicion_inicial_y=posicion.getValue()-2;
-         for(int i=0;i<TAMANIO_RADAR;i++)
-        {
-            for(int j=0;j<TAMANIO_RADAR;j++)
-            {
-                //System.out.println("Debug: He entrado en el segundo for de actualizar mapa");
-                //if((posicion_inicial_y+i)>=0 && (posicion_inicial_y+i)<500 && (posicion_inicial_x+j)>=0 && (posicion_inicial_x+j)<500)
-               // {
-                    //System.out.println("Debug: He entrado en el primer if del segundo for de actualizar mapa");
-                    //System.out.println("Debug matriz mapa:"+matriz_mapa[posicion_inicial_i+i][posicion_inicial_j+j]);
-                    System.out.print(matriz_mapa[posicion_inicial_y+i][posicion_inicial_x+j]+" ");
-               // }
-            }
-            System.out.println();
-        }
     }
     public boolean pisandoObjetivo(Pair<Integer, Integer> posicion){
         if(matriz_mapa[posicion.getValue()+2][posicion.getKey()+2]==2)
