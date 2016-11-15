@@ -34,7 +34,8 @@ public class Heuristica {
 
     public Acciones calcularSiguienteMovimiento(Mapa mapa, Pair<Integer, Integer> posicion_coche_aux) {
         Pair<Integer, Integer> posicion_coche = new Pair(posicion_coche_aux.getKey() + 2, posicion_coche_aux.getValue() + 2);
-        //System.out.println("Debug: he entrado en calcular siguiente movimiento");
+        System.out.println("Debug: Posicion coche: "+ posicion_coche.toString());
+        System.out.println("Debug: Posicion coche: "+ posicion_coche_aux.toString());
         Acciones accion = Acciones.moveE;
         ArrayList<Acciones> acciones_posibles = comprobarAccionesPosibles(mapa, posicion_coche);
         if (mapa.getPosicionObjetivo() == null) {
@@ -50,28 +51,28 @@ public class Heuristica {
 
                 switch (acciones_posibles.get(i)) {
                     case moveSW:
-                        posicion_posible = new Pair(posicion_coche.getKey() - 1, posicion_coche.getValue() + 1);
+                        posicion_posible = new Pair(posicion_coche_aux.getKey() + 1, posicion_coche_aux.getValue() + 1);
                         break;
                     case moveS:
-                        posicion_posible = new Pair(posicion_coche.getKey(), posicion_coche.getValue() + 1);
+                        posicion_posible = new Pair(posicion_coche_aux.getKey(), posicion_coche_aux.getValue() + 1);
                         break;
                     case moveW:
-                        posicion_posible = new Pair(posicion_coche.getKey() - 1, posicion_coche.getValue());
+                        posicion_posible = new Pair(posicion_coche_aux.getKey() + 1, posicion_coche_aux.getValue());
                         break;
                     case moveNW:
-                        posicion_posible = new Pair(posicion_coche.getKey() - 1, posicion_coche.getValue() - 1);
+                        posicion_posible = new Pair(posicion_coche_aux.getKey() + 1, posicion_coche_aux.getValue() - 1);
                         break;
                     case moveN:
-                        posicion_posible = new Pair(posicion_coche.getKey(), posicion_coche.getValue() - 1);
+                        posicion_posible = new Pair(posicion_coche_aux.getKey(), posicion_coche_aux.getValue() - 1);
                         break;
                     case moveNE:
-                        posicion_posible = new Pair(posicion_coche.getKey() + 1, posicion_coche.getValue() - 1);
+                        posicion_posible = new Pair(posicion_coche_aux.getKey() - 1, posicion_coche_aux.getValue() - 1);
                         break;
                     case moveE:
-                        posicion_posible = new Pair(posicion_coche.getKey(), posicion_coche.getValue() + 1);
+                        posicion_posible = new Pair(posicion_coche_aux.getKey()-1, posicion_coche_aux.getValue());
                         break;
                     case moveSE:
-                        posicion_posible = new Pair(posicion_coche.getKey() + 1, posicion_coche.getValue() + 1);
+                        posicion_posible = new Pair(posicion_coche_aux.getKey() - 1, posicion_coche_aux.getValue() + 1);
                         break;
                 }
                 distancias.add(calcularDistanciaEuclidea(mapa.getPosicionObjetivo(), posicion_posible));
@@ -141,7 +142,8 @@ public class Heuristica {
             actions.add(Acciones.moveSE);
         }
 
-        //Solo cogemos las acciones con casilla negativa en el caso en el que no tengamos otra opción
+        //Solo cogemos las acciones con casilla negativa en el caso en el que no tengamos otra opción 
+        //porque estoy rodeado de casillas negativas
         if (actions.size() == 0) {
             int indice = -1;
             int max = Integer.MIN_VALUE;
