@@ -12,6 +12,7 @@ import javafx.util.Pair;
  *
  * @author Emilio Chica Jiménez
  * @author Miguel Angel Torres López
+ * @author Gregorio Carvajal Expósito
  */
 public class Heuristica {
 
@@ -20,13 +21,43 @@ public class Heuristica {
 
     public Heuristica() {
         objetivo_detectado = false;
-        this.mapa_heuristica = new int[504][504];
+        mapa_heuristica = new int[504][504];
+        inicializarMapa();
     }
 
+    /**
+     * Inicializa el mapa de la heuristica con los valores adecuados
+     *
+     * @author Emilio Chica Jiménez
+     */
+    private void inicializarMapa() {
+        for (int i = 0; i < 504; ++i) {
+            for (int j = 0; j < 504; ++j) {
+                //Inicializo los bordes a -1
+                if (i < 1 || j < 1 || i > 500 || j > 500) {
+                    mapa_heuristica[i][j] = -1;
+                } else {
+                    mapa_heuristica[i][j] = 3;
+                }
+            }
+        }
+    }
+
+    /**
+     * Calcula el siguiente mejor movimiento teniendo en cuenta los movimientos
+     * posibles y los datos del scanner
+     *
+     * @author Emilio Chica Jiménez
+     * @author Miguel Angel Torres López
+     * @param mapa Se usa para comprobar las acciones desde la posicion del
+     * coche en el mapa
+     * @param posicion_coche La posicion actual del coche
+     * @return Devuelve la mejor acción
+     */
     public Acciones calcularSiguienteMovimiento(Mapa mapa, Pair<Integer, Integer> posicion_coche_aux) {
-        int pos  = 2;
+        int pos = 2;
         double[][] matriz_scanner = mapa.getMatriz_scanner();
-       
+
         Pair<Integer, Integer> posicion_coche = new Pair(posicion_coche_aux.getKey() + 2, posicion_coche_aux.getValue() + 2);
         Acciones accion = Acciones.moveE;
         ArrayList<Acciones> acciones_posibles = comprobarAccionesPosibles(mapa, posicion_coche);
@@ -82,28 +113,16 @@ public class Heuristica {
 
         return accion;
     }
-
-    private void accionMasFavorable(Mapa mapa){
-        
-    }
-    
-    private double[][] matrizHibridaRadarScanner(Mapa mapa){
-        double[][] matriz_hibrida = new double[5][5];
-        int[][] matriz_radar = mapa.getMatrizRadar();
-        double[][] matriz_scanner = mapa.getMatriz_scanner();
-        for(int i =0;i<5;++i){
-            for(int j =0;j<5;++j){
-                double valor_gradiente = matriz_scanner[i][j];
-                if(matriz_radar[i][j]==1)
-                    valor_gradiente = Double.MAX_VALUE;
-                matriz_hibrida[i][j] = valor_gradiente;
-                    
-            }
-        }
-        return matriz_hibrida;
-    }
-    
-    
+    /**
+     * Comprueba las posibles acciones sobre las casillas del mapa
+     *
+     * @author Emilio Chica Jiménez
+     * @author Miguel Angel Torres López
+     * @param mapa Se usa para comprobar las acciones desde la posicion del
+     * coche en el mapa
+     * @param posicion_coche La posicion actual del coche
+     * @return El array de acciones posibles
+     */
     public ArrayList<Acciones> comprobarAccionesPosibles(Mapa mapa, Pair<Integer, Integer> posicion_coche) {
 
         ArrayList<Acciones> actions = new ArrayList();
@@ -175,10 +194,10 @@ public class Heuristica {
 	 * Funcion que comprueba si existen cercos en el mapa y si el objetivo o el
 	 * agente se encuentran encerrados en uno de ellos
 	 * 
+	 * @author Gregorio Carvajal Exposito
 	 * @param map Objeto de la clase Mapa
 	 * @param posicionAgente Pair con la posicion el agente
 	 * @return Devuelve TRUE en caso de que el mapa sea irresoluble y FALSE en caso contrario
-	 * @author Gregorio Carvajal Exposito
 	 */
 	public boolean comprobarCercos(Mapa map, Pair<Integer, Integer> posicionAgente) {
 		boolean esCerco = false;
@@ -346,8 +365,8 @@ public class Heuristica {
 	 * Funcion que actualiza la matriz de la heuristica con los nuevos 
 	 * muros descubiertos del mapa
 	 * 
-	 * @param map Mapa que ha percibido el agente
 	 * @author Gregorio Carvajal Exposito
+	 * @param map Mapa que ha percibido el agente
 	 */
 	private void actualizarMapa(Mapa map)
 	{
