@@ -21,6 +21,7 @@ public class Mapa {
     
     private int[][] matriz_mapa;
     private int[][] matriz_radar;
+    private double[][] matriz_scanner;
     //Si la posicion es null significa que no hemos encontrado el objetivo aún.
     private Pair<Integer, Integer> posicion_objetivo;
     private int antiguedad;
@@ -170,6 +171,9 @@ public class Mapa {
         }
     }
     
+    public double[][] getMatriz_scanner() {
+        return matriz_scanner;
+    }
     public int[][] getMatrizRadar()
     {
         return matriz_radar;

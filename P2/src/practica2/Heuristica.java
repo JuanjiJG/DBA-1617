@@ -23,21 +23,11 @@ public class Heuristica {
         this.mapa_heuristica = new int[504][504];
     }
 
-    public double calcularDistanciaEuclidea(Pair<Integer, Integer> posicion_objetivo, Pair<Integer, Integer> posicion_posible) {
-        double d = 0;
-        //x == getKey(), y == getValue()
-        int x1 = posicion_objetivo.getKey();
-        int x2 = posicion_posible.getKey();
-        int y1 = posicion_objetivo.getValue();
-        int y2 = posicion_posible.getValue();
-        d = Math.sqrt(((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2)));
-        return d;
-    }
-
     public Acciones calcularSiguienteMovimiento(Mapa mapa, Pair<Integer, Integer> posicion_coche_aux) {
+        int pos  = 2;
+        double[][] matriz_scanner = mapa.getMatriz_scanner();
+       
         Pair<Integer, Integer> posicion_coche = new Pair(posicion_coche_aux.getKey() + 2, posicion_coche_aux.getValue() + 2);
-        System.out.println("Debug: Posicion coche: "+ posicion_coche.toString());
-        System.out.println("Debug: Posicion coche: "+ posicion_coche_aux.toString());
         Acciones accion = Acciones.moveE;
         ArrayList<Acciones> acciones_posibles = comprobarAccionesPosibles(mapa, posicion_coche);
         if (mapa.getPosicionObjetivo() == null) {
@@ -48,37 +38,33 @@ public class Heuristica {
             ArrayList<Double> distancias = new ArrayList();
 
             for (int i = 0; i < acciones_posibles.size(); ++i) {
-
-                Pair<Integer, Integer> posicion_posible = new Pair(0, 0);
-
                 switch (acciones_posibles.get(i)) {
                     case moveSW:
-                        posicion_posible = new Pair(posicion_coche_aux.getKey() + 1, posicion_coche_aux.getValue() + 1);
+                        distancias.add(matriz_scanner[pos + 1][pos + 1]);
                         break;
                     case moveS:
-                        posicion_posible = new Pair(posicion_coche_aux.getKey(), posicion_coche_aux.getValue() + 1);
+                        distancias.add(matriz_scanner[pos][pos + 1]);
                         break;
                     case moveW:
-                        posicion_posible = new Pair(posicion_coche_aux.getKey() + 1, posicion_coche_aux.getValue());
+                        distancias.add(matriz_scanner[pos + 1][pos]);
                         break;
                     case moveNW:
-                        posicion_posible = new Pair(posicion_coche_aux.getKey() + 1, posicion_coche_aux.getValue() - 1);
+                        distancias.add(matriz_scanner[pos + 1][pos - 1]);
                         break;
                     case moveN:
-                        posicion_posible = new Pair(posicion_coche_aux.getKey(), posicion_coche_aux.getValue() - 1);
+                        distancias.add(matriz_scanner[pos][pos - 1]);
                         break;
                     case moveNE:
-                        posicion_posible = new Pair(posicion_coche_aux.getKey() - 1, posicion_coche_aux.getValue() - 1);
+                        distancias.add(matriz_scanner[pos - 1][pos - 1]);
                         break;
                     case moveE:
-                        posicion_posible = new Pair(posicion_coche_aux.getKey()-1, posicion_coche_aux.getValue());
+                        distancias.add(matriz_scanner[pos - 1][pos]);
                         break;
                     case moveSE:
-                        posicion_posible = new Pair(posicion_coche_aux.getKey() - 1, posicion_coche_aux.getValue() + 1);
+                        distancias.add(matriz_scanner[pos - 1][pos + 1]);
                         break;
                 }
-                distancias.add(calcularDistanciaEuclidea(mapa.getPosicionObjetivo(), posicion_posible));
-                System.out.println("\nDebug: Accion posible: " + acciones_posibles.get(i) + " Distancia a " + posicion_posible.toString() + " distancia: " + distancias.get(i) + " El objetivo esta: " + mapa.getPosicionObjetivo());
+                System.out.println("\nDebug: Accion posible: " + acciones_posibles.get(i) + " distancia: " + distancias.get(i) + " El objetivo esta: " + mapa.getPosicionObjetivo());
             }
 
             int indice_mejor_accion = 0;
@@ -97,6 +83,27 @@ public class Heuristica {
         return accion;
     }
 
+    private void accionMasFavorable(Mapa mapa){
+        
+    }
+    
+    private double[][] matrizHibridaRadarScanner(Mapa mapa){
+        double[][] matriz_hibrida = new double[5][5];
+        int[][] matriz_radar = mapa.getMatrizRadar();
+        double[][] matriz_scanner = mapa.getMatriz_scanner();
+        for(int i =0;i<5;++i){
+            for(int j =0;j<5;++j){
+                double valor_gradiente = matriz_scanner[i][j];
+                if(matriz_radar[i][j]==1)
+                    valor_gradiente = Double.MAX_VALUE;
+                matriz_hibrida[i][j] = valor_gradiente;
+                    
+            }
+        }
+        return matriz_hibrida;
+    }
+    
+    
     public ArrayList<Acciones> comprobarAccionesPosibles(Mapa mapa, Pair<Integer, Integer> posicion_coche) {
 
         ArrayList<Acciones> actions = new ArrayList();

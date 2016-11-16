@@ -114,7 +114,10 @@ public class Agente extends SingleAgent {
                     {
                         //System.out.println("Debug: antes de actualizar mapa");
                         map.actualizarMapa(posicion);
-                        //System.out.println("Debug: antes de escoger siguiente movimiento");
+                        //Si antigueda%100 == 0 se llama a la funcion de comprobarCercos de la heuristica
+                        //para que compruebe la funcion si esta en un cerco el objetivo y lo asigne a la variable 
+                        //booleana sin solucion
+
                         Acciones siguiente_accion=heuristic.calcularSiguienteMovimiento(map, posicion);
                         System.out.println("Debug: esta es la accion que voy a hacer: "+siguiente_accion.toString());
                         enviarMensajeAlServidor(siguiente_accion);
