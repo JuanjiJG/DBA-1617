@@ -12,6 +12,7 @@ import javafx.util.Pair;
  *
  * @author Emilio Chica Jiménez
  * @author Miguel Angel Torres López
+ * @author Gregorio Carvajal Expósito
  */
 public class Heuristica {
 
@@ -20,13 +21,43 @@ public class Heuristica {
 
     public Heuristica() {
         objetivo_detectado = false;
-        this.mapa_heuristica = new int[504][504];
+        mapa_heuristica = new int[504][504];
+        inicializarMapa();
     }
 
+    /**
+     * Inicializa el mapa de la heuristica con los valores adecuados
+     *
+     * @author Emilio Chica Jiménez
+     */
+    private void inicializarMapa() {
+        for (int i = 0; i < 504; ++i) {
+            for (int j = 0; j < 504; ++j) {
+                //Inicializo los bordes a -1
+                if (i < 1 || j < 1 || i > 500 || j > 500) {
+                    mapa_heuristica[i][j] = -1;
+                } else {
+                    mapa_heuristica[i][j] = 3;
+                }
+            }
+        }
+    }
+
+    /**
+     * Calcula el siguiente mejor movimiento teniendo en cuenta los movimientos
+     * posibles y los datos del scanner
+     *
+     * @author Emilio Chica Jiménez
+     * @author Miguel Angel Torres López
+     * @param mapa Se usa para comprobar las acciones desde la posicion del
+     * coche en el mapa
+     * @param posicion_coche La posicion actual del coche
+     * @return Devuelve la mejor acción
+     */
     public Acciones calcularSiguienteMovimiento(Mapa mapa, Pair<Integer, Integer> posicion_coche_aux) {
-        int pos  = 2;
+        int pos = 2;
         double[][] matriz_scanner = mapa.getMatriz_scanner();
-       
+
         Pair<Integer, Integer> posicion_coche = new Pair(posicion_coche_aux.getKey() + 2, posicion_coche_aux.getValue() + 2);
         Acciones accion = Acciones.moveE;
         ArrayList<Acciones> acciones_posibles = comprobarAccionesPosibles(mapa, posicion_coche);
@@ -83,27 +114,37 @@ public class Heuristica {
         return accion;
     }
 
-    private void accionMasFavorable(Mapa mapa){
-        
+    private void accionMasFavorable(Mapa mapa) {
+
     }
-    
-    private double[][] matrizHibridaRadarScanner(Mapa mapa){
+
+    private double[][] matrizHibridaRadarScanner(Mapa mapa) {
         double[][] matriz_hibrida = new double[5][5];
         int[][] matriz_radar = mapa.getMatrizRadar();
         double[][] matriz_scanner = mapa.getMatriz_scanner();
-        for(int i =0;i<5;++i){
-            for(int j =0;j<5;++j){
+        for (int i = 0; i < 5; ++i) {
+            for (int j = 0; j < 5; ++j) {
                 double valor_gradiente = matriz_scanner[i][j];
-                if(matriz_radar[i][j]==1)
+                if (matriz_radar[i][j] == 1) {
                     valor_gradiente = Double.MAX_VALUE;
+                }
                 matriz_hibrida[i][j] = valor_gradiente;
-                    
+
             }
         }
         return matriz_hibrida;
     }
-    
-    
+
+    /**
+     * Comprueba las posibles acciones sobre las casillas del mapa
+     *
+     * @author Emilio Chica Jiménez
+     * @author Miguel Angel Torres López
+     * @param mapa Se usa para comprobar las acciones desde la posicion del
+     * coche en el mapa
+     * @param posicion_coche La posicion actual del coche
+     * @return El array de acciones posibles
+     */
     public ArrayList<Acciones> comprobarAccionesPosibles(Mapa mapa, Pair<Integer, Integer> posicion_coche) {
 
         ArrayList<Acciones> actions = new ArrayList();
@@ -170,158 +211,136 @@ public class Heuristica {
 
         return actions;
     }
-	
-	public boolean comprobarCercos(Mapa map) {
-		boolean esCerco = false;
-		ArrayList<Pair<Integer, Integer>> posicionesCerco = new ArrayList<>();
-		Pair<Integer, Integer> inicioCerco;
-		int i, j;
-		
-		//actualizarMapa(map);
-		
-		for (i=2; i<502; i++)
-		{
-			for (j=2; j<502; j++) //Paso 2
-			{
-				if (mapa_heuristica[i][j] == 1) //Paso 3
-				{
-					mapa_heuristica[i][j] = 5;
-					inicioCerco = new Pair<>(i, j);
-					
-					boolean finCerco = false;
-					while(!finCerco) //Bucle azul, Paso 4 - Encontrar un cerco
-					{
-						if (mapa_heuristica[i][j+1] == 1) //Paso 4.a
-						{
-							j++;
-							mapa_heuristica[i][j] = 4;
-							posicionesCerco.add(new Pair(i, j));
-						} 
-						else if (mapa_heuristica[i+1][j] == 1) //Paso 4.b.i
-						{
-							i++;
-							mapa_heuristica[i][j] = 4;
-							posicionesCerco.add(new Pair(i, j));
-						}
-						else if (mapa_heuristica[i-1][j] == 1) //Paso 4.b.ii.1
-						{
-							i--;
-							mapa_heuristica[i][j] = 4;
-							posicionesCerco.add(new Pair(i, j));
-						}
-						else if (mapa_heuristica[i][j-1] == 1) //Paso 4.b.ii.2.a
-						{
-							j--;
-							mapa_heuristica[i][j] = 4;
-							posicionesCerco.add(new Pair(i, j));
-						}
-						else //Paso 4.b.ii.2.b
-						{	
-							finCerco = true; //Parar el bucle
-							
-							if (mapa_heuristica[i][j-1] == 5) //Paso 4.b.ii.2.b.i
-							{
-								esCerco = true;
-							}
-							else //4.b.ii.2.b.ii - Comprobar si es linea recta
-							{
-								if (
-										(
-											(i == 2 || i == 501)
-											&& 
-											(j == 2 || j == 501)
-										)
-										&&
-										(
-											(inicioCerco.getKey() == 2 || inicioCerco.getKey() == 501)
-											&& 
-											(inicioCerco.getValue() == 2 || inicioCerco.getValue() == 501)
-										)
-									)
-								{
-									esCerco = true;
-								}
-							}
-						}
-					} //Fin while
-					
-					i = inicioCerco.getKey();
-					j = inicioCerco.getValue();
-					
-					if (!esCerco) //Paso 5 - Desmarcar casillas
-					{
-						
-						
-						finCerco = false;
-						while(!finCerco) //Bucle morado, Paso 6
-						{
-							if (mapa_heuristica[i][j+1] == 4) //Paso 6.a
-							{
-								j++;
-								mapa_heuristica[i][j] = 1;
-							} 
-							else if (mapa_heuristica[i+1][j] == 4) //Paso 6.b.i
-							{
-								i++;
-								mapa_heuristica[i][j] = 1;
-							}
-							else if (mapa_heuristica[i-1][j] == 4) //Paso 6.b.ii.1
-							{
-								i--;
-								mapa_heuristica[i][j] = 1;
-							}
-							else if (mapa_heuristica[i][j-1] == 4) //Paso 6.b.ii.2.a
-							{
-								j--;
-								mapa_heuristica[i][j] = 1;
-							}
-							else //Paso 6.b.ii.2.b
-							{
-								finCerco = true; //Parar el bucle
-							}
-						} //Fin while
-					} //Fin if
-					else //Paso 7 - Comprobar si el objetivo esta dentro del cerco
-					{
-						//Obtener los extremos del cerco
-						int maxi = Integer.MIN_VALUE;
-						int mini = Integer.MAX_VALUE;
-						int maxj = Integer.MIN_VALUE;
-						int minj = Integer.MAX_VALUE;
-						
-						for (int k=0; k<posicionesCerco.size(); k++)
-						{
-							Pair<Integer, Integer> actual = posicionesCerco.get(k);
-							
-							if (actual.getKey() > maxi)
-								maxi = actual.getKey();
-							
-							if (actual.getKey() < mini)
-								mini = actual.getKey();
-							
-							if (actual.getValue() > maxj)
-								maxj = actual.getValue();
-							
-							if (actual.getValue() < minj)
-								minj = actual.getValue();
-						}
-						
-						//Comprobamos
-						if (map.getPosicionObjetivo().getKey() < maxj && 
-							map.getPosicionObjetivo().getKey() > minj &&
-							map.getPosicionObjetivo().getValue() < maxi &&
-							map.getPosicionObjetivo().getValue() > mini)
-						{
-							return true; //Hemos encontrado el objetivo dentro del cerco
-						}
-					}
-					
-				}
-			}
-		}
-		
-		//Si hemos llegado a este punto, es que hemos recorrido la matriz completamente sin
-		//encontrar el objetivo rodeado
-		return false;
-	}
+
+    public boolean comprobarCercos(Mapa map) {
+        boolean esCerco = false;
+        ArrayList<Pair<Integer, Integer>> posicionesCerco = new ArrayList<>();
+        Pair<Integer, Integer> inicioCerco;
+        int i, j;
+
+        //actualizarMapa(map);
+        for (i = 2; i < 502; i++) {
+            for (j = 2; j < 502; j++) //Paso 2
+            {
+                if (mapa_heuristica[i][j] == 1) //Paso 3
+                {
+                    mapa_heuristica[i][j] = 5;
+                    inicioCerco = new Pair<>(i, j);
+
+                    boolean finCerco = false;
+                    while (!finCerco) //Bucle azul, Paso 4 - Encontrar un cerco
+                    {
+                        if (mapa_heuristica[i][j + 1] == 1) //Paso 4.a
+                        {
+                            j++;
+                            mapa_heuristica[i][j] = 4;
+                            posicionesCerco.add(new Pair(i, j));
+                        } else if (mapa_heuristica[i + 1][j] == 1) //Paso 4.b.i
+                        {
+                            i++;
+                            mapa_heuristica[i][j] = 4;
+                            posicionesCerco.add(new Pair(i, j));
+                        } else if (mapa_heuristica[i - 1][j] == 1) //Paso 4.b.ii.1
+                        {
+                            i--;
+                            mapa_heuristica[i][j] = 4;
+                            posicionesCerco.add(new Pair(i, j));
+                        } else if (mapa_heuristica[i][j - 1] == 1) //Paso 4.b.ii.2.a
+                        {
+                            j--;
+                            mapa_heuristica[i][j] = 4;
+                            posicionesCerco.add(new Pair(i, j));
+                        } else //Paso 4.b.ii.2.b
+                        {
+                            finCerco = true; //Parar el bucle
+
+                            if (mapa_heuristica[i][j - 1] == 5) //Paso 4.b.ii.2.b.i
+                            {
+                                esCerco = true;
+                            } else //4.b.ii.2.b.ii - Comprobar si es linea recta
+                             if (((i == 2 || i == 501)
+                                        && (j == 2 || j == 501))
+                                        && ((inicioCerco.getKey() == 2 || inicioCerco.getKey() == 501)
+                                        && (inicioCerco.getValue() == 2 || inicioCerco.getValue() == 501))) {
+                                    esCerco = true;
+                                }
+                        }
+                    } //Fin while
+
+                    i = inicioCerco.getKey();
+                    j = inicioCerco.getValue();
+
+                    if (!esCerco) //Paso 5 - Desmarcar casillas
+                    {
+
+                        finCerco = false;
+                        while (!finCerco) //Bucle morado, Paso 6
+                        {
+                            if (mapa_heuristica[i][j + 1] == 4) //Paso 6.a
+                            {
+                                j++;
+                                mapa_heuristica[i][j] = 1;
+                            } else if (mapa_heuristica[i + 1][j] == 4) //Paso 6.b.i
+                            {
+                                i++;
+                                mapa_heuristica[i][j] = 1;
+                            } else if (mapa_heuristica[i - 1][j] == 4) //Paso 6.b.ii.1
+                            {
+                                i--;
+                                mapa_heuristica[i][j] = 1;
+                            } else if (mapa_heuristica[i][j - 1] == 4) //Paso 6.b.ii.2.a
+                            {
+                                j--;
+                                mapa_heuristica[i][j] = 1;
+                            } else //Paso 6.b.ii.2.b
+                            {
+                                finCerco = true; //Parar el bucle
+                            }
+                        } //Fin while
+                    } //Fin if
+                    else //Paso 7 - Comprobar si el objetivo esta dentro del cerco
+                    {
+                        //Obtener los extremos del cerco
+                        int maxi = Integer.MIN_VALUE;
+                        int mini = Integer.MAX_VALUE;
+                        int maxj = Integer.MIN_VALUE;
+                        int minj = Integer.MAX_VALUE;
+
+                        for (int k = 0; k < posicionesCerco.size(); k++) {
+                            Pair<Integer, Integer> actual = posicionesCerco.get(k);
+
+                            if (actual.getKey() > maxi) {
+                                maxi = actual.getKey();
+                            }
+
+                            if (actual.getKey() < mini) {
+                                mini = actual.getKey();
+                            }
+
+                            if (actual.getValue() > maxj) {
+                                maxj = actual.getValue();
+                            }
+
+                            if (actual.getValue() < minj) {
+                                minj = actual.getValue();
+                            }
+                        }
+
+                        //Comprobamos
+                        if (map.getPosicionObjetivo().getKey() < maxj
+                                && map.getPosicionObjetivo().getKey() > minj
+                                && map.getPosicionObjetivo().getValue() < maxi
+                                && map.getPosicionObjetivo().getValue() > mini) {
+                            return true; //Hemos encontrado el objetivo dentro del cerco
+                        }
+                    }
+
+                }
+            }
+        }
+
+        //Si hemos llegado a este punto, es que hemos recorrido la matriz completamente sin
+        //encontrar el objetivo rodeado
+        return false;
+    }
 }
