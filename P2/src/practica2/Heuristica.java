@@ -171,13 +171,22 @@ public class Heuristica {
         return actions;
     }
 	
-	public boolean comprobarCercos(Mapa map) {
+	/**
+	 * Funcion que comprueba si existen cercos en el mapa y si el objetivo o el
+	 * agente se encuentran encerrados en uno de ellos
+	 * 
+	 * @param map Objeto de la clase Mapa
+	 * @param posicionAgente Pair con la posicion el agente
+	 * @return Devuelve TRUE en caso de que el mapa sea irresoluble y FALSE en caso contrario
+	 * @author Gregorio Carvajal Exposito
+	 */
+	public boolean comprobarCercos(Mapa map, Pair<Integer, Integer> posicionAgente) {
 		boolean esCerco = false;
 		ArrayList<Pair<Integer, Integer>> posicionesCerco = new ArrayList<>();
 		Pair<Integer, Integer> inicioCerco;
 		int i, j;
 		
-		//actualizarMapa(map);
+		this.actualizarMapa(map);
 		
 		for (i=2; i<502; i++)
 		{
@@ -314,6 +323,14 @@ public class Heuristica {
 						{
 							return true; //Hemos encontrado el objetivo dentro del cerco
 						}
+						else //Comprobamos si el AGENTE esta dentro del cerco 
+							if (posicionAgente.getKey() < maxj && 
+								posicionAgente.getKey() > minj &&
+								posicionAgente.getValue() < maxi &&
+								posicionAgente.getValue() > mini)
+							{
+								return true; //El agente esta encerrado en el cerco
+							}
 					}
 					
 				}
@@ -323,5 +340,29 @@ public class Heuristica {
 		//Si hemos llegado a este punto, es que hemos recorrido la matriz completamente sin
 		//encontrar el objetivo rodeado
 		return false;
+	}
+	
+	/**
+	 * Funcion que actualiza la matriz de la heuristica con los nuevos 
+	 * muros descubiertos del mapa
+	 * 
+	 * @param map Mapa que ha percibido el agente
+	 * @author Gregorio Carvajal Exposito
+	 */
+	private void actualizarMapa(Mapa map)
+	{
+		for (int i=2; i<502; i++)
+		{
+			for (int j=2; j<502; j++)
+			{
+				if (mapa_heuristica[i][j] == 3)
+				{
+					if (map.devolverMapa()[i][j] < 0)
+						mapa_heuristica[i][j] = 0;
+					else
+						mapa_heuristica[i][j] = map.devolverMapa()[i][j];
+				}
+			}
+		}
 	}
 }
