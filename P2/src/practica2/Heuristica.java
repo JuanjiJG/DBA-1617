@@ -179,9 +179,9 @@ public class Heuristica {
 		
 		//actualizarMapa(map);
 		
-		for (i=2; i<503; i++)
+		for (i=2; i<502; i++)
 		{
-			for (j=2; j<503; j++) //Paso 2
+			for (j=2; j<502; j++) //Paso 2
 			{
 				if (mapa_heuristica[i][j] == 1) //Paso 3
 				{
@@ -216,18 +216,41 @@ public class Heuristica {
 							posicionesCerco.add(new Pair(i, j));
 						}
 						else //Paso 4.b.ii.2.b
-						{
-							//TODO: Comprobar si es linea recta
-							
+						{	
 							finCerco = true; //Parar el bucle
-							esCerco = mapa_heuristica[i][j-1] == 5; //Pasos	4.b.ii.2.b.i & 4.b.ii.2.b.ii
+							
+							if (mapa_heuristica[i][j-1] == 5) //Paso 4.b.ii.2.b.i
+							{
+								esCerco = true;
+							}
+							else //4.b.ii.2.b.ii - Comprobar si es linea recta
+							{
+								if (
+										(
+											(i == 2 || i == 501)
+											&& 
+											(j == 2 || j == 501)
+										)
+										&&
+										(
+											(inicioCerco.getKey() == 2 || inicioCerco.getKey() == 501)
+											&& 
+											(inicioCerco.getValue() == 2 || inicioCerco.getValue() == 501)
+										)
+									)
+								{
+									esCerco = true;
+								}
+							}
 						}
 					} //Fin while
 					
+					i = inicioCerco.getKey();
+					j = inicioCerco.getValue();
+					
 					if (!esCerco) //Paso 5 - Desmarcar casillas
 					{
-						i = inicioCerco.getKey();
-						j = inicioCerco.getValue();
+						
 						
 						finCerco = false;
 						while(!finCerco) //Bucle morado, Paso 6
