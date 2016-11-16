@@ -16,9 +16,11 @@ import javafx.util.Pair;
 public class Heuristica {
 
     private boolean objetivo_detectado;
+    private int[][] mapa_heuristica;
 
     public Heuristica() {
         objetivo_detectado = false;
+        this.mapa_heuristica = new int[504][504];
     }
 
     public double calcularDistanciaEuclidea(Pair<Integer, Integer> posicion_objetivo, Pair<Integer, Integer> posicion_posible) {
