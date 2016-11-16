@@ -113,28 +113,6 @@ public class Heuristica {
 
         return accion;
     }
-
-    private void accionMasFavorable(Mapa mapa) {
-
-    }
-
-    private double[][] matrizHibridaRadarScanner(Mapa mapa) {
-        double[][] matriz_hibrida = new double[5][5];
-        int[][] matriz_radar = mapa.getMatrizRadar();
-        double[][] matriz_scanner = mapa.getMatriz_scanner();
-        for (int i = 0; i < 5; ++i) {
-            for (int j = 0; j < 5; ++j) {
-                double valor_gradiente = matriz_scanner[i][j];
-                if (matriz_radar[i][j] == 1) {
-                    valor_gradiente = Double.MAX_VALUE;
-                }
-                matriz_hibrida[i][j] = valor_gradiente;
-
-            }
-        }
-        return matriz_hibrida;
-    }
-
     /**
      * Comprueba las posibles acciones sobre las casillas del mapa
      *
