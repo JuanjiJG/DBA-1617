@@ -147,7 +147,7 @@ public class Agente extends SingleAgent {
             if(crashed==false)
             {
                 enviarMensajeAlServidor(Acciones.logout);
-                for(int i=0;i<2;i++)
+                for(int i=0;i<NUM_PERCEPCIONES+1;i++)
                 {
                     recibirMensajeDelServidor();
                 }
