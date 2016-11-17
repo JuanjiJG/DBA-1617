@@ -1,14 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package practica2;
 
 import javafx.util.Pair;
 
 /**
  * Esta clase contiene los atributos y métodos para el mapa de conocimiento del mundo
+ * 
  * @author Emilio Chica Jiménez
  * @author Miguel Angel Torres López
  * @author Juan José Jiménez García
@@ -19,18 +15,16 @@ public class Mapa {
     private static final int TAMANIO_MAPA = 504;
     private static final int TAMANIO_RADAR = 5;
     private static final int TAMANIO_SCANNER = 5;
-    
     private int[][] matriz_mapa;
     private int[][] matriz_radar;
     private double[][] matriz_scanner;
     boolean objetivo_inalcanzable;
-    
-    //Si la posicion es null significa que no hemos encontrado el objetivo aún.
-    private Pair<Integer, Integer> posicion_objetivo;
+    private Pair<Integer, Integer> posicion_objetivo; //Si la posicion es null significa que no hemos encontrado el objetivo aún.
     private int antiguedad;
     
     /**
      * Constructor de la clase Mapa
+     * 
      * @author Juan José Jiménez García
      */
     public Mapa() {
@@ -47,6 +41,7 @@ public class Mapa {
     
     /**
      * Método para obtener la posición del objetivo
+     * 
      * @return La posición del objetivo
      * @author Juan José Jiménez García
      */
@@ -56,6 +51,7 @@ public class Mapa {
     
     /**
      * Método para actualizar la matriz mapa de conocimiento del mundo
+     * 
      * @param posicion La posición en la que se encuentra el agente
      * @author Miguel Ángel Torres López
      * @author Antonio Javier Benítez Guijarro
@@ -107,6 +103,7 @@ public class Mapa {
     
     /**
      * Método para comprobar si se está pisando el objetivo
+     * 
      * @param posicion
      * @return Un booleano que indica si se está pisando el objetivo en esa casilla
      * @author Antonio Javier Benítez Guijarro
@@ -118,6 +115,7 @@ public class Mapa {
     
     /**
      * Método para inicializar la matriz mapa de conocimiento del mundo
+     * 
      * @author Juan José Jiménez García
      */
     public void inicializarMapa() {
@@ -131,6 +129,7 @@ public class Mapa {
     
     /**
      * Método para obtener la matriz del mapa de conocimiento del mundo
+     * 
      * @return La matriz del mapa
      * @author Juan José Jiménez García
      */
@@ -163,6 +162,7 @@ public class Mapa {
     
     /**
      * Método para calcular la ubicación del objetivo, siendo llamada una única vez
+     * 
      * @param posicion_coche La posición en la que actualmente se encuentra el coche
      * @author Juan José Jiménez García
      * @author Miguel Ángel Torres López
@@ -243,12 +243,20 @@ public class Mapa {
         if (pos_min_2.getKey() == 4 && pos_min_2.getValue() == 4) {
             pos_final_2 = new Pair(posicion_coche.getKey()+2, posicion_coche.getValue()+2);
         }
+        
+        // Obtenemos las variables x2 e y2
+        int x2 = 1;
+        int y2 = 1;
+        
+        // Actualizamos la posición del objetivo con los datos obtenidos
+        // Las coordenadas obtenidas son la posición real del objetivo en el mapa del servidor
+        this.posicion_objetivo = new Pair(x2-2, y2-2);
     }
     
     /**
-     * Método para encontrar el objetivo en una matriz radar
-     * @param radar La matriz de 5x5 casillas en la que buscar el objetivo
-     * @return Un booleano indicando si ha encontrado el objetivo o no
+     * Método para ajustar la matriz de radar
+     * 
+     * @param radar_percibido La matriz de 5x5 casillas en la que buscar el objetivo
      * @author Miguel Angel Torres Lopez
      * @author Antonio Javier Benitez Guijarro
      */

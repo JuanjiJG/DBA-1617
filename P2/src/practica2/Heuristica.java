@@ -1,15 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package practica2;
 
 import java.util.ArrayList;
 import javafx.util.Pair;
 
 /**
- *
+ * Clase para los métodos de la heurística
+ * 
  * @author Emilio Chica Jiménez
  * @author Miguel Angel Torres López
  * @author Gregorio Carvajal Expósito
@@ -57,50 +53,60 @@ public class Heuristica {
     public Acciones calcularSiguienteMovimiento(Mapa mapa, Pair<Integer, Integer> posicion_coche_aux) {
         int pos = 2;
         double[][] matriz_scanner = mapa.getMatriz_scanner();
+        
+        System.out.println("Debug: Voy a imprimir la matriz scanner");
+        for(int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                System.out.print(matriz_scanner[i][j] + " ");
+            }
+            System.out.println("");
+        }
 
         Pair<Integer, Integer> posicion_coche = new Pair(posicion_coche_aux.getKey() + 2, posicion_coche_aux.getValue() + 2);
         Acciones accion = Acciones.moveE;
         ArrayList<Acciones> acciones_posibles = comprobarAccionesPosibles(mapa, posicion_coche);
-        if (mapa.getPosicionObjetivo() == null) {
-            System.out.println("Debug: No he encontrado el objetivo y sigo con " + acciones_posibles.get(0));
-            accion = acciones_posibles.get(0);
-        } else if (acciones_posibles.size() > 1) {
+        if (acciones_posibles.size() > 1) {
 
             ArrayList<Double> distancias = new ArrayList();
 
-            for (int i = 0; i < acciones_posibles.size(); ++i) {
+            for (int i = 0; i < acciones_posibles.size(); i++) {
                 switch (acciones_posibles.get(i)) {
                     case moveSW:
-                        distancias.add(matriz_scanner[pos + 1][pos + 1]);
-                        break;
-                    case moveS:
-                        distancias.add(matriz_scanner[pos][pos + 1]);
-                        break;
-                    case moveW:
-                        distancias.add(matriz_scanner[pos + 1][pos]);
-                        break;
-                    case moveNW:
-                        distancias.add(matriz_scanner[pos + 1][pos - 1]);
-                        break;
-                    case moveN:
-                        distancias.add(matriz_scanner[pos][pos - 1]);
-                        break;
-                    case moveNE:
                         distancias.add(matriz_scanner[pos - 1][pos - 1]);
                         break;
-                    case moveE:
+                    case moveS:
+                        distancias.add(matriz_scanner[pos + 1][pos]);
+                        break;
+                    case moveW:
+                        distancias.add(matriz_scanner[pos][pos - 1]);
+                        break;
+                    case moveNW:
+                        distancias.add(matriz_scanner[pos - 1][pos - 1]);
+                        break;
+                    case moveN:
                         distancias.add(matriz_scanner[pos - 1][pos]);
                         break;
-                    case moveSE:
+                    case moveNE:
                         distancias.add(matriz_scanner[pos - 1][pos + 1]);
+                        break;
+                    case moveE:
+                        distancias.add(matriz_scanner[pos][pos + 1]);
+                        break;
+                    case moveSE:
+                        distancias.add(matriz_scanner[pos + 1][pos + 1]);
                         break;
                 }
                 System.out.println("\nDebug: Accion posible: " + acciones_posibles.get(i) + " distancia: " + distancias.get(i) + " El objetivo esta: " + mapa.getPosicionObjetivo());
             }
+            
+            System.out.println("Debug: Voy a imprimir el array de distancias");
+            for(int i = 0; i < distancias.size(); i++) {
+                System.out.println("Debug: Accion posible de i: " + acciones_posibles.get(i) + " - Distancia de i: " + distancias.get(i));
+            }
 
             int indice_mejor_accion = 0;
             double min_distancia = distancias.get(0);
-            for (int j = 0; j < distancias.size(); ++j) {
+            for (int j = 0; j < distancias.size(); j++) {
                 if (min_distancia > distancias.get(j)) {
                     min_distancia = distancias.get(j);
                     indice_mejor_accion = j;
@@ -108,6 +114,7 @@ public class Heuristica {
             }
             accion = acciones_posibles.get(indice_mejor_accion);
         } else {
+            System.out.println("Debug: no usa el scanner");
             accion = acciones_posibles.get(0);
         }
 

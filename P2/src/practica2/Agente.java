@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package practica2;
 
 import com.eclipsesource.json.*;
@@ -24,16 +19,16 @@ import javafx.util.Pair;
  */
 public class Agente extends SingleAgent {
 
-    private static final int NUM_PERCEPCIONES = 3;
+    private static final int NUM_PERCEPCIONES = 4;
     private static final String AGENT_NAME = "GugelCarRedForest";
-
     private Pair<Integer, Integer> posicion;
     private String percepcion;
     private boolean pisando_objetivo;
     private boolean crashed;
+    private boolean sin_solucion;
     private int cont_bateria;
     private String server_key;
-    private int mundo_elegido;
+    private final int mundo_elegido;
     private Mapa map;
     private Heuristica heuristic;
 
@@ -63,15 +58,14 @@ public class Agente extends SingleAgent {
 
         this.map = new Mapa();
         this.map.inicializarMapa();
-
         this.heuristic = new Heuristica();
-
         this.pisando_objetivo = false;
         this.crashed = false;
         this.posicion = new Pair(0, 0);
         this.percepcion = "";
         this.server_key = "";
         this.cont_bateria = 0;
+        this.sin_solucion = false;
     }
 
     /**
@@ -90,11 +84,14 @@ public class Agente extends SingleAgent {
                 recibirMensajeDelServidor();
             }
 
+            // Calcular posición del objetivo
+            //this.map.calcularPosicionObjetivo(posicion);
+            
             cont_bateria = 100;
             enviarMensajeAlServidor(Acciones.refuel);
 
-            while (pisando_objetivo == false && map.getAntiguedad() >= -1000000) { //-1610612736 es 3/4 del valor minimo de una variable tipo entero. Indica que se ha recorrido el mapa varias veces sin encotrar la solucion
-
+            while ((pisando_objetivo == false) && (map.getAntiguedad() >= -21600) && (this.sin_solucion == false)) { //-1610612736 es 3/4 del valor minimo de una variable tipo entero. Indica que se ha recorrido el mapa varias veces sin encotrar la solucion
+                
                 for (int i = 0; i < NUM_PERCEPCIONES; i++) {
                     recibirMensajeDelServidor();
                 }
@@ -103,22 +100,34 @@ public class Agente extends SingleAgent {
                     System.out.println("Debug: voy a recargar la bateria");
                     cont_bateria = 100;
                     enviarMensajeAlServidor(Acciones.refuel);
-                } else //System.out.println("Debug: antes de if pisando objetivo");
-                if (map.pisandoObjetivo(posicion)) {
+                }
+                else if (map.pisandoObjetivo(posicion)) {
                     //System.out.println("Debug: se supone que está en el objetivo");
                     pisando_objetivo = true;
-                } else {
+                }
+                else {
                     //System.out.println("Debug: antes de actualizar mapa");
                     map.actualizarMapa(posicion);
-                    //Si antigueda%100 == 0 se llama a la funcion de comprobarCercos de la heuristica
-                    //para que compruebe la funcion si esta en un cerco el objetivo y lo asigne a la variable 
-                    //booleana sin solucion
-
-                    Acciones siguiente_accion = heuristic.calcularSiguienteMovimiento(map, posicion);
-                    System.out.println("Debug: esta es la accion que voy a hacer: " + siguiente_accion.toString());
-                    enviarMensajeAlServidor(siguiente_accion);
-                    cont_bateria--;
-                    map.decrementarAntiguedad();
+                    
+                    // Si antiguedad % 100 == 0 se llama a la funcion de comprobarCercos de la heuristica
+                    // para que compruebe la funcion si esta en un cerco el objetivo y lo asigne a la variable 
+                    // booleana sin solucion
+                    //if(this.map.getAntiguedad()%100 == 0) {
+                    //    this.sin_solucion = this.heuristic.comprobarCercos(map, posicion);
+                    //}
+                    
+                    // SI no hay solución, finalizar
+                    // SI sigue habiendo posibilidad de solución, elegimos movimiento
+                    if(this.sin_solucion) {
+                        System.out.println("Debug: Este mapa no se puede resolver");
+                    }
+                    else {
+                        Acciones siguiente_accion = heuristic.calcularSiguienteMovimiento(map, posicion);
+                        System.out.println("Debug: esta es la accion que voy a hacer: " + siguiente_accion.toString());
+                        enviarMensajeAlServidor(siguiente_accion);
+                        cont_bateria--;
+                        map.decrementarAntiguedad();
+                    }
                 }
             }
 
@@ -200,7 +209,7 @@ public class Agente extends SingleAgent {
                     break;
 
                 case "scanner":
-                    JsonArray scanner = json.get("radar").asArray();
+                    JsonArray scanner = json.get("scanner").asArray();
                     double[][] scanner_percibido = new double[5][5];
 
                     for (int i = 0; i < 25; i++) {
@@ -273,6 +282,7 @@ public class Agente extends SingleAgent {
                 json.add("world", "map" + mundo_elegido);
                 json.add("radar", AGENT_NAME);
                 json.add("gps", AGENT_NAME);
+                json.add("scanner", AGENT_NAME);
                 break;
 
             default:
@@ -284,10 +294,11 @@ public class Agente extends SingleAgent {
     }
 
     /**
-     * Método para el procesamiento de la traza de imagen
+     * Método para enviar un mensaje al servidor
      *
      * @author Miguel Angel Torres López
      * @author Antonio Javier Benítez Guijarro
+     * @param accion La acción que queremos enviar al servidor
      */
     public void enviarMensajeAlServidor(Acciones accion) {
 
@@ -299,16 +310,16 @@ public class Agente extends SingleAgent {
     }
 
     /**
-     * Método para el procesamiento de la traza de imagen
+     * Método para recibir un mensaje del servidor
      *
      * @author Miguel Angel Torres López
      * @author Antonio Javier Benítez Guijarro
-     * @progress PENDIENTE
+     * @throws java.io.IOException
      */
     public void recibirMensajeDelServidor() throws IOException {
-        ACLMessage inbox = new ACLMessage();
+
         try {
-            inbox = this.receiveACLMessage();
+            ACLMessage inbox = this.receiveACLMessage();
             System.out.println("\nDebug: " + inbox.getContent());
             parsearPercepcion(inbox.getContent());
             if (crashed == true) {
@@ -325,6 +336,7 @@ public class Agente extends SingleAgent {
      *
      * @author Miguel Angel Torres López
      * @author Antonio Javier Benítez Guijarro
+     * @return Un booleano que indica si la batería requiere de carga
      */
     public boolean comprobarBateria() {
 
