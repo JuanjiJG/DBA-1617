@@ -170,6 +170,10 @@ public class Mapa {
             }
         }
     }
+
+    public void setMatriz_scanner(double[][] matriz_scanner) {
+        this.matriz_scanner = matriz_scanner;
+    }
     
     public double[][] getMatriz_scanner() {
         return matriz_scanner;
