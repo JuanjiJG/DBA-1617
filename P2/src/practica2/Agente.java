@@ -128,9 +128,7 @@ public class Agente extends SingleAgent {
             }
             
             this.finalize();
-            
-            // Aquí hay que implementar el funcionamiento del agente y todo el grueso del sistema
-            // Este método puede llamar a otros métodos que formen parte del comportamiento
+
         } catch (IOException ex) {
             Logger.getLogger(Agente.class.getName()).log(Level.SEVERE, null, ex);
         }

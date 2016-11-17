@@ -18,10 +18,13 @@ public class Mapa {
     
     private static final int TAMANIO_MAPA = 504;
     private static final int TAMANIO_RADAR = 5;
+    private static final int TAMANIO_SCANNER = 5;
     
     private int[][] matriz_mapa;
     private int[][] matriz_radar;
     private double[][] matriz_scanner;
+    boolean objetivo_inalcanzable;
+    
     //Si la posicion es null significa que no hemos encontrado el objetivo aún.
     private Pair<Integer, Integer> posicion_objetivo;
     private int antiguedad;
@@ -34,7 +37,10 @@ public class Mapa {
         
         this.matriz_mapa = new int[TAMANIO_MAPA][TAMANIO_MAPA];
         this.matriz_radar = new int[TAMANIO_RADAR][TAMANIO_RADAR];
+        this.matriz_scanner = new double[TAMANIO_SCANNER][TAMANIO_SCANNER];
         this.posicion_objetivo = null;
+        this.objetivo_inalcanzable = false;
+        
         antiguedad=-1;
         this.inicializarMapa();
     }
@@ -98,15 +104,16 @@ public class Mapa {
         }
         
     }
+    
+    /**
+     * Método para comprobar si se está pisando el objetivo
+     * @param posicion
+     * @return Un booleano que indica si se está pisando el objetivo en esa casilla
+     * @author Antonio Javier Benítez Guijarro
+     */
     public boolean pisandoObjetivo(Pair<Integer, Integer> posicion){
-        if(matriz_mapa[posicion.getValue()+2][posicion.getKey()+2]==2)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        
+        return (matriz_mapa[posicion.getValue()+2][posicion.getKey()+2]==2);
     }
     
     /**
@@ -174,8 +181,8 @@ public class Mapa {
     public double[][] getMatriz_scanner() {
         return matriz_scanner;
     }
-    public int[][] getMatrizRadar()
-    {
+    
+    public int[][] getMatrizRadar() {
         return matriz_radar;
     }
 
