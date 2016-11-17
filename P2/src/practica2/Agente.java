@@ -207,11 +207,11 @@ public class Agente extends SingleAgent {
                         scanner_percibido[i / 5][i % 5] = scanner.get(i).asDouble();
                     }
 
-                    map.setMatriz_scanner(scanner_percibido);
+                    map.setMatrizScanner(scanner_percibido);
                     break;
 
                 case "battery":
-                    //No se usa por el momento
+                    // No se va a utilizar por el momento
                     break;
 
                 case "trace":
@@ -313,7 +313,7 @@ public class Agente extends SingleAgent {
             parsearPercepcion(inbox.getContent());
             if (crashed == true) {
                 System.out.println("Deslogueando del servidor");
-                this.finalize();
+                //this.finalize();
             }
         } catch (InterruptedException ex) {
             System.out.println("No se recibio correctamente el mensaje");

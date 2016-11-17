@@ -162,6 +162,90 @@ public class Mapa {
     }*/
     
     /**
+     * Método para calcular la ubicación del objetivo, siendo llamada una única vez
+     * @param posicion_coche La posición en la que actualmente se encuentra el coche
+     * @author Juan José Jiménez García
+     * @author Miguel Ángel Torres López
+     * @author Antonio Javier Benítez Guijarro
+     */
+    public void calcularPosicionObjetivo(Pair<Integer, Integer> posicion_coche) {
+        
+        double minimo_1 = Double.MAX_VALUE;
+        double minimo_2 = Double.MAX_VALUE;
+        Pair<Integer, Integer> pos_min_1 = null;
+        Pair<Integer, Integer> pos_min_2 = null;
+        
+        // Calcular mínimo 1
+        if(this.matriz_scanner[0][0] < minimo_1) {
+            minimo_1 = this.matriz_scanner[0][0];
+            pos_min_1 = new Pair(0, 0);
+        }
+        if(this.matriz_scanner[0][4] < minimo_1) {
+            minimo_1 = this.matriz_scanner[0][4];
+            pos_min_1 = new Pair(0, 4);
+        }
+        if(this.matriz_scanner[4][0] < minimo_1) {
+            minimo_1 = this.matriz_scanner[4][0];
+            pos_min_1 = new Pair(4, 0);
+        }
+        if(this.matriz_scanner[4][4] < minimo_1) {
+            minimo_1 = this.matriz_scanner[4][4];
+            pos_min_1 = new Pair(4, 4);
+        }
+        
+        // Calcular mínimo 2
+        // Debemos asegurarnos de que no asignamos la casilla que ya está asignada en el mínimo 1
+        if((this.matriz_scanner[0][0] < minimo_2) && (pos_min_1.getKey() != 0) && (pos_min_1.getValue() != 0)) {
+            minimo_2 = this.matriz_scanner[0][0];
+            pos_min_2 = new Pair(0, 0);
+        }
+        if((this.matriz_scanner[0][4] < minimo_2) && (pos_min_1.getKey() != 0) && (pos_min_1.getValue() != 4)) {
+            minimo_2 = this.matriz_scanner[0][4];
+            pos_min_2 = new Pair(0, 4);
+        }
+        if((this.matriz_scanner[4][0] < minimo_2) && (pos_min_1.getKey() != 4) && (pos_min_1.getValue() != 0)) {
+            minimo_2 = this.matriz_scanner[4][0];
+            pos_min_2 = new Pair(4, 0);
+        }
+        if((this.matriz_scanner[4][4] < minimo_2) && (pos_min_1.getKey() != 4) && (pos_min_1.getValue() != 4)) {
+            minimo_2 = this.matriz_scanner[4][4];
+            pos_min_2 = new Pair(4, 4);
+        }
+        
+        // Obtener la posición 1 en el mapa de memoria del agente
+        Pair pos_final_1 = null;
+        
+        if (pos_min_1.getKey() == 0 && pos_min_1.getValue() == 0) {
+            pos_final_1 = new Pair(posicion_coche.getKey()-2, posicion_coche.getValue()-2);
+        }
+        if (pos_min_1.getKey() == 0 && pos_min_1.getValue() == 4) {
+            pos_final_1 = new Pair(posicion_coche.getKey()+2, posicion_coche.getValue()-2);
+        }
+        if (pos_min_1.getKey() == 4 && pos_min_1.getValue() == 0) {
+            pos_final_1 = new Pair(posicion_coche.getKey()-2, posicion_coche.getValue()+2);
+        }
+        if (pos_min_1.getKey() == 4 && pos_min_1.getValue() == 4) {
+            pos_final_1 = new Pair(posicion_coche.getKey()+2, posicion_coche.getValue()+2);
+        }
+        
+        // Obtener la posición 2 en el mapa de memoria del agente
+        Pair pos_final_2 = null;
+        
+        if (pos_min_2.getKey() == 0 && pos_min_2.getValue() == 0) {
+            pos_final_2 = new Pair(posicion_coche.getKey()-2, posicion_coche.getValue()-2);
+        }
+        if (pos_min_2.getKey() == 0 && pos_min_2.getValue() == 4) {
+            pos_final_2 = new Pair(posicion_coche.getKey()+2, posicion_coche.getValue()-2);
+        }
+        if (pos_min_2.getKey() == 4 && pos_min_2.getValue() == 0) {
+            pos_final_2 = new Pair(posicion_coche.getKey()-2, posicion_coche.getValue()+2);
+        }
+        if (pos_min_2.getKey() == 4 && pos_min_2.getValue() == 4) {
+            pos_final_2 = new Pair(posicion_coche.getKey()+2, posicion_coche.getValue()+2);
+        }
+    }
+    
+    /**
      * Método para encontrar el objetivo en una matriz radar
      * @param radar La matriz de 5x5 casillas en la que buscar el objetivo
      * @return Un booleano indicando si ha encontrado el objetivo o no
@@ -178,7 +262,7 @@ public class Mapa {
         }
     }
 
-    public void setMatriz_scanner(double[][] matriz_scanner) {
+    public void setMatrizScanner(double[][] matriz_scanner) {
         this.matriz_scanner = matriz_scanner;
     }
     
