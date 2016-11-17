@@ -89,7 +89,7 @@ public class Agente extends SingleAgent {
             cont_bateria=100;
             enviarMensajeAlServidor(Acciones.refuel);
             
-            while(pisando_objetivo==false && map.getAntiguedad()>=-1000000){ //-1610612736 es 3/4 del valor minimo de una variable tipo entero. Indica que se ha recorrido el mapa varias veces sin encotrar la solucion
+            while(pisando_objetivo==false && map.getAntiguedad()>=-21600){ //-1610612736 es 3/4 del valor minimo de una variable tipo entero. Indica que se ha recorrido el mapa varias veces sin encotrar la solucion
                 
                 for(int i=0;i<NUM_PERCEPCIONES;i++)
                 { 
@@ -309,7 +309,7 @@ public class Agente extends SingleAgent {
             if(crashed==true)
             {
                 System.out.println("Deslogueando del servidor");
-                this.finalize();
+                //this.finalize();
             }
         } catch (InterruptedException ex) {
             System.out.println("No se recibio correctamente el mensaje");
