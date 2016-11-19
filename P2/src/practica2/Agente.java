@@ -90,7 +90,7 @@ public class Agente extends SingleAgent {
             cont_bateria = 100;
             enviarMensajeAlServidor(Acciones.refuel);
 
-            while ((pisando_objetivo == false) && (map.getAntiguedad() >= -15000) && (this.sin_solucion == false)) { //-1610612736 es 3/4 del valor minimo de una variable tipo entero. Indica que se ha recorrido el mapa varias veces sin encotrar la solucion
+            while ((pisando_objetivo == false) && (map.getAntiguedad() >= -15000) && (this.sin_solucion == false)) { 
                 
                 for (int i = 0; i < NUM_PERCEPCIONES; i++) {
                     recibirMensajeDelServidor();
@@ -112,14 +112,14 @@ public class Agente extends SingleAgent {
                     // Si antiguedad % 100 == 0 se llama a la funcion de comprobarCercos de la heuristica
                     // para que compruebe la funcion si esta en un cerco el objetivo y lo asigne a la variable 
                     // booleana sin solucion
-                    //if(this.map.getAntiguedad()%100 == 0) {
-                    //    this.sin_solucion = this.heuristic.comprobarCercos(map, posicion);
-                    //}
+                    if(map.getPosicionObjetivo()!=null && map.getAntiguedad()%100 == 0) {
+                        this.sin_solucion = this.heuristic.comprobarCercos(map, posicion);
+                    }
                     
                     // SI no hay solución, finalizar
                     // SI sigue habiendo posibilidad de solución, elegimos movimiento
                     if(this.sin_solucion) {
-                        System.out.println("Debug: Este mapa no se puede resolver");
+                        System.out.println("SOLUCION: Este mapa no se puede resolver");
                     }
                     else {
                         Acciones siguiente_accion = heuristic.calcularSiguienteMovimiento(map, posicion);

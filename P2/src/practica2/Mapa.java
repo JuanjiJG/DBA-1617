@@ -140,18 +140,18 @@ public class Mapa {
     
     /**
      * Método para encontrar el objetivo en una matriz radar
-     * @param radar La matriz de 5x5 casillas en la que buscar el objetivo
+     * 
      * @return Un booleano indicando si ha encontrado el objetivo o no
      * @author Juan José Jiménez García
      */
-   /* public boolean buscarObjetivo(int[][] radar) {
+   /* public boolean buscarObjetivo() {
         
         boolean encontrado = false;
         
-        for (int i = 0; i < TAMANIO_RADAR; i++) {
-            for (int j = 0; j < TAMANIO_RADAR; j++) {
+        for (int i = 0; i < TAMANIO_MAPA; i++) {
+            for (int j = 0; j < TAMANIO_MAPA; j++) {
             
-                if (radar[i][j] == 2) {
+                if (matriz_mapa[i][j] == 2) {
                     encontrado = true;
                 }
             }

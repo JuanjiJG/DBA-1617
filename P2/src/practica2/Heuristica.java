@@ -51,6 +51,7 @@ public class Heuristica {
      * @return Devuelve la mejor acción
      */
     public Acciones calcularSiguienteMovimiento(Mapa mapa, Pair<Integer, Integer> posicion_coche_aux) {
+       
         int pos = 2;
         double[][] matriz_scanner = mapa.getMatriz_scanner();
         
@@ -120,6 +121,7 @@ public class Heuristica {
 
         return accion;
     }
+    
 
     /**
      * Comprueba las posibles acciones sobre las casillas del mapa
