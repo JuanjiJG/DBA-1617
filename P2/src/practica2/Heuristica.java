@@ -54,14 +54,6 @@ public class Heuristica {
        
         int pos = 2;
         double[][] matriz_scanner = mapa.getMatriz_scanner();
-        
-        System.out.println("Debug: Voy a imprimir la matriz scanner");
-        for(int i = 0; i < 5; i++) {
-            for (int j = 0; j < 5; j++) {
-                System.out.print(matriz_scanner[i][j] + " ");
-            }
-            System.out.println("");
-        }
 
         Pair<Integer, Integer> posicion_coche = new Pair(posicion_coche_aux.getKey() + 2, posicion_coche_aux.getValue() + 2);
         Acciones accion = Acciones.moveE;
@@ -97,14 +89,9 @@ public class Heuristica {
                         distancias.add(matriz_scanner[pos + 1][pos + 1]);
                         break;
                 }
-                System.out.println("\nDebug: Accion posible: " + acciones_posibles.get(i) + " distancia: " + distancias.get(i) + " El objetivo esta: " + mapa.getPosicionObjetivo());
             }
             
-            System.out.println("Debug: Voy a imprimir el array de distancias");
-            for(int i = 0; i < distancias.size(); i++) {
-                System.out.println("Debug: Accion posible de i: " + acciones_posibles.get(i) + " - Distancia de i: " + distancias.get(i));
-            }
-
+            
             int indice_mejor_accion = 0;
             double min_distancia = distancias.get(0);
             for (int j = 0; j < distancias.size(); j++) {
@@ -115,7 +102,6 @@ public class Heuristica {
             }
             accion = acciones_posibles.get(indice_mejor_accion);
         } else {
-            System.out.println("Debug: no usa el scanner");
             accion = acciones_posibles.get(0);
         }
 
@@ -151,10 +137,7 @@ public class Heuristica {
         casillas[7] = mapa_actual[posicion_coche.getValue() + 1][posicion_coche.getKey() + 1];
 
         //x == getKey(), y == getValue()
-        System.out.print("CASILLAS\n");
-        for (int i = 0; i < casillas.length; ++i) {
-            System.out.print(casillas[i] + " ");
-        }
+        
         if (casillas[0] == 0 || casillas[0] == 2) {
             actions.add(Acciones.moveSW);
         }
@@ -182,7 +165,7 @@ public class Heuristica {
 
         //Solo cogemos las acciones con casilla negativa en el caso en el que no tengamos otra opción 
         //porque estoy rodeado de casillas negativas
-        if (actions.size() == 0) {
+        if (actions.isEmpty()) {
             int indice = -1;
             int max = Integer.MIN_VALUE;
             for (int i = 0; i < casillas.length; ++i) {

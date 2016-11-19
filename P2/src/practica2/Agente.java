@@ -54,7 +54,7 @@ public class Agente extends SingleAgent {
     @Override
     public void init() {
 
-        System.out.println("Inicializando estado del agente...");
+        System.out.println("\n\nInicializando estado del agente...");
 
         this.map = new Mapa();
         this.map.inicializarMapa();
@@ -72,6 +72,8 @@ public class Agente extends SingleAgent {
      * Método que ejecutará el agente cuando se inicie
      *
      * @author Juan José Jiménez García
+	 * @author Gregorio Carvajal Expósito
+	 * @author Emilio Chica Jimenéz
      */
     @Override
     public void execute() {
@@ -83,9 +85,6 @@ public class Agente extends SingleAgent {
             for (int i = 0; i < NUM_PERCEPCIONES; i++) {
                 recibirMensajeDelServidor();
             }
-
-            // Calcular posición del objetivo
-            //this.map.calcularPosicionObjetivo(posicion);
             
             cont_bateria = 100;
             enviarMensajeAlServidor(Acciones.refuel);
@@ -95,43 +94,40 @@ public class Agente extends SingleAgent {
                 for (int i = 0; i < NUM_PERCEPCIONES; i++) {
                     recibirMensajeDelServidor();
                 }
-                //System.out.println("Debug: Antes de comprobar bateria");
+                
                 if (comprobarBateria()) {
-                    System.out.println("Debug: voy a recargar la bateria");
+                    //ESTADO: Poca bateria
                     cont_bateria = 100;
                     enviarMensajeAlServidor(Acciones.refuel);
                 }
                 else if (map.pisandoObjetivo(posicion)) {
-                    //System.out.println("Debug: se supone que está en el objetivo");
+                    //ESTADO: Pisando objetivo
                     pisando_objetivo = true;
                 }
                 else {
-                    //System.out.println("Debug: antes de actualizar mapa");
+                    //ESTADO: Movimiento
                     map.actualizarMapa(posicion);
                     
-                    // Si antiguedad % 100 == 0 se llama a la funcion de comprobarCercos de la heuristica
-                    // para que compruebe la funcion si esta en un cerco el objetivo y lo asigne a la variable 
-                    // booleana sin solucion
+                    /* Si antiguedad % 100 == 0 se llama a la funcion de comprobarCercos de la heuristica
+                       para que compruebe la funcion si esta en un cerco el objetivo y lo asigne a la variable 
+                       booleana sin solucion */
                     if(map.getPosicionObjetivo()!=null && map.getAntiguedad()%100 == 0) {
                         this.sin_solucion = this.heuristic.comprobarCercos(map, posicion);
                     }
                     
-                    // SI no hay solución, finalizar
-                    // SI sigue habiendo posibilidad de solución, elegimos movimiento
-                    if(this.sin_solucion) {
+                    
+                    
+                    if(this.sin_solucion) { // SI no hay solución, finalizar
                         System.out.println("SOLUCION: Este mapa no se puede resolver");
                     }
-                    else {
+                    else { // SI sigue habiendo posibilidad de solución, elegimos movimiento
                         Acciones siguiente_accion = heuristic.calcularSiguienteMovimiento(map, posicion);
-                        System.out.println("Debug: esta es la accion que voy a hacer: " + siguiente_accion.toString());
                         enviarMensajeAlServidor(siguiente_accion);
                         cont_bateria--;
                         map.decrementarAntiguedad();
                     }
                 }
             }
-
-            this.finalize();
 
         } catch (IOException ex) {
             Logger.getLogger(Agente.class.getName()).log(Level.SEVERE, null, ex);
@@ -142,14 +138,16 @@ public class Agente extends SingleAgent {
      * Método que se ejecutará cuando el agente vaya a finalizar su ejecución
      *
      * @author Juan José Jiménez García
+	 * @author Gregorio Carvajal Expósito
      */
     @Override
     public void finalize() {
 
-        System.out.println("Finalizando ejecución y estado del agente...");
+        System.out.println("Finalizando agente...");
 
         try {
             if (crashed == false) {
+				//ESTADO: Error
                 enviarMensajeAlServidor(Acciones.logout);
                 for (int i = 0; i < NUM_PERCEPCIONES + 1; i++) {
                     recibirMensajeDelServidor();
@@ -243,10 +241,7 @@ public class Agente extends SingleAgent {
     public void procesarTraza(JsonObject injson) throws IOException {
 
         try {
-            System.out.println("Recibiendo la traza");
-
-            //ACLMessage inbox = this.receiveACLMessage();
-            //JsonObject injson = Json.parse(inbox.getContent()).asObject();
+			
             JsonArray ja = injson.get("trace").asArray();
             byte data[] = new byte[ja.size()];
 
@@ -254,10 +249,11 @@ public class Agente extends SingleAgent {
                 data[i] = (byte) ja.get(i).asInt();
             }
 
-            FileOutputStream fos = new FileOutputStream(this.mundo_elegido + " - " + new SimpleDateFormat("yyyy-MM-dd-hh-mm").format(new Date()) + ".png");
+			String filename = this.mundo_elegido + " - " + new SimpleDateFormat("yyyy-MM-dd-hh-mm").format(new Date()) + ".png";
+            FileOutputStream fos = new FileOutputStream(filename);
             fos.write(data);
             fos.close();
-            System.out.println("Traza guardada");
+			System.out.println("Traza guardada en el archivo " + filename);
 
         } catch (IOException ex) {
 
@@ -320,11 +316,9 @@ public class Agente extends SingleAgent {
 
         try {
             ACLMessage inbox = this.receiveACLMessage();
-            System.out.println("\nDebug: " + inbox.getContent());
             parsearPercepcion(inbox.getContent());
             if (crashed == true) {
                 System.out.println("Deslogueando del servidor");
-                //this.finalize();
             }
         } catch (InterruptedException ex) {
             System.out.println("No se recibio correctamente el mensaje");

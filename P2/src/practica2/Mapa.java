@@ -57,27 +57,19 @@ public class Mapa {
      * @author Antonio Javier Benítez Guijarro
      */
     public void actualizarMapa(Pair<Integer, Integer> posicion) {
-        //System.out.println("Debug: he entrado en actualizar mapa");
         int posicion_inicial_x=posicion.getKey();
         int posicion_inicial_y=posicion.getValue();
-        
-        
-        //System.out.println("Debug: antes del primer for de actualizar mapa");
         
         for(int i=0;i<TAMANIO_RADAR;i++)
         {
             for(int j=0;j<TAMANIO_RADAR;j++)
             {
-                //System.out.println("Debug: He entrado en el segundo for de actualizar mapa");
-                    //System.out.println("Debug: He entrado en el primer if del segundo for de actualizar mapa");
-                    //System.out.println("Debug matriz mapa:"+matriz_mapa[posicion_inicial_i+i][posicion_inicial_j+j]);
-                
                     //Nos interesa que primero actualice el mapa y despues compruebe si hay un 2
                     if(matriz_mapa[posicion_inicial_y+i][posicion_inicial_x+j]==3)
                     {
-                        //System.out.println("Debug: He entrado en el segundo if del segundo for de actualizar mapa");
                         matriz_mapa[posicion_inicial_y+i][posicion_inicial_x+j]=matriz_radar[i][j];
                     }
+					
                     //Compruebo si hay un 2
                     if(matriz_mapa[posicion_inicial_y+i][posicion_inicial_x+j] == 2){
                         this.posicion_objetivo= new Pair(posicion_inicial_x+2,posicion_inicial_y+2);
@@ -89,16 +81,6 @@ public class Mapa {
         {
             matriz_mapa[posicion.getValue()+2][posicion.getKey()+2]=antiguedad;
         }
-        
-        for(int i=0;i<TAMANIO_RADAR;i++)
-        {
-            for(int j=0;j<TAMANIO_RADAR;j++)
-            {
-                    System.out.print(matriz_mapa[posicion_inicial_y+i][posicion_inicial_x+j]+" ");
-            }
-            System.out.println();
-        }
-        
     }
     
     /**
@@ -160,6 +142,7 @@ public class Mapa {
         return encontrado;
     }*/
     
+	
     /**
      * Método para calcular la ubicación del objetivo, siendo llamada una única vez
      * 
@@ -168,7 +151,8 @@ public class Mapa {
      * @author Miguel Ángel Torres López
      * @author Antonio Javier Benítez Guijarro
      */
-    public void calcularPosicionObjetivo(Pair<Integer, Integer> posicion_coche) {
+    /*BORRAR
+	public void calcularPosicionObjetivo(Pair<Integer, Integer> posicion_coche) {
         
         double minimo_1 = Double.MAX_VALUE;
         double minimo_2 = Double.MAX_VALUE;
@@ -251,7 +235,7 @@ public class Mapa {
         // Actualizamos la posición del objetivo con los datos obtenidos
         // Las coordenadas obtenidas son la posición real del objetivo en el mapa del servidor
         this.posicion_objetivo = new Pair(x2-2, y2-2);
-    }
+    } BORRAR*/
     
     /**
      * Método para ajustar la matriz de radar
