@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package practica2;
 
 import es.upv.dsic.gti_ia.core.AgentID;
@@ -24,7 +19,7 @@ public class Main {
         System.out.println("Introduce el nº del mapa que quieres explorar (del 1 al 10):");
         int mundo = keyboard.nextInt();
 
-        //Heuristica p = new Heuristica();
+        // Heuristica p = new Heuristica();
         // System.out.println(p.calcularDistanciaEuclidea(new Pair(53,46), new Pair(52,47)));
         Agente gugel = null;
 
@@ -41,6 +36,5 @@ public class Main {
 
         // Iniciamos el agente
         gugel.start();
-
     }
 }

@@ -22,7 +22,6 @@ public class Agente extends SingleAgent {
     private static final int NUM_PERCEPCIONES = 4;
     private static final String AGENT_NAME = "GugelCarRedForest";
     private Pair<Integer, Integer> posicion;
-    private String percepcion;
     private boolean pisando_objetivo;
     private boolean crashed;
     private boolean sin_solucion;
@@ -41,7 +40,6 @@ public class Agente extends SingleAgent {
      * @author Juan José Jiménez García
      */
     public Agente(AgentID aid, int mundo) throws Exception {
-
         super(aid);
         this.mundo_elegido = mundo;
     }
@@ -62,7 +60,6 @@ public class Agente extends SingleAgent {
         this.pisando_objetivo = false;
         this.crashed = false;
         this.posicion = new Pair(0, 0);
-        this.percepcion = "";
         this.server_key = "";
         this.cont_bateria = 0;
         this.sin_solucion = false;
@@ -72,8 +69,8 @@ public class Agente extends SingleAgent {
      * Método que ejecutará el agente cuando se inicie
      *
      * @author Juan José Jiménez García
-	 * @author Gregorio Carvajal Expósito
-	 * @author Emilio Chica Jimenéz
+     * @author Gregorio Carvajal Expósito
+     * @author Emilio Chica Jimenéz
      */
     @Override
     public void execute() {
@@ -85,42 +82,40 @@ public class Agente extends SingleAgent {
             for (int i = 0; i < NUM_PERCEPCIONES; i++) {
                 recibirMensajeDelServidor();
             }
-            
+
             cont_bateria = 100;
             enviarMensajeAlServidor(Acciones.refuel);
 
-            while ((pisando_objetivo == false) && (map.getAntiguedad() >= -15000) && (this.sin_solucion == false)) { 
-                
+            while ((pisando_objetivo == false) && (map.getAntiguedad() >= -15000) && (this.sin_solucion == false)) {
+
                 for (int i = 0; i < NUM_PERCEPCIONES; i++) {
                     recibirMensajeDelServidor();
                 }
-                
+
                 if (comprobarBateria()) {
-                    //ESTADO: Poca bateria
+                    // ESTADO: Poca bateria
                     cont_bateria = 100;
                     enviarMensajeAlServidor(Acciones.refuel);
-                }
-                else if (map.pisandoObjetivo(posicion)) {
-                    //ESTADO: Pisando objetivo
+                } else if (map.pisandoObjetivo(posicion)) {
+                    // ESTADO: Pisando objetivo
                     pisando_objetivo = true;
-                }
-                else {
-                    //ESTADO: Movimiento
+                } else {
+                    // ESTADO: Movimiento
                     map.actualizarMapa(posicion);
-                    
-                    /* Si antiguedad % 100 == 0 se llama a la funcion de comprobarCercos de la heuristica
-                       para que compruebe la funcion si esta en un cerco el objetivo y lo asigne a la variable 
-                       booleana sin solucion */
-                    if(map.getPosicionObjetivo()!=null && map.getAntiguedad()%100 == 0) {
+
+                    /*
+                    Si antiguedad % 100 == 0 se llama a la funcion de
+                    comprobarCercos de la heuristica para que compruebe la
+                    funcion si esta en un cerco el objetivo y lo asigne a la
+                    variable booleana sin solucion
+                     */
+                    if (map.getPosicionObjetivo() != null && map.getAntiguedad() % 100 == 0) {
                         this.sin_solucion = this.heuristic.comprobarCercos(map, posicion);
                     }
-                    
-                    
-                    
-                    if(this.sin_solucion) { // SI no hay solución, finalizar
-                        System.out.println("SOLUCION: Este mapa no se puede resolver");
-                    }
-                    else { // SI sigue habiendo posibilidad de solución, elegimos movimiento
+
+                    if (this.sin_solucion) { // SI no hay solución, finalizar
+                        System.out.println("SOLUCIÓN: Este mapa no se puede resolver");
+                    } else { // SI sigue habiendo posibilidad de solución, elegimos movimiento
                         Acciones siguiente_accion = heuristic.calcularSiguienteMovimiento(map, posicion);
                         enviarMensajeAlServidor(siguiente_accion);
                         cont_bateria--;
@@ -138,7 +133,7 @@ public class Agente extends SingleAgent {
      * Método que se ejecutará cuando el agente vaya a finalizar su ejecución
      *
      * @author Juan José Jiménez García
-	 * @author Gregorio Carvajal Expósito
+     * @author Gregorio Carvajal Expósito
      */
     @Override
     public void finalize() {
@@ -147,7 +142,7 @@ public class Agente extends SingleAgent {
 
         try {
             if (crashed == false) {
-				//ESTADO: Error
+                // ESTADO: Error
                 enviarMensajeAlServidor(Acciones.logout);
                 for (int i = 0; i < NUM_PERCEPCIONES + 1; i++) {
                     recibirMensajeDelServidor();
@@ -169,7 +164,7 @@ public class Agente extends SingleAgent {
      * @throws java.io.IOException
      */
     public void parsearPercepcion(String percepcion) throws IOException {
-        if (percepcion.equals("CRASHED")) //Recibido desde un sensor
+        if (percepcion.equals("CRASHED")) // Recibido desde un sensor
         {
             crashed = true;
         } else {
@@ -225,9 +220,7 @@ public class Agente extends SingleAgent {
                     procesarTraza(json);
                     break;
             }
-
         }
-
     }
 
     /**
@@ -241,7 +234,7 @@ public class Agente extends SingleAgent {
     public void procesarTraza(JsonObject injson) throws IOException {
 
         try {
-			
+
             JsonArray ja = injson.get("trace").asArray();
             byte data[] = new byte[ja.size()];
 
@@ -249,11 +242,11 @@ public class Agente extends SingleAgent {
                 data[i] = (byte) ja.get(i).asInt();
             }
 
-			String filename = this.mundo_elegido + " - " + new SimpleDateFormat("yyyy-MM-dd-hh-mm").format(new Date()) + ".png";
+            String filename = this.mundo_elegido + " - " + new SimpleDateFormat("yyyy-MM-dd-hh-mm").format(new Date()) + ".png";
             FileOutputStream fos = new FileOutputStream(filename);
             fos.write(data);
             fos.close();
-			System.out.println("Traza guardada en el archivo " + filename);
+            System.out.println("Traza guardada en el archivo " + filename);
 
         } catch (IOException ex) {
 
@@ -334,11 +327,6 @@ public class Agente extends SingleAgent {
      */
     public boolean comprobarBateria() {
 
-        if (cont_bateria <= 5) {
-            return true;
-        } else {
-            return false;
-        }
+        return (cont_bateria <= 5);
     }
-
 }

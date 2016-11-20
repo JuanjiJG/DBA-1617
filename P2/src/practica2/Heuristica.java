@@ -5,19 +5,25 @@ import javafx.util.Pair;
 
 /**
  * Clase para los métodos de la heurística
- * 
+ *
  * @author Emilio Chica Jiménez
  * @author Miguel Angel Torres López
  * @author Gregorio Carvajal Expósito
  */
 public class Heuristica {
 
+    private static final int TAMANIO_MAPA = 504;
     private boolean objetivo_detectado;
     private int[][] mapa_heuristica;
 
+    /**
+     * Constructor de la clase Heuristica
+     *
+     * @author Emilio Chica Jiménez
+     */
     public Heuristica() {
         objetivo_detectado = false;
-        mapa_heuristica = new int[504][504];
+        mapa_heuristica = new int[TAMANIO_MAPA][TAMANIO_MAPA];
         inicializarMapa();
     }
 
@@ -29,7 +35,7 @@ public class Heuristica {
     private void inicializarMapa() {
         for (int i = 0; i < 504; ++i) {
             for (int j = 0; j < 504; ++j) {
-                //Inicializo los bordes a -1
+                // Inicializo los bordes a -1
                 if (i < 1 || j < 1 || i > 500 || j > 500) {
                     mapa_heuristica[i][j] = -1;
                 } else {
@@ -47,13 +53,13 @@ public class Heuristica {
      * @author Miguel Angel Torres López
      * @param mapa Se usa para comprobar las acciones desde la posicion del
      * coche en el mapa
-     * @param posicion_coche La posicion actual del coche
+     * @param posicion_coche_aux La posicion actual del coche
      * @return Devuelve la mejor acción
      */
     public Acciones calcularSiguienteMovimiento(Mapa mapa, Pair<Integer, Integer> posicion_coche_aux) {
-       
+
         int pos = 2;
-        double[][] matriz_scanner = mapa.getMatriz_scanner();
+        double[][] matriz_scanner = mapa.getMatrizScanner();
 
         Pair<Integer, Integer> posicion_coche = new Pair(posicion_coche_aux.getKey() + 2, posicion_coche_aux.getValue() + 2);
         Acciones accion = Acciones.moveE;
@@ -90,8 +96,7 @@ public class Heuristica {
                         break;
                 }
             }
-            
-            
+
             int indice_mejor_accion = 0;
             double min_distancia = distancias.get(0);
             for (int j = 0; j < distancias.size(); j++) {
@@ -107,7 +112,6 @@ public class Heuristica {
 
         return accion;
     }
-    
 
     /**
      * Comprueba las posibles acciones sobre las casillas del mapa
@@ -136,8 +140,7 @@ public class Heuristica {
         casillas[6] = mapa_actual[posicion_coche.getValue()][posicion_coche.getKey() + 1];
         casillas[7] = mapa_actual[posicion_coche.getValue() + 1][posicion_coche.getKey() + 1];
 
-        //x == getKey(), y == getValue()
-        
+        // x == getKey(), y == getValue()
         if (casillas[0] == 0 || casillas[0] == 2) {
             actions.add(Acciones.moveSW);
         }
@@ -163,8 +166,8 @@ public class Heuristica {
             actions.add(Acciones.moveSE);
         }
 
-        //Solo cogemos las acciones con casilla negativa en el caso en el que no tengamos otra opción 
-        //porque estoy rodeado de casillas negativas
+        // Solo cogemos las acciones con casilla negativa en el caso en el que
+        // no tengamos otra opción porque estoy rodeado de casillas negativas
         if (actions.isEmpty()) {
             int indice = -1;
             int max = Integer.MIN_VALUE;
@@ -202,44 +205,44 @@ public class Heuristica {
         this.actualizarMapa(map);
 
         for (i = 2; i < 502; i++) {
-            for (j = 2; j < 502; j++) //Paso 2
+            for (j = 2; j < 502; j++) // Paso 2
             {
-                if (mapa_heuristica[i][j] == 1) //Paso 3
+                if (mapa_heuristica[i][j] == 1) // Paso 3
                 {
                     mapa_heuristica[i][j] = 5;
                     inicioCerco = new Pair<>(i, j);
 
                     boolean finCerco = false;
-                    while (!finCerco) //Bucle azul, Paso 4 - Encontrar un cerco
+                    while (!finCerco) // Bucle azul, Paso 4 - Encontrar un cerco
                     {
-                        if (mapa_heuristica[i][j + 1] == 1) //Paso 4.a
+                        if (mapa_heuristica[i][j + 1] == 1) // Paso 4.a
                         {
                             j++;
                             mapa_heuristica[i][j] = 4;
                             posicionesCerco.add(new Pair(i, j));
-                        } else if (mapa_heuristica[i + 1][j] == 1) //Paso 4.b.i
+                        } else if (mapa_heuristica[i + 1][j] == 1) // Paso 4.b.i
                         {
                             i++;
                             mapa_heuristica[i][j] = 4;
                             posicionesCerco.add(new Pair(i, j));
-                        } else if (mapa_heuristica[i - 1][j] == 1) //Paso 4.b.ii.1
+                        } else if (mapa_heuristica[i - 1][j] == 1) // Paso 4.b.ii.1
                         {
                             i--;
                             mapa_heuristica[i][j] = 4;
                             posicionesCerco.add(new Pair(i, j));
-                        } else if (mapa_heuristica[i][j - 1] == 1) //Paso 4.b.ii.2.a
+                        } else if (mapa_heuristica[i][j - 1] == 1) // Paso 4.b.ii.2.a
                         {
                             j--;
                             mapa_heuristica[i][j] = 4;
                             posicionesCerco.add(new Pair(i, j));
-                        } else //Paso 4.b.ii.2.b
+                        } else // Paso 4.b.ii.2.b
                         {
-                            finCerco = true; //Parar el bucle
+                            finCerco = true; // Parar el bucle
 
-                            if (mapa_heuristica[i][j - 1] == 5) //Paso 4.b.ii.2.b.i
+                            if (mapa_heuristica[i][j - 1] == 5) // Paso 4.b.ii.2.b.i
                             {
                                 esCerco = true;
-                            } else //4.b.ii.2.b.ii - Comprobar si es linea recta
+                            } else // 4.b.ii.2.b.ii - Comprobar si es linea recta
                             {
                                 if (((i == 2 || i == 501)
                                         && (j == 2 || j == 501))
@@ -249,42 +252,42 @@ public class Heuristica {
                                 }
                             }
                         }
-                    } //Fin while
+                    } // Fin while
 
                     i = inicioCerco.getKey();
                     j = inicioCerco.getValue();
 
-                    if (!esCerco) //Paso 5 - Desmarcar casillas
+                    if (!esCerco) // Paso 5 - Desmarcar casillas
                     {
 
                         finCerco = false;
-                        while (!finCerco) //Bucle morado, Paso 6
+                        while (!finCerco) // Bucle morado, Paso 6
                         {
-                            if (mapa_heuristica[i][j + 1] == 4) //Paso 6.a
+                            if (mapa_heuristica[i][j + 1] == 4) // Paso 6.a
                             {
                                 j++;
                                 mapa_heuristica[i][j] = 1;
-                            } else if (mapa_heuristica[i + 1][j] == 4) //Paso 6.b.i
+                            } else if (mapa_heuristica[i + 1][j] == 4) // Paso 6.b.i
                             {
                                 i++;
                                 mapa_heuristica[i][j] = 1;
-                            } else if (mapa_heuristica[i - 1][j] == 4) //Paso 6.b.ii.1
+                            } else if (mapa_heuristica[i - 1][j] == 4) // Paso 6.b.ii.1
                             {
                                 i--;
                                 mapa_heuristica[i][j] = 1;
-                            } else if (mapa_heuristica[i][j - 1] == 4) //Paso 6.b.ii.2.a
+                            } else if (mapa_heuristica[i][j - 1] == 4) // Paso 6.b.ii.2.a
                             {
                                 j--;
                                 mapa_heuristica[i][j] = 1;
-                            } else //Paso 6.b.ii.2.b
+                            } else // Paso 6.b.ii.2.b
                             {
-                                finCerco = true; //Parar el bucle
+                                finCerco = true; // Parar el bucle
                             }
-                        } //Fin while
-                    } //Fin if
-                    else //Paso 7 - Comprobar si el objetivo esta dentro del cerco
+                        } // Fin while
+                    } // Fin if
+                    else // Paso 7 - Comprobar si el objetivo esta dentro del cerco
                     {
-                        //Obtener los extremos del cerco
+                        // Obtener los extremos del cerco
                         int maxi = Integer.MIN_VALUE;
                         int mini = Integer.MAX_VALUE;
                         int maxj = Integer.MIN_VALUE;
@@ -310,27 +313,27 @@ public class Heuristica {
                             }
                         }
 
-                        //Comprobamos
+                        // Comprobamos
                         if (map.getPosicionObjetivo().getKey() < maxj
                                 && map.getPosicionObjetivo().getKey() > minj
                                 && map.getPosicionObjetivo().getValue() < maxi
                                 && map.getPosicionObjetivo().getValue() > mini) {
-                            return true; //Hemos encontrado el objetivo dentro del cerco
-                        } else //Comprobamos si el AGENTE esta dentro del cerco 
-                         if (posicionAgente.getKey() < maxj
-                                    && posicionAgente.getKey() > minj
-                                    && posicionAgente.getValue() < maxi
-                                    && posicionAgente.getValue() > mini) {
-                                return true; //El agente esta encerrado en el cerco
-                            }
+                            return true; // Hemos encontrado el objetivo dentro del cerco
+                        } else // Comprobamos si el AGENTE esta dentro del cerco 
+                        if (posicionAgente.getKey() < maxj
+                                && posicionAgente.getKey() > minj
+                                && posicionAgente.getValue() < maxi
+                                && posicionAgente.getValue() > mini) {
+                            return true; // El agente esta encerrado en el cerco
+                        }
                     }
 
                 }
             }
         }
 
-        //Si hemos llegado a este punto, es que hemos recorrido la matriz completamente sin
-        //encontrar el objetivo rodeado
+        // Si hemos llegado a este punto, es que hemos recorrido la matriz
+        // completamente sin encontrar el objetivo rodeado
         return false;
     }
 
