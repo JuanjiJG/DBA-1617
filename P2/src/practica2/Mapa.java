@@ -117,7 +117,7 @@ public class Mapa {
 
         return this.matriz_mapa;
     }
-    
+
     /**
      * Método para ajustar la matriz de radar
      *
@@ -134,22 +134,51 @@ public class Mapa {
         }
     }
 
+    /**
+     * Método para establecer al completo la matriz de scanner
+     * 
+     * @param matriz_scanner
+     * @author Juan José Jiménez García
+     */
     public void setMatrizScanner(double[][] matriz_scanner) {
         this.matriz_scanner = matriz_scanner;
     }
 
+    /**
+     * Método para obtener la matriz de scanner
+     * 
+     * @return La matriz de scanner
+     * @author Juan José Jiménez García
+     */
     public double[][] getMatrizScanner() {
         return matriz_scanner;
     }
 
+    /**
+     * Método para obtener la matriz de radar
+     * 
+     * @return La matriz de radar
+     * @author Juan José Jiménez García
+     */
     public int[][] getMatrizRadar() {
         return matriz_radar;
     }
 
+    /**
+     * Método para devolver la antigüedad
+     * 
+     * @return El valor de la antigüead
+     * @author Juan José Jiménez García
+     */
     public int getAntiguedad() {
         return antiguedad;
     }
 
+    /**
+     * Método para decrementar la antigüedad
+     *
+     * @author Juan José Jiménez García
+     */
     public void decrementarAntiguedad() {
         this.antiguedad--;
     }

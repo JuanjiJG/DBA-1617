@@ -16,6 +16,10 @@ import javafx.util.Pair;
  * agente
  *
  * @author Juan José Jiménez García
+ * @author Gregorio Carvajal Expósito
+ * @author Emilio Chica Jimenéz
+ * @author Miguel Angel Torres López
+ * @author Antonio Javier Benítez Guijarro
  */
 public class Agente extends SingleAgent {
 

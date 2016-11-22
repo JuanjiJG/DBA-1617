@@ -19,8 +19,6 @@ public class Main {
         System.out.println("Introduce el nº del mapa que quieres explorar (del 1 al 10):");
         int mundo = keyboard.nextInt();
 
-        // Heuristica p = new Heuristica();
-        // System.out.println(p.calcularDistanciaEuclidea(new Pair(53,46), new Pair(52,47)));
         Agente gugel = null;
 
         // Conectar a la plataforma de agentes
