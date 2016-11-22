@@ -13,7 +13,6 @@ import javafx.util.Pair;
 public class Heuristica {
 
     private static final int TAMANIO_MAPA = 504;
-    private boolean objetivo_detectado;
     private int[][] mapa_heuristica;
 
     /**
@@ -22,7 +21,6 @@ public class Heuristica {
      * @author Emilio Chica Jiménez
      */
     public Heuristica() {
-        objetivo_detectado = false;
         mapa_heuristica = new int[TAMANIO_MAPA][TAMANIO_MAPA];
         inicializarMapa();
     }
@@ -64,6 +62,8 @@ public class Heuristica {
         Pair<Integer, Integer> posicion_coche = new Pair(posicion_coche_aux.getKey() + 2, posicion_coche_aux.getValue() + 2);
         Acciones accion = Acciones.moveE;
         ArrayList<Acciones> acciones_posibles = comprobarAccionesPosibles(mapa, posicion_coche);
+        
+        // Paso 4.b
         if (acciones_posibles.size() > 1) {
 
             ArrayList<Double> distancias = new ArrayList();
@@ -110,6 +110,7 @@ public class Heuristica {
             accion = acciones_posibles.get(0);
         }
 
+        // Paso 5
         return accion;
     }
 
@@ -140,6 +141,7 @@ public class Heuristica {
         casillas[6] = mapa_actual[posicion_coche.getValue()][posicion_coche.getKey() + 1];
         casillas[7] = mapa_actual[posicion_coche.getValue() + 1][posicion_coche.getKey() + 1];
 
+        // Paso 4
         // x == getKey(), y == getValue()
         if (casillas[0] == 0 || casillas[0] == 2) {
             actions.add(Acciones.moveSW);
@@ -166,6 +168,7 @@ public class Heuristica {
             actions.add(Acciones.moveSE);
         }
 
+        // Paso 4.a
         // Solo cogemos las acciones con casilla negativa en el caso en el que
         // no tengamos otra opción porque estoy rodeado de casillas negativas
         if (actions.isEmpty()) {
@@ -327,7 +330,6 @@ public class Heuristica {
                             return true; // El agente esta encerrado en el cerco
                         }
                     }
-
                 }
             }
         }

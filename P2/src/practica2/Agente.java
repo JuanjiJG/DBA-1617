@@ -81,6 +81,7 @@ public class Agente extends SingleAgent {
 
         try {
             System.out.println("Ejecutando el agente...");
+            // ESTADO: Inicializar
             enviarMensajeAlServidor(Acciones.login);
 
             for (int i = 0; i < NUM_PERCEPCIONES; i++) {
@@ -119,7 +120,7 @@ public class Agente extends SingleAgent {
 
                     if (this.sin_solucion) { // SI no hay solución, finalizar
                         System.out.println("SOLUCIÓN: Este mapa no se puede resolver");
-                    } else { // SI sigue habiendo posibilidad de solución, elegimos movimiento
+                    } else { // Si sigue habiendo posibilidad de solución, elegimos movimiento
                         Acciones siguiente_accion = heuristic.calcularSiguienteMovimiento(map, posicion);
                         enviarMensajeAlServidor(siguiente_accion);
                         cont_bateria--;
