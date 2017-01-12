@@ -17,7 +17,8 @@ public class Heuristica {
     private Pair<Integer,Integer> subObjetivo;
     private BaseConocimiento linkbc;
     private int tamMapa;
-    private final double UMBRAL = 5;
+    private final double UMBRAL_EMPATE = 5;
+    private final int UMBRAL_COMBUSTIBLE = 75;
     private int cuadrante_1_i_inicio;
     private int cuadrante_1_i_final;
     private int cuadrante_1_j_inicio;
@@ -46,6 +47,14 @@ public class Heuristica {
         tamMapa = linkbc.getTamMapa();
     }
     
+    
+    private boolean necesitaRepostar(EstadoAgente agente){
+        if(agente.getFuelActual() < UMBRAL_COMBUSTIBLE)
+            return true;
+        else 
+            return false;
+    }
+    
     private void dividirCuadrantes(){
         this.cuadrante_1_i_inicio = 0;
         this.cuadrante_1_i_final = (tamMapa/2)-1;
@@ -68,6 +77,71 @@ public class Heuristica {
         this.cuadrante_4_j_inicio = tamMapa/2;
         this.cuadrante_4_j_final = tamMapa-1;
         
+    }
+    
+    
+    //Devolveremos la direccion (norte sur, este...) donde teoricamente nos deberiamos mover si no hay obstaculos y la casilla que es el mapa del profesor.
+    private Pair<Acciones,Pair<Integer,Integer>> calcularMejorCasilla(Pair<Integer,Integer> posicion_agente, Pair<Integer,Integer> posicion_destino){
+        Pair<Integer,Integer> posicion_objetivo = new Pair(posicion_destino.getValue(),posicion_destino.getKey());
+        //Cambiamos los indices para que concuerden con los del profesor.
+        int j = posicion_agente.getKey();
+        int i = posicion_agente.getValue();
+        double minimo;
+        Pair<Integer,Integer> resultado = null;
+        Acciones direccion = null;
+        
+        
+        
+        
+        double[][] distancias = new double[3][3];
+        
+        
+        
+        distancias[0][0] = calcularDistanciaEuclidea(new Pair(i-1,j-1),posicion_objetivo);
+        distancias[0][2] = calcularDistanciaEuclidea(new Pair(i-1,j+1),posicion_objetivo);
+        distancias[0][1] = calcularDistanciaEuclidea(new Pair(i-1,j),posicion_objetivo);
+        
+        distancias[1][2] = calcularDistanciaEuclidea(new Pair(i,j+1),posicion_objetivo); 
+        distancias[1][0] = calcularDistanciaEuclidea(new Pair(i,j-1),posicion_objetivo);
+        
+        distancias[2][2] = calcularDistanciaEuclidea(new Pair(i+1,j+1),posicion_objetivo);
+        distancias[2][1] = calcularDistanciaEuclidea(new Pair(i+1,j),posicion_objetivo);
+        distancias[2][0] = calcularDistanciaEuclidea(new Pair(i+1,j-1),posicion_objetivo);
+        
+        minimo = distancias[0][0];
+        //Puede fallar la conversion de los indices
+        for(int c=0; c < 3; c++){
+            for(int h=0; h<3; h++){
+                if((c!=1)&&(h!=1)){
+                    if(distancias[c][h]<minimo)
+                    {
+                        minimo = distancias[c][h];
+                        resultado = new Pair(i+(c-1),j+(h-1));
+                        int indice_i = c;
+                        int indice_j = h;
+
+                        if((indice_i == 0)&&(indice_j == 0))
+                            direccion = Acciones.moveNW;
+                        if((indice_i == 0)&&(indice_j == 1))
+                            direccion = Acciones.moveN;
+                        if((indice_i == 0)&&(indice_j == 2))
+                            direccion = Acciones.moveNE;
+                        if((indice_i == 1)&&(indice_j == 0))
+                            direccion = Acciones.moveW;
+                        if((indice_i == 1)&&(indice_j == 2))
+                            direccion = Acciones.moveE;
+                        if((indice_i == 2)&&(indice_j == 0))
+                            direccion = Acciones.moveSW;
+                        if((indice_i == 2)&&(indice_j == 1))
+                            direccion = Acciones.moveS;
+                        if((indice_i == 2)&&(indice_j == 2))
+                            direccion = Acciones.moveSE;
+                    }
+                }
+            }
+        }
+        
+        return new Pair(direccion,resultado);        
     }
     
     public EstadoAgente buscandoObjetivo(ArrayList<EstadoAgente> estados){
@@ -96,7 +170,7 @@ public class Heuristica {
             
         for(int i = 0; i < estados.size(); i++){
             double distancia_aux = calcularDistanciaEuclidea(estados.get(i).getPosicion(),this.subObjetivo);
-            if(distancia_aux <= minDistancia + this.UMBRAL ){
+            if(distancia_aux <= minDistancia + this.UMBRAL_EMPATE ){
                 indices_posibles.add(i);
             }            
         }  
@@ -118,6 +192,19 @@ public class Heuristica {
             }
             indice_agente_seleccionado = agente_seleccionado_empate;            
         }
+        
+        agente_seleccionado = estados.get(indice_agente_seleccionado);
+        
+        if(necesitaRepostar(agente_seleccionado)){
+            agente_seleccionado.setNextAction(Acciones.refuel);
+            
+            return agente_seleccionado;
+        }
+        //Muy posiblemente haya que darle la vuelta a las coordenadas de agente_seleccionado.
+        double [][] distancias = crearMatrizDistancias(agente_seleccionado.getPosicion(),this.subObjetivo);
+        
+        
+        
         
         
         
