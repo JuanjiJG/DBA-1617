@@ -1,14 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package practica3;
 
 /**
- *
- * @author m_ang
+ * Clase enumerado que contiene los tipos de agente de los que disponemos
+ * 
+ * @author Miguel Ángel Torres López
  */
 public enum TiposAgente {
-    
+    camion, coche, dron
 }
