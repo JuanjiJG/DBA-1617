@@ -5,6 +5,7 @@
  */
 package practica3;
 
+import java.util.ArrayList;
 import javafx.util.Pair;
 
 /**
@@ -15,9 +16,65 @@ import javafx.util.Pair;
 public class Heuristica {
     private Pair<Integer,Integer> subObjetivo;
     private BaseConocimiento linkbc;
+    private int tamMapa;
+    private int cuadrante_1_i_inicio;
+    private int cuadrante_1_i_final;
+    private int cuadrante_1_j_inicio;
+    private int cuadrante_1_j_final;
+    
+    private int cuadrante_2_i_inicio;
+    private int cuadrante_2_i_final;
+    private int cuadrante_2_j_inicio;
+    private int cuadrante_2_j_final;
+    
+    private int cuadrante_3_i_inicio;
+    private int cuadrante_3_i_final;
+    private int cuadrante_3_j_inicio;
+    private int cuadrante_3_j_final;
+    
+    private int cuadrante_4_i_inicio;
+    private int cuadrante_4_i_final;
+    private int cuadrante_4_j_inicio;
+    private int cuadrante_4_j_final;
+    
+    
+    
+    public Heuristica(){
+        linkbc = BaseConocimiento.getInstance();
+        
+        tamMapa = linkbc.getTamMapa();
+    }
+    
+    private void dividirCuadrantes(){
+        this.cuadrante_1_i_inicio = 0;
+        this.cuadrante_1_i_final = (tamMapa/2)-1;
+        this.cuadrante_1_j_inicio = 0;
+        this.cuadrante_1_j_final = (tamMapa/2)-1;
+        
+        
+        this.cuadrante_2_i_inicio = tamMapa/2;
+        this.cuadrante_2_i_final = tamMapa-1;
+        this.cuadrante_2_j_inicio = 0;
+        this.cuadrante_2_j_final = (tamMapa/2)-1;
+        
+        this.cuadrante_3_i_inicio = 0;
+        this.cuadrante_3_i_final = (tamMapa/2)-1;
+        this.cuadrante_3_j_inicio = tamMapa/2;
+        this.cuadrante_3_j_final = tamMapa-1;
+        
+        this.cuadrante_4_i_inicio = tamMapa/2;
+        this.cuadrante_4_i_final = tamMapa-1;
+        this.cuadrante_4_j_inicio = tamMapa/2;
+        this.cuadrante_4_j_final = tamMapa-1;
+        
+    }
     
     public EstadoAgente calcularSiguienteMovimiento(ArrayList<EstadoAgente> estados){
         EstadoAgente aux = new EstadoAgente();
+        
+        
+        
+        
         return aux;
     }
     
@@ -28,6 +85,8 @@ public class Heuristica {
         return d; 
     }
     
+    private void calcularSubObjetivo(){
+    }
     
     
     private boolean comprobarCasilla(){
