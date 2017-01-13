@@ -19,6 +19,9 @@ public class Heuristica {
     private int tamMapa;
     private final double UMBRAL_EMPATE = 5;
     private final int UMBRAL_COMBUSTIBLE = 75;
+    private double[][] distancias;
+    private double gradiente_muro_encontrado=Double.MAX_VALUE;
+    private boolean siguiendo_muro=false;
     private int cuadrante_1_i_inicio;
     private int cuadrante_1_i_final;
     private int cuadrante_1_j_inicio;
@@ -79,6 +82,61 @@ public class Heuristica {
         
     }
     
+    //Por si falla segun dice antonio deberia de devolver EstadoAgente agente_seleccionado
+    private void calcularSiguienteMovimmiento(EstadoAgente agente_seleccionado,Pair<Integer,Integer> posicion_agente, Pair<Integer,Integer> posicion_destino){
+        Pair<Acciones,Pair<Integer,Integer>> casilla = calcularMejorCasilla(posicion_agente,posicion_destino);
+        int i=casilla.getValue().getValue();//Invertimos las variables para nuestro mapa
+        int j=casilla.getValue().getKey();//Invertimos las variables para nuestro mapa
+        int mapa [][] = this.linkbc.getMapa();
+        Acciones direccion = casilla.getKey();
+        if()
+        
+        //Si es un muro o es un agente
+        //Si ya esabamos siguiendo el muro o es la primera vez que lo encontramos
+        if(mapa[i][j]==1 || mapa[i][j]==2 || mapa[i][j]==4 || siguiendo_muro){
+                siguiendo_muro=true;
+                switch(direccion){
+                    case moveNW:
+                        if(distancias[0][0] < gradiente_muro_encontrado)
+                            gradiente_muro_encontrado = distancias[0][0];
+                        if(mapa[i][j])
+                        agente_seleccionado.setNextAction(moveW);
+                        break;
+                    case moveN:
+                        gradiente_muro_encontrado = distancias[0][1];
+                        agente_seleccionado.setNextAction(moveNW);
+                        break;
+                    case moveNE:
+                        gradiente_muro_encontrado = distancias[0][2];
+                        agente_seleccionado.setNextAction(moveN);
+                        break;
+                    case moveW:
+                        gradiente_muro_encontrado = distancias[1][0];
+                        agente_seleccionado.setNextAction(moveSW);
+                        agente_seleccionado.setNextAction(moveS);
+                        break;
+                    case moveE:
+                        gradiente_muro_encontrado = distancias[1][2];
+                        agente_seleccionado.setNextAction(moveNE);
+                        agente_seleccionado.setNextAction(moveN);
+                        break;
+                    case moveSW:
+                        gradiente_muro_encontrado = distancias[2][0];
+                        agente_seleccionado.setNextAction(moveS);
+                        break;
+                    case moveS:
+                        gradiente_muro_encontrado = distancias[2][1];
+                        agente_seleccionado.setNextAction(moveSE);
+                        break;
+                    case moveSE:
+                        gradiente_muro_encontrado = distancias[2][2];
+                        agente_seleccionado.setNextAction(moveE);
+                        break;
+                }
+            
+        }
+        
+    }
     
     //Devolveremos la direccion (norte sur, este...) donde teoricamente nos deberiamos mover si no hay obstaculos y la casilla que es el mapa del profesor.
     private Pair<Acciones,Pair<Integer,Integer>> calcularMejorCasilla(Pair<Integer,Integer> posicion_agente, Pair<Integer,Integer> posicion_destino){
@@ -91,10 +149,7 @@ public class Heuristica {
         Acciones direccion = null;
         
         
-        
-        
-        double[][] distancias = new double[3][3];
-        
+        distancias = new double[3][3];
         
         
         distancias[0][0] = calcularDistanciaEuclidea(new Pair(i-1,j-1),posicion_objetivo);
@@ -144,7 +199,7 @@ public class Heuristica {
         return new Pair(direccion,resultado);        
     }
     
-    public EstadoAgente buscandoObjetivo(ArrayList<EstadoAgente> estados){
+    public EstadoAgente buscandoObjetivo(ArrayList<EstadoAgente> estados,boolean tenemosFuelEnElMundo){
         EstadoAgente agente_seleccionado;
         double minDistancia;
         ArrayList<Integer> indices_posibles = new ArrayList();
@@ -155,7 +210,7 @@ public class Heuristica {
         if(this.subObjetivo == null){
             calcularSubObjetivo();//Analiza los cuadrantes y asigna un subObjetivo que sea un grupo de casillas inexploradas 3x3
         }
-        
+        ///Elegimos al agente que esté más cerca del objetivo
         minDistancia = calcularDistanciaEuclidea(estados.get(0).getPosicion(),this.subObjetivo);
         //Sacamos el agente que este mas cerca del objetivo, es decir, que su distancia hacia el objetivo sea la minima o que haya empatado con otro.
         for(int i = 1; i < estados.size(); i++){
@@ -195,36 +250,36 @@ public class Heuristica {
         
         agente_seleccionado = estados.get(indice_agente_seleccionado);
         
-        if(necesitaRepostar(agente_seleccionado)){
-            agente_seleccionado.setNextAction(Acciones.refuel);
-            
-            return agente_seleccionado;
+        //Una vez seleccionado el agente que queremos comprobamos si hay fuel en el mundo
+        //Si hay combustible lo hacemos repostar
+        if(tenemosFuelEnElMundo){
+            if(necesitaRepostar(agente_seleccionado)){
+                agente_seleccionado.setNextAction(Acciones.refuel);
+
+                return agente_seleccionado;
+            }
+        }else
+        {
+            //Sino combrobamos si tiene combustible el agente
+            if(agente_seleccionado.getFuelActual()>0){
+                
+            }else{
+                //Si tenemos agentes en el array eliminamos el agente seleccionado 
+                //porque no tiene fuel y no hay fuel en el mundo por lo que ya no nos sirve
+                if(estados.size()>0){
+                    estados.remove(agente_seleccionado);
+                    return buscandoObjetivo(estados,false);
+                }else{ //Sino tenemos más agentes que podamos mover devolvemos un EstadoAgente a null porque ya solo queda hacer el logout 
+                    //CONDICIÓN DE PARADA SI NO HEMOS ENCONTRADO EL OBJETIVO
+                    return null;
+                }
+            }
         }
-        //Muy posiblemente haya que darle la vuelta a las coordenadas de agente_seleccionado.
-        double [][] distancias = crearMatrizDistancias(agente_seleccionado.getPosicion(),this.subObjetivo);
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
         
         
         return aux;
     }
+
     
     //Puede que no este correcto. IMPORTANTE.
     private double calcularDistanciaEuclidea(Pair<Integer,Integer> posicion_objetivo,Pair<Integer,Integer> posicion_agente){ 

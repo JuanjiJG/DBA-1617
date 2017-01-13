@@ -57,7 +57,15 @@ public class Heuristica {
     public Acciones calcularSiguienteMovimiento(Mapa mapa, Pair<Integer, Integer> posicion_coche_aux) {
 
         int pos = 2;
-        double[][] matriz_scanner = mapa.getMatrizScanner();
+        double[][] matriz_scanner = mapa.getMatriz_scanner();
+
+        System.out.println("Debug: Voy a imprimir la matriz scanner");
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                System.out.print(matriz_scanner[i][j] + " ");
+            }
+            System.out.println("");
+        }
 
         Pair<Integer, Integer> posicion_coche = new Pair(posicion_coche_aux.getKey() + 2, posicion_coche_aux.getValue() + 2);
         Acciones accion = Acciones.moveE;
@@ -95,6 +103,11 @@ public class Heuristica {
                         distancias.add(matriz_scanner[pos + 1][pos + 1]);
                         break;
                 }
+            }
+
+            System.out.println("Debug: Voy a imprimir el array de distancias");
+            for (int i = 0; i < distancias.size(); i++) {
+                System.out.println("Debug: Accion posible de i: " + acciones_posibles.get(i) + " - Distancia de i: " + distancias.get(i));
             }
 
             int indice_mejor_accion = 0;
@@ -361,4 +374,5 @@ public class Heuristica {
             }
         }
     }
+
 }
