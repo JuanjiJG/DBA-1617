@@ -18,7 +18,9 @@ public class Heuristica {
     private BaseConocimiento linkbc;
     private int tamMapa;
     private final double UMBRAL_EMPATE = 5;
+    private final double UMBRAL_EMPATE_PUNTUACION = 10;
     private final int UMBRAL_COMBUSTIBLE = 75;
+    private final int UMBRAL_PENALIZACION = 3;
     private double[][] distancias;
     Acciones acciones_posibles [];
     private double gradiente_muro_encontrado=Double.MAX_VALUE;
@@ -264,6 +266,18 @@ public class Heuristica {
         
     }
     
+    private double calcularPuntuacion(EstadoAgente estado, Pair<Integer,Integer> posicion_destino){
+        double puntuacion = 0;
+        double distancia = calcularDistanciaEuclidea(estado.getPosicion(),posicion_destino);
+        puntuacion = distancia * estado.getGasto();
+        
+        
+        if(estado.getTipo()!= TiposAgente.dron){                
+            puntuacion *= this.UMBRAL_PENALIZACION;
+        }        
+        return puntuacion;
+    }
+    
     //Devolveremos la direccion (norte sur, este...) donde teoricamente nos deberiamos mover si no hay obstaculos y la casilla que es el mapa del profesor.
     private Pair<Acciones,Pair<Integer,Integer>> calcularMejorCasilla(Pair<Integer,Integer> posicion_agente, Pair<Integer,Integer> posicion_destino){
         Pair<Integer,Integer> posicion_objetivo = new Pair(posicion_destino.getValue(),posicion_destino.getKey());
@@ -388,7 +402,7 @@ public class Heuristica {
         {
             //Sino combrobamos si tiene combustible el agente
             if(agente_seleccionado.getFuelActual()>0){
-                
+                calcularSiguienteMovimiento(agente_seleccionado,agente_seleccionado.getPosicion(),this.subObjetivo);
             }else{
                 //Si tenemos agentes en el array eliminamos el agente seleccionado 
                 //porque no tiene fuel y no hay fuel en el mundo por lo que ya no nos sirve
@@ -403,9 +417,90 @@ public class Heuristica {
         }
         
         
-        return aux;
+        return agente_seleccionado;
+    }
+    
+    public EstadoAgente objetivoAlcanzado(ArrayList<EstadoAgente> estados, Pair<Integer,Integer> objetivo,boolean tenemosFuelEnElMundo){
+        ArrayList<EstadoAgente> agentes_no_en_el_objetivo = new ArrayList(estados);
+         for(int i = 0; i < estados.size(); i++){
+             if(estados.get(i).getPisandoObjetivo()){
+                 agentes_no_en_el_objetivo.remove(i);
+             }
+         }
+         
+         return objetivoEncontrado(agentes_no_en_el_objetivo, objetivo, tenemosFuelEnElMundo);
     }
 
+    public EstadoAgente objetivoEncontrado(ArrayList<EstadoAgente> estados, Pair<Integer,Integer> objetivo,boolean tenemosFuelEnElMundo){
+        EstadoAgente agente_seleccionado;
+        double minPuntuacion;
+        ArrayList<Integer> indices_posibles = new ArrayList();
+        int indice_agente_seleccionado = 0;
+        
+        
+        ///Elegimos al agente que esté más cerca del objetivo
+        minPuntuacion = calcularPuntuacion(estados.get(0).getPosicion(),objetivo);
+        //Sacamos el agente que este mas cerca del objetivo, es decir, que su distancia hacia el objetivo sea la minima o que haya empatado con otro.
+        for(int i = 1; i < estados.size(); i++){
+            double puntuacion_aux = calcularPuntuacion(estados.get(i).getPosicion(),objetivo);
+            
+            if(puntuacion_aux < minPuntuacion){
+                minPuntuacion = puntuacion_aux;
+                indice_agente_seleccionado = i;
+            }
+        }
+        
+            
+        for(int i = 0; i < estados.size(); i++){
+            double distancia_aux = calcularPuntuacion(estados.get(i).getPosicion(),objetivo);
+            if(distancia_aux <= minPuntuacion + this.UMBRAL_EMPATE_PUNTUACION ){
+                indices_posibles.add(i);
+            }            
+        }  
+        
+        //Preferencia Avion, COCHE, camion
+        if(indices_posibles.size() > 0){
+            int agente_seleccionado_empate = indices_posibles.get(0);
+            for(int i =0; i < indices_posibles.size(); i++){
+                if(estados.get(indices_posibles.get(i)).getTipo()== TipoAgentes.AVION){
+                        if(estados.get(agente_seleccionado_empate).getTipo() != TipoAgentes.AVION)
+                            agente_seleccionado_empate = indices_posibles.get(i);
+                }
+            }
+            indice_agente_seleccionado = agente_seleccionado_empate;            
+        }
+        
+        agente_seleccionado = estados.get(indice_agente_seleccionado);
+        
+        //Una vez seleccionado el agente que queremos comprobamos si hay fuel en el mundo
+        //Si hay combustible lo hacemos repostar
+        if(tenemosFuelEnElMundo){
+            if(necesitaRepostar(agente_seleccionado)){
+                agente_seleccionado.setNextAction(Acciones.refuel);
+
+                return agente_seleccionado;
+            }
+        }else
+        {
+            //Sino combrobamos si tiene combustible el agente
+            if(agente_seleccionado.getFuelActual()>0){
+                calcularSiguienteMovimiento(agente_seleccionado,agente_seleccionado.getPosicion(),objetivo);
+            }else{
+                //Si tenemos agentes en el array eliminamos el agente seleccionado 
+                //porque no tiene fuel y no hay fuel en el mundo por lo que ya no nos sirve
+                if(estados.size()>0){
+                    estados.remove(agente_seleccionado);
+                    return objetivoEncontrado(estados,objetivo,false);
+                }else{ //Sino tenemos más agentes que podamos mover devolvemos un EstadoAgente a null porque ya solo queda hacer el logout 
+                    //CONDICIÓN DE PARADA SI NO HEMOS ENCONTRADO EL OBJETIVO
+                    return null;
+                }
+            }
+        }
+        
+        
+        return agente_seleccionado;
+    }
     
     //Puede que no este correcto. IMPORTANTE.
     private double calcularDistanciaEuclidea(Pair<Integer,Integer> posicion_objetivo,Pair<Integer,Integer> posicion_agente){ 
@@ -527,11 +622,5 @@ public class Heuristica {
                     this.subObjetivo = new Pair<Integer,Integer>(i,j);
             }
         }
-    }
-    
-    
-    private boolean comprobarCasilla(){
-    
-        return false;
     }
 }
