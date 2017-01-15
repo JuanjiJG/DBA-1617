@@ -20,11 +20,13 @@ import java.util.Map;
  */
 public class Controlador extends SingleAgent {
 	
-	private static final String SERVER_NAME = "Furud";
+	public static final String SERVER_NAME = "Furud";
+	public static final String AGENT_ID = "controlador";
 	private static final String AGENTES_CONVERSATION_ID = "grupo-6-agentes";
 	private final int MUNDO_ELEGIDO; //Debe asignarse en el constructor, por parametro
 	private String conversationID;
 	private Map<String, AgentID> agentesMAP = new HashMap<>(); //Inicializar asi en constructor
+	private boolean fuelMundoAcabado = false;
     
 	/**
 	 * Ejecua el recieve y actualiza las variables necesarias del controlador
@@ -107,7 +109,7 @@ public class Controlador extends SingleAgent {
 	 */
 	public void compartirConversationID() {
 		JsonObject json = new JsonObject();
-		json.add("result", conversationID);
+		json.add("serverID", conversationID);
 		
 		for (Map.Entry<String, AgentID> agente : agentesMAP.entrySet())
 		{
