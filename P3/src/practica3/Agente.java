@@ -5,13 +5,49 @@
  */
 package practica3;
 
+import es.upv.dsic.gti_ia.core.AgentID;
+import es.upv.dsic.gti_ia.core.SingleAgent;
+
 /**
  *
- * @author m_ang
+ * @author Miguel Ángel Torres López
  * @author Gregorio Carvajal Expósito
  */
-public class Agente {
+public class Agente extends SingleAgent {
+
+    public Agente(AgentID aid) throws Exception {
+        super(aid);
+    }
     
+    /**
+     * Inicialización de las variables antes de la ejecución del agente
+     * 
+     * @author Miguel Ángel Torres López
+     */
+    @Override
+    public void init(){
+        System.out.println("\n\nInicializando estado del agente...");
+    }
+    
+    /**
+     * Método que ejecutará el agente cuando se inicie
+     * 
+     * @author Miguel Ángel Torres López
+     */
+    @Override
+    public void execute(){
+        System.out.println("Ejecutando el agente...");
+    }
+    
+    /**
+     * Método que se ejecutará cuando el agente vaya a finalizar su ejecución
+     *
+     * @author Miguel Ángel Torres López
+     */
+    @Override
+    public void finalize() {
+        System.out.println("Finalizando agente...");
+    }
 	
 	/**
 	 * Ejecua el recieve y actualiza las variables necesarias del controlador
