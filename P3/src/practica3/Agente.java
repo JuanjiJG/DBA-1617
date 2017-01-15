@@ -26,6 +26,7 @@ public class Agente extends SingleAgent {
 
     public Agente(AgentID aid) throws Exception {
         super(aid);
+		miEstado = new EstadoAgente(aid.toString());
     }
     
     /**
