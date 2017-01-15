@@ -11,6 +11,31 @@ public class EstadoAgente {
     private boolean crashed;
     private boolean pisandoObjetivo;
     private String replyWithControlador;
+    private TiposAgente tipo;
+    private Acciones nextAction;
+
+    /**
+    * Metodo contstructor de la clase agente
+    *
+    * @param percepcion es la percepción que tiene el agente de su entorno
+    * @param fuelActual es la cantidad de fuel actual que tiene el agente
+    * @param crashed nos informa de si el agente ha crasheado
+    * @param pisandoObjetivo nos informa de si el agente esta sobre el objetivo
+    * @param replyWithControlador contiene el codigo con el que se comunicaran ela gente y el controlador
+    * @param tipo contiene el tipo de agente que es el agente actual
+    * @param nextAction contiene la siguiente acción que realizará el agente
+    * 
+    * @author Miguel Ángel Torres López
+    */
+    public EstadoAgente(int[][] percepcion, int fuelActual, boolean crashed, boolean pisandoObjetivo, String replyWithControlador, TiposAgente tipo, Acciones nextAction) {
+        this.percepcion = percepcion;
+        this.fuelActual = fuelActual;
+        this.crashed = crashed;
+        this.pisandoObjetivo = pisandoObjetivo;
+        this.replyWithControlador = replyWithControlador;
+        this.tipo = tipo;
+        this.nextAction = nextAction;
+    }
 
     /**
     * Metodo get para la variable percepcion
@@ -122,5 +147,72 @@ public class EstadoAgente {
         this.replyWithControlador = replyWithControlador;
     }
     
+    /**
+    * Metodo get que devuelve el gasto de combustible del agente
+    *
+    * @return Devuelve un int con la cantidad de combustible que consume el agente en cada movimiento
+    * 
+    * @author Miguel Ángel Torres López
+    */
+    public int getGasto(){
+        if(tipo==TiposAgente.camion){
+            return CapacidadesAgentes.GASTO_CAMION;
+        }
+        else if(tipo==TiposAgente.coche){
+            return CapacidadesAgentes.GASTO_COCHE;
+        }
+        else if(tipo==TiposAgente.dron){
+            return CapacidadesAgentes.GASTO_DRON;
+        }
+        else
+        {
+            return 0;
+        }
+    }
     
+    /**
+    * Metodo get que devuelve la visibilidad del agente
+    *
+    * @return Devuelve un int con la cantidad de casillas que es capaz de ver el agente
+    * 
+    * @author Miguel Ángel Torres López
+    */
+    public int getVisibilidad(){
+        if(tipo==TiposAgente.camion){
+            return CapacidadesAgentes.VISIBILIDAD_CAMION;
+        }
+        else if(tipo==TiposAgente.coche){
+            return CapacidadesAgentes.VISIBILIDAD_COCHE;
+        }
+        else if(tipo==TiposAgente.dron){
+            return CapacidadesAgentes.VISIBILIDAD_DRON;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    
+    /**
+    * Metodo get que devuelve si el agente puede volar o no
+    *
+    * @return Devuelve un boolean que informa de si el agente puede volar o no
+    * 
+    * @author Miguel Ángel Torres López
+    */
+    public boolean getPuedeVolar(){
+        if(tipo==TiposAgente.camion){
+            return CapacidadesAgentes.VUELA_CAMION;
+        }
+        else if(tipo==TiposAgente.coche){
+            return CapacidadesAgentes.VUELA_COCHE;
+        }
+        else if(tipo==TiposAgente.dron){
+            return CapacidadesAgentes.VUELA_DRON;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }
