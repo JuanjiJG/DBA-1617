@@ -17,6 +17,17 @@ public class EstadoAgente {
     /**
     * Metodo contstructor de la clase agente
     *
+    * @param replyWithControlador contiene el codigo con el que se comunicaran ela gente y el controlador
+    * 
+    * @author Miguel Ángel Torres López
+    */
+    public EstadoAgente(String replyWithControlador) {
+        this.replyWithControlador = replyWithControlador;
+    }
+    
+    /**
+    * Metodo contstructor de la clase agente
+    *
     * @param percepcion es la percepción que tiene el agente de su entorno
     * @param fuelActual es la cantidad de fuel actual que tiene el agente
     * @param crashed nos informa de si el agente ha crasheado
@@ -93,6 +104,28 @@ public class EstadoAgente {
     }
 
     /**
+    * Metodo get para la variable tipo
+    *
+    * @return Devuelve un TipoAgente con el tipo del agente actual
+    * 
+    * @author Miguel Ángel Torres López
+    */
+    public TiposAgente getTipo() {
+        return tipo;
+    }
+
+    /**
+    * Metodo get para la variable nextAction
+    *
+    * @return Devuelve un Acciones con la siguiente accion que va a ejecutar el agente
+    * 
+    * @author Miguel Ángel Torres López
+    */
+    public Acciones getNextAction() {
+        return nextAction;
+    }    
+
+    /**
     * Metodo set para la variable percepcion
     *
     * @param percepcion es la información que tiene el agente de las casillas que le rodean
@@ -145,6 +178,28 @@ public class EstadoAgente {
     */
     public void setReplyWithControlador(String replyWithControlador) {
         this.replyWithControlador = replyWithControlador;
+    }
+
+    /**
+    * Metodo set para la variable tipo
+    *
+    * @param tipo es tipo de agente del agente actual
+    * 
+    * @author Miguel Ángel Torres López
+    */
+    public void setTipo(TiposAgente tipo) {
+        this.tipo = tipo;
+    }
+
+    /**
+    * Metodo set para la variable nextAction
+    *
+    * @param nextAction es la siguiente acción que ejecutara el agente
+    * 
+    * @author Miguel Ángel Torres López
+    */
+    public void setNextAction(Acciones nextAction) {
+        this.nextAction = nextAction;
     }
     
     /**
