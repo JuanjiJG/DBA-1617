@@ -10,6 +10,9 @@ import com.eclipsesource.json.JsonObject;
 import es.upv.dsic.gti_ia.core.ACLMessage;
 import es.upv.dsic.gti_ia.core.AgentID;
 import es.upv.dsic.gti_ia.core.SingleAgent;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -21,8 +24,8 @@ public class Agente extends SingleAgent {
 	private String conversationIDControlador;
 	private String repyWithServer;
 	private EstadoAgente miEstado;
-	private boolean percepcionRecibida = false;
-	private boolean percepcionSolicitada = false;
+	private boolean percepcionRecibida;
+	private boolean percepcionSolicitada;
 
     public Agente(AgentID aid) throws Exception {
         super(aid);
@@ -37,6 +40,12 @@ public class Agente extends SingleAgent {
     @Override
     public void init(){
         System.out.println("\n\nInicializando estado del agente...");
+        
+        this.conversationIDServer="";
+        this.conversationIDControlador="";
+        this.repyWithServer="";
+        this.percepcionRecibida=false;
+        this.percepcionSolicitada=false;
     }
     
     /**
@@ -47,6 +56,35 @@ public class Agente extends SingleAgent {
     @Override
     public void execute(){
         System.out.println("Ejecutando el agente...");
+        
+        //Llamo al metodo recibir para esperar el conversation id del server
+        try {
+            this.recibir();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Agente.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        //Una vez ya ha recibido el agente el id de conversaicon del server, hago checkin en este
+        this.checkin();
+        
+        while(true)
+        {
+            if(miEstado.isPisandoObjetivo()==false)
+            {
+                this.solicitarPercepcion();
+                try {
+                    this.recibir();
+                    this.recibir();
+                    this.informarResultadoAccion();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Agente.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            else
+            {
+                this.finalize();
+            }
+        }
     }
     
     /**
@@ -57,6 +95,12 @@ public class Agente extends SingleAgent {
     @Override
     public void finalize() {
         System.out.println("Finalizando agente...");
+        
+        if (miEstado.isCrashed()==false) {
+            enviarEstado(); //Tendrá que informar al controlador de que termina de alguna manera
+        }
+
+        super.finalize();
     }
 	
 	/**
