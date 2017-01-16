@@ -69,20 +69,13 @@ public class Agente extends SingleAgent {
         
         while(true)
         {
-            if(miEstado.isPisandoObjetivo()==false)
-            {
-                this.solicitarPercepcion();
-                try {
-                    this.recibir();
-                    this.recibir();
-                    this.informarResultadoAccion();
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(Agente.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            else
-            {
-                this.finalize();
+            this.solicitarPercepcion();
+            try {
+                this.recibir();
+                this.recibir();
+                this.informarResultadoAccion();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Agente.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -95,11 +88,6 @@ public class Agente extends SingleAgent {
     @Override
     public void finalize() {
         System.out.println("Finalizando agente...");
-        
-        if (miEstado.isCrashed()==false) {
-            enviarEstado(); //Tendrá que informar al controlador de que termina de alguna manera
-        }
-
         super.finalize();
     }
 	

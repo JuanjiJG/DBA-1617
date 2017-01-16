@@ -1,11 +1,14 @@
 package practica3;
 
+import javafx.util.Pair;
+
 /**
  * Clase que contiene las variables de estado de un agente
  *
  * @author Miguel Ángel Torres López
  */
 public class EstadoAgente {
+    private Pair<Integer,Integer> posicion;
     private int[][] percepcion;
     private int fuelActual;
     private boolean crashed;
@@ -13,7 +16,7 @@ public class EstadoAgente {
     private String replyWithControlador;
     private TiposAgente tipo;
     private Acciones nextAction;
-
+    
     /**
     * Metodo contstructor de la clase agente
     *
@@ -46,6 +49,17 @@ public class EstadoAgente {
         this.replyWithControlador = replyWithControlador;
         this.tipo = tipo;
         this.nextAction = nextAction;
+    }
+    
+    /**
+    * Metodo get para la variable posicion
+    *
+    * @return Devuelve una matriz con la posicion actual del agente
+    * 
+    * @author Miguel Ángel Torres López
+    */
+    public Pair<Integer, Integer> getPosicion() {
+        return posicion;
     }
 
     /**
@@ -125,6 +139,17 @@ public class EstadoAgente {
         return nextAction;
     }    
 
+    /**
+    * Metodo set para la variable posicion
+    *
+    * @param posicion es la casilla del mapa sobre la que esta el agente
+    * 
+    * @author Miguel Ángel Torres López
+    */
+    public void setPosicion(Pair<Integer, Integer> posicion) {
+        this.posicion = posicion;
+    }
+    
     /**
     * Metodo set para la variable percepcion
     *
