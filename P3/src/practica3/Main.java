@@ -9,7 +9,7 @@ import java.util.Scanner;
  *
  * @author Miguel Ángel Torres López
  */
-public class P3 {
+public class Main {
 
     public static void main(String[] args) throws Exception {
         // Pedir al usuario el mundo al que conectarse
