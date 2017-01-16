@@ -72,6 +72,16 @@ public class Controlador extends SingleAgent {
     }
 
     /**
+     * Método que lee una imagen de traza de un mapa y obtiene de ella el tamaño
+     * del mismo
+     *
+     * @author Juan José Jiménez García
+     */
+    public void obtenerTamanoMapa() {
+
+    }
+
+    /**
      * Ejecuta el receive y actualiza las variables necesarias del controlador
      *
      * @author Gregorio Carvajal Expósito
@@ -214,15 +224,5 @@ public class Controlador extends SingleAgent {
         cancel.setReceiver(new AgentID(SERVER_NAME));
 
         send(cancel);
-    }
-
-    /**
-     * Realiza un subscribe y despues un logout para obtener una traza vacia y
-     * asi poder obtener el tamaño del mapa
-     *
-     * @author Gregorio Carvajal Expósito
-     */
-    public void obtenerTamanoMapa() {
-
     }
 }
