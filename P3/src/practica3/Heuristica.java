@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package practica3;
 
 import java.util.ArrayList;
@@ -138,7 +133,7 @@ public class Heuristica {
     }
     
     //Por si falla segun dice antonio deberia de devolver EstadoAgente agente_seleccionado
-    private void calcularSiguienteMovimmiento(EstadoAgente agente_seleccionado,Pair<Integer,Integer> posicion_agente, Pair<Integer,Integer> posicion_destino){
+    private void calcularSiguienteMovimiento(EstadoAgente agente_seleccionado,Pair<Integer,Integer> posicion_agente, Pair<Integer,Integer> posicion_destino){
         Pair<Acciones,Pair<Integer,Integer>> casilla = calcularMejorCasilla(posicion_agente,posicion_destino);
         int i=casilla.getValue().getValue();//Invertimos las variables para nuestro mapa
         int j=casilla.getValue().getKey();//Invertimos las variables para nuestro mapa
@@ -375,12 +370,12 @@ public class Heuristica {
             int agente_seleccionado_empate = indices_posibles.get(0);
             for(int i =0; i < indices_posibles.size(); i++){
                 switch(estados.get(indices_posibles.get(i)).getTipo()){
-                    case TipoAgentes.CAMION :
-                        if(estados.get(agente_seleccionado_empate).getTipo() != TipoAgentes.CAMION)
+                    case TiposAgente.camion :
+                        if(estados.get(agente_seleccionado_empate).getTipo() != TiposAgente.camion)
                             agente_seleccionado_empate = indices_posibles.get(i);
                         break;
-                    case TipoAgentes.AVION :
-                        if(estados.get(agente_seleccionado_empate).getTipo() == TipoAgentes.COCHE)
+                    case TiposAgente.avion :
+                        if(estados.get(agente_seleccionado_empate).getTipo() == TiposAgente.coche)
                             agente_seleccionado_empate = indices_posibles.get(i);                        
                         break;
                 }
