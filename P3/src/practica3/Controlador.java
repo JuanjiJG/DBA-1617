@@ -220,8 +220,9 @@ public class Controlador extends SingleAgent {
 						}
 						
 						estado.setPercepcion(radar);
-						
-                    } else //Respuesta al REQUEST de la accion escogida
+						bc.actualizarMapa(estado);
+                    }
+					else //Respuesta al REQUEST de la accion escogida
                     {
                         //Do nothing
                     }
