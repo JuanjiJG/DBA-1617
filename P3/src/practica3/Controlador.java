@@ -301,7 +301,7 @@ public class Controlador extends SingleAgent {
      */
     public int obtenerTamanoMapa() {
 
-        int[] tamaniosMapa = {104, 104, 104, 104, 104, 154, 104, 104, 154, 504};
+        int[] tamaniosMapa = {110, 110, 110, 110, 110, 160, 110, 110, 160, 510};
 
         if (this.MUNDO_ELEGIDO <= 10) {
             return tamaniosMapa[this.MUNDO_ELEGIDO + 1];
