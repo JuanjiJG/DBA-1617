@@ -60,15 +60,16 @@ public class Agente extends SingleAgent {
         System.out.println("Ejecutando el agente...");
         
         try {
-            //Falta una llamada para solicitar server id al controlador
-            
+            //Solicito el server id al controlador
+            this.solicitarConversationID();
+			
             //Llamo al metodo recibir para esperar el conversation id del server
             this.recibir();
         
             //Una vez ya ha recibido el agente el id de conversaicon del server, hago checkin en este
             this.checkin();
 
-            //Recibo una respuesta del servidor al checking con las capabilities
+            //Recibo una respuesta del servidor al checkin con las capabilities
             this.recibir();
 
 
@@ -275,7 +276,7 @@ public class Agente extends SingleAgent {
 		ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
 		JsonObject json = new JsonObject();
 		
-		json.add("command", "checking");
+		json.add("command", "checkin");
 		
 		msg.setSender(this.getAid());
 		msg.setContent(json.toString());
@@ -342,6 +343,26 @@ public class Agente extends SingleAgent {
 		msg.setReceiver(new AgentID(Controlador.AGENT_ID));
 		msg.setContent(jsonErr.toString());
 		msg.setConversationId(conversationIDControlador);
+		msg.setReplyWith(miEstado.getReplyWithControlador());
+		
+		send(msg);
+	}
+	
+	/**
+	 * Solicita (send) al Controlador que le informe de
+	 * los ConversationID que se van a usar en las comunicaciones
+	 * 
+	 * @author Gregorio Carvajal Expósito
+	 */
+	public void solicitarConversationID() {
+		ACLMessage msg = new ACLMessage(ACLMessage.QUERY_REF);
+		JsonObject json = new JsonObject();
+		
+		json.add("query", "server-conversation-id");
+		
+		msg.setSender(this.getAid());
+		msg.setContent(json.toString());
+		msg.setReceiver(new AgentID(Controlador.AGENT_ID));
 		msg.setReplyWith(miEstado.getReplyWithControlador());
 		
 		send(msg);
