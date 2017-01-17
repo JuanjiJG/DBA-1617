@@ -1,6 +1,13 @@
 package practica3;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.util.Pair;
 
 /**
@@ -13,6 +20,8 @@ public class BaseConocimiento {
     private Pair<Integer, Integer> posicionObjetivo; //Si la posicion es null significa que no hemos encontrado el objetivo aún.
     private int[][] mapa;
     private int tamanioMapa;
+    private int mapaElegido;
+    private int antiguedad;
     private ArrayList<EstadoAgente> estadoActivos;
     private ArrayList<EstadoAgente> estadoInactivos;
 
@@ -28,7 +37,7 @@ public class BaseConocimiento {
      * @return La instancia de BaseConocimiento
      * @author Juan José Jiménez García
      */
-    public static BaseConocimiento getInstancia() {
+    public static BaseConocimiento getInstance() {
         if (instancia == null) {
             instancia = new BaseConocimiento();
         }
@@ -55,24 +64,39 @@ public class BaseConocimiento {
 
     /**
      * Método para cargar el mapa almacenado en un fichero. También se encarga
-     * de establecer la posicionObjetivo en caso de que sea visible
+     * de establecer la posicionObjetivo en caso de que sea visible.
      *
+     * @param numMapa El número del mapa que se quiere cargar
+     * @param tamMapa El tamaño del mapa que se quiere cargar
      * @author Juan José Jiménez García
      */
-    public void cargarMapa(String ruta) {
+    public void cargarMapa(int numMapa, int tamMapa) {
 
         /*
-        Idea del método:
-            - Obtener por parámetro el mapa a cargar
-            - Buscar el archivo del mapa y cargarlo
-                - Para cargarlo lo que haremos será reemplazar el mapa con lo que vamos leyendo
-            - ¿Y si no lo encuentra?
-                - Llamar al método inicializar (lo más factible)
-                - Gestionar algun tipo de error?
-        
-        La idea de inicializar el mapa tiene sentido siempre para la primera "carga"
-        Se puede "resetear" si borramos el archivo para que no lo encuentre y reinicialice
+        Funcionamiento del método:
+        - Obtener por parámetro el mapa a cargar y su tamaño
+        - Buscar el archivo del mapa y cargarlo
+        - En caso de no encontrar el archivo (excepcion lanzada)...
+            - Llamar al método inicializar pasando el tamaño del mapa
+
+        La idea general es que la primera vez que "cargue" el mapa, inicialice uno
+        Se puede reiniciar un mapa borrando el archivo generado para que vuelva a inicializar
          */
+        ObjectInputStream inputStream = null;
+        String fileName = "map_" + numMapa + "_savefile.data";
+        boolean existeArchivo = false;
+
+        try {
+            inputStream = new ObjectInputStream(new FileInputStream(fileName));
+            existeArchivo = true;
+            this.mapa = (int[][]) inputStream.readObject();
+        } catch (IOException | ClassNotFoundException ex) {
+            Logger.getLogger(BaseConocimiento.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            if (!existeArchivo) {
+                this.inicializarMapa(tamMapa);
+            }
+        }
     }
 
     /**
@@ -80,14 +104,28 @@ public class BaseConocimiento {
      *
      * @author Juan José Jiménez García
      */
-    public void guardarMapa(String ruta) {
+    public void guardarMapa() {
 
         /*
-        La idea del método sería:
-            - Comprobar si hay un archivo existente (o no, hay que verlo)
+        Funcionamiento del método:
+            - Crear un archivo con el nombre basado en el mapa elegido
             - Escribir en un archivo de disco la variable mapa
-            - Si este procedimiento tiene alguna información de exito o fallo, ¿usarla?
          */
+        ObjectOutputStream outputStream = null;
+        String fileName = "map_" + this.mapaElegido + "_savefile.data";
+
+        try {
+            outputStream = new ObjectOutputStream(new FileOutputStream(fileName));
+            outputStream.writeObject(this.mapa);
+        } catch (IOException ex) {
+            Logger.getLogger(BaseConocimiento.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                outputStream.close();
+            } catch (IOException ex) {
+                Logger.getLogger(BaseConocimiento.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 
     /**
@@ -95,14 +133,19 @@ public class BaseConocimiento {
      *
      * @param estadoAgente El objeto de tipo EstadoAgente que contiene
      * información sobre el agente
+     * @return Un booleano que indica si durante el proceso de actualización se
+     * ha encontrado el objetivo
      * @author Juan José Jiménez García
      */
-    public void actualizarMapa(EstadoAgente estadoAgente) {
+    public boolean actualizarMapa(EstadoAgente estadoAgente) {
 
         /*
         La idea del método sería:
             - Coger el estado del agente y ver qué tipo de agente es.
             Con un switch se haría eso.
+            - Se entiende que el estado del agente tiene ya las coordenadas y
+            la posición bien puestas, así que trabajamos con coordenadas como
+            siempre, sin invertir nada. CUIDADO CON ESTO QUE AUN NO ESTÁ CLARO DEL TODO
         
             - Acceder a su matriz de percepcion y posicion actual en el mundo
             - Actualizar la información del mapa (ver P2 que hay algo así)
@@ -111,18 +154,32 @@ public class BaseConocimiento {
             - ¿Implementamos que la funcion devuelva algo según el resultado?
                 - ¿Hay objetivo o no (true o false)?
          */
-        int[][] percepcion = estadoAgente.getPercepcion();
-        TiposAgente tipo = estadoAgente.getTipo();
-        Pair<Integer, Integer> posicion = estadoAgente.getPosicion();
+        boolean objetivoEncontrado = false;
 
-        switch (tipo) {
-            case CAMION:
-                break;
-            case DRON:
-                break;
-            case COCHE:
-                break;
+        int[][] percepcion = estadoAgente.getPercepcion();
+        int visibilidad = estadoAgente.getVisibilidad();
+
+        Pair<Integer, Integer> posicion = estadoAgente.getPosicion();
+        int posicion_inicial_x = posicion.getKey();
+        int posicion_inicial_y = posicion.getValue();
+
+        for (int i = 0; i < visibilidad; i++) {
+            for (int j = 0; j < visibilidad; j++) {
+
+                //Nos interesa que primero actualice el mapa y despues compruebe si hay un 3 (objetivo)
+                if (mapa[posicion_inicial_y + i][posicion_inicial_x + j] == 3) {
+                    mapa[posicion_inicial_y + i][posicion_inicial_x + j] = percepcion[i][j];
+                }
+
+                //Compruebo si hay un 3 (casilla de objetivo)
+                if (mapa[posicion_inicial_y + i][posicion_inicial_x + j] == 2) {
+                    this.posicionObjetivo = new Pair(posicion_inicial_x + 2, posicion_inicial_y + 2);
+                    objetivoEncontrado = true;
+                }
+            }
         }
+
+        return objetivoEncontrado;
     }
 
     /**
@@ -134,5 +191,34 @@ public class BaseConocimiento {
     public int[][] getMapa() {
 
         return this.mapa;
+    }
+
+    /**
+     * Método para devolver la antigüedad.
+     *
+     * @return El valor de la antigüead
+     * @author Juan José Jiménez García
+     */
+    public int getAntiguedad() {
+        return this.antiguedad;
+    }
+
+    /**
+     * Método para devolver el tamaño del mapa.
+     *
+     * @return El valor de la antigüead
+     * @author Juan José Jiménez García
+     */
+    public int getTamMapa() {
+        return this.tamanioMapa;
+    }
+
+    /**
+     * Método para decrementar la antigüedad.
+     *
+     * @author Juan José Jiménez García
+     */
+    public void decrementarAntiguedad() {
+        this.antiguedad--;
     }
 }
