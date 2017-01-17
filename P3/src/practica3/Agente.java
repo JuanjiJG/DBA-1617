@@ -62,16 +62,19 @@ public class Agente extends SingleAgent {
         try {
             //Solicito el server id al controlador
             this.solicitarConversationID();
-			
+            System.out.println("Solicito el conversation ID");
+            
             //Llamo al metodo recibir para esperar el conversation id del server
             this.recibir();
-        
+            System.out.println("Recibo el conversation ID: "+conversationIDControlador);
+            
             //Una vez ya ha recibido el agente el id de conversaicon del server, hago checkin en este
             this.checkin();
-
+            System.out.println("He hecho el checkin");
+            
             //Recibo una respuesta del servidor al checkin con las capabilities
             this.recibir();
-
+            System.out.println("Mis cabailities son: "+ this.miEstado.getTipo().toString());
 
             while(true)
             {
@@ -79,17 +82,22 @@ public class Agente extends SingleAgent {
                 {
                     //Solicito al servidor las percepciones del agente
                     this.solicitarPercepcion();
+                    System.out.println("Solicito percepcion");
                     //Recibo las percepciones que el servidor me manda en respuesta a la solicitud
                     this.recibir();
+                    System.out.println("He recibido las percepciones");
                     //Espero a recibir un mensaje del controlador consultando el estado del agente
                     //y envio el el estado del agente al controlador
                     this.recibir();
+                    System.out.println("He recibido un mensaje del controlado consultado el estado y enviado el estado al controlador");
                     //Espero a recibir un mensaje del controlador con la acción que realizar
                     //y mando esa accion al server
                     this.recibir();
+                    System.out.println("He recibido un mensaje del controlador con la acción que realizar");
                     //Espero a recibir un mensaje del servidor con la respuesta a la accion realizada
                     //e informo al controlador del resultado
                     this.recibir();
+                    System.out.println("He recibido un mensaje del servidor con la respuesta a la accion realizada");
                 }
                 else
                 {

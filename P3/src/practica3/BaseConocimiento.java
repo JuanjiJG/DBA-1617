@@ -1,5 +1,6 @@
 package practica3;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -89,12 +90,20 @@ public class BaseConocimiento {
         boolean existeObjetivo = false;
 
         try {
-            inputStream = new ObjectInputStream(new FileInputStream(fileName));
-            existeArchivo = true;
-            this.mapa = (int[][]) inputStream.readObject();
-            if (this.buscarObjetivo()) {
-                existeObjetivo = true;
+            //Comprueba si existe el archivo
+            File f = new File(fileName);
+            if(f.exists() && !f.isDirectory()) { 
+                 inputStream = new ObjectInputStream(new FileInputStream(fileName));
+                existeArchivo = true;
+                this.mapa = (int[][]) inputStream.readObject();
+                if (this.buscarObjetivo()) {
+                    existeObjetivo = true;
+                }  
+            }else
+            {
+                existeArchivo = false;
             }
+            
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(BaseConocimiento.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
