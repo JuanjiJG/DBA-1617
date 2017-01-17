@@ -20,20 +20,31 @@ public class Main {
         int mundo = keyboard.nextInt();
 
         Controlador gugel = null;
+        Agente[] agentes = new Agente[4];
 
         // Conectar a la plataforma de agentes
         AgentsConnection.connect("isg2.ugr.es", 6000, "Furud", "Ishiguro", "Leon", false);
 
-        // Creamos el objeto Controlador
+        // Creamos el objeto Controlador y los 4 agentes exploradores
         try {
             gugel = new Controlador(new AgentID("GugelCarRedForest"), mundo);
+            
+            for (int i = 0; i < agentes.length; i++) {
+                agentes[i] = new Agente(new AgentID("Agente_" + i));
+            }
         } catch (Exception e) {
-            System.err.println("Ha habido un error creando el controlador.");
+            System.err.println("Ha habido un error creando a los agentes.");
+            System.err.println(e.toString());
             System.exit(1);
         }
 
-        // Iniciamos el agente
+        // Iniciamos el agente controlador
         gugel.start();
+        
+        // Iniciamos los agentes exploradores
+        for (int i = 0; i < agentes.length; i++) {
+            agentes[i].start();
+        }
     }
     
 }
