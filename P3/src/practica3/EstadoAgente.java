@@ -32,6 +32,7 @@ public class EstadoAgente {
     * Metodo contstructor de la clase agente
     *
     * @param percepcion es la percepción que tiene el agente de su entorno
+    * @param posicion es la posicion actual del agente en el mapa
     * @param fuelActual es la cantidad de fuel actual que tiene el agente
     * @param crashed nos informa de si el agente ha crasheado
     * @param pisandoObjetivo nos informa de si el agente esta sobre el objetivo
@@ -41,8 +42,9 @@ public class EstadoAgente {
     * 
     * @author Miguel Ángel Torres López
     */
-    public EstadoAgente(int[][] percepcion, int fuelActual, boolean crashed, boolean pisandoObjetivo, String replyWithControlador, TiposAgente tipo, Acciones nextAction) {
+    public EstadoAgente(int[][] percepcion,Pair<Integer,Integer> posicion, int fuelActual, boolean crashed, boolean pisandoObjetivo, String replyWithControlador, TiposAgente tipo, Acciones nextAction) {
         this.percepcion = percepcion;
+        this.posicion = posicion;
         this.fuelActual = fuelActual;
         this.crashed = crashed;
         this.pisandoObjetivo = pisandoObjetivo;
