@@ -234,6 +234,17 @@ public class BaseConocimiento {
         
         this.conjuntoEstados.clear();
     }
+    
+    /**
+     * Método para obtener el conjunto de elementos EstadoAgente.
+     * 
+     * @return El conjunto de elementos EstadoAgente
+     * @author Juan José Jiménez García
+     */
+    public ArrayList<EstadoAgente> getConjuntoEstados() {
+        
+        return this.conjuntoEstados;
+    }
 
     /**
      * Método para obtener el mapa de la base de conocimiento.

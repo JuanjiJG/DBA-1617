@@ -28,7 +28,7 @@ public class Controlador extends SingleAgent {
     public static final String AGENT_ID = "controlador";
     private static final String AGENTES_CONVERSATION_ID = "grupo-6-agentes";
     private final int MUNDO_ELEGIDO;
-    private boolean fuelMundoAcabado;
+    private boolean quedaFuel;
     private boolean terminado;
     private EstadosEjecucion estadoActual;
     private String conversationID;
@@ -61,21 +61,23 @@ public class Controlador extends SingleAgent {
         this.agentesMAP = new HashMap<>();
         this.heuristica = new Heuristica();
         this.bc = BaseConocimiento.getInstance();
-        this.fuelMundoAcabado = false;
+        this.quedaFuel = true;
         this.terminado = false;
         this.estadoActual = EstadosEjecucion.INICIAL;
         this.conversationID = "";
     }
 
     /**
-     * Método que contiene la lógica que ejecutará el Controlador cuando se
-     * inicie
+     * Método que contiene la lógica que ejecutará el Controlador cuando
+     * finalice su ejecución
      *
      * @author Juan José Jiménez García
      */
     @Override
     public void execute() {
 
+        ArrayList<EstadoAgente> estadosAgentes;
+        
         while (!terminado) {
             switch (this.estadoActual) {
                 case INICIAL:
@@ -96,11 +98,10 @@ public class Controlador extends SingleAgent {
 
                         // Cargar el mapa
                         boolean resultado = bc.cargarMapa(this.MUNDO_ELEGIDO, tamMapa);
-                        
+
                         if (resultado) {
                             this.estadoActual = EstadosEjecucion.ENCONTRADO;
-                        }
-                        else {
+                        } else {
                             this.estadoActual = EstadosEjecucion.BUSCANDO;
                         }
                     } // Si no lo hemos obtenido, ha habido un error
@@ -110,12 +111,129 @@ public class Controlador extends SingleAgent {
                     break;
 
                 case BUSCANDO:
+                    // Obtener un array de EstadoAgente
+                    this.pedirEstadoAgente();
+                    
+                    // Recopilar los estados de agente
+                    for (int i = 0; i < this.agentesMAP.size(); i++) {
+                        try {
+                            this.recibir();
+                        } catch (InterruptedException | IOException ex) {
+                            Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                    
+                    // Una vez recopilados, los pedimos a la base de conocimiento
+                    estadosAgentes = bc.getConjuntoEstados();
+                    
+                    // Si las percepciones han localizado el objetivo, pasaremos a otro estado
+                    if (this.bc.getPosicionObjetivo() != null) {
+                        // Pasar el array a la heurística y obtener el agente seleccionado
+                        EstadoAgente agenteSeleccionado = this.heuristica.buscandoObjetivo(estadosAgentes, this.quedaFuel);
+
+                        // Si la siguiente accion es null, significa que nos hemos quedad sin fuel
+                        if(agenteSeleccionado.getNextAction() == null) {
+                            this.estadoActual = EstadosEjecucion.TERMINADO;
+                        }
+                        else {
+                            // Mandamos la accion al agente seleccionado
+                            this.asignarAccion(agenteSeleccionado);
+                        }
+                    }
+                    else {
+                        this.estadoActual = EstadosEjecucion.ENCONTRADO;
+                    }
                     break;
 
                 case ENCONTRADO:
+                    // Obtener un array de EstadoAgente
+                    this.pedirEstadoAgente();
+                    
+                    // Recopilar los estados de agente
+                    for (int i = 0; i < this.agentesMAP.size(); i++) {
+                        try {
+                            this.recibir();
+                        } catch (InterruptedException | IOException ex) {
+                            Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                    
+                    // Una vez recopilados, los pedimos a la base de conocimiento
+                    estadosAgentes = bc.getConjuntoEstados();
+                    
+                    // Si alguno de los agentes está pisando el objetivo, pasamos al estado ALCANZADO
+                    boolean unoPisando = false;
+                    
+                    while (!unoPisando) {
+                        for (EstadoAgente estado : estadosAgentes) {
+                            if (estado.isPisandoObjetivo())
+                                unoPisando = true;
+                        }
+                    }
+                    
+                    if (unoPisando) {
+                        this.estadoActual = EstadosEjecucion.ALCANZADO;
+                    }
+                    else {
+                        // Pasar el array a la heurística y obtener el agente seleccionado
+                        EstadoAgente agenteSeleccionado = this.heuristica.buscandoObjetivo(estadosAgentes, this.quedaFuel);
+
+                        // Si la siguiente accion es null, significa que nos hemos quedad sin fuel
+                        if(agenteSeleccionado.getNextAction() == null) {
+                            this.estadoActual = EstadosEjecucion.TERMINADO;
+                        }
+                        else {
+                            // Mandamos la accion al agente seleccionado
+                            this.asignarAccion(agenteSeleccionado);
+                        }
+                    }
                     break;
 
                 case ALCANZADO:
+                    // Obtener un array de EstadoAgente
+                    this.pedirEstadoAgente();
+                    
+                    // Recopilar los estados de agente
+                    for (int i = 0; i < this.agentesMAP.size(); i++) {
+                        try {
+                            this.recibir();
+                        } catch (InterruptedException | IOException ex) {
+                            Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                    
+                    // Una vez recopilados, los pedimos a la base de conocimiento
+                    estadosAgentes = bc.getConjuntoEstados();
+                    
+                    // Si todos los agentes está pisando el objetivo, pasamos al estado TERMINADO
+                    boolean todosPisando = false;
+                    int contadorTodosPisando = 0;
+                    
+                    while (!todosPisando) {
+                        for (EstadoAgente estado : estadosAgentes) {
+                            if (estado.isPisandoObjetivo())
+                                contadorTodosPisando++;
+                        }
+                        if (contadorTodosPisando == 4)
+                            todosPisando = true;
+                    }
+                    
+                    if (todosPisando) {
+                        this.estadoActual = EstadosEjecucion.TERMINADO;
+                    }
+                    else {
+                        // Pasar el array a la heurística y obtener el agente seleccionado
+                        EstadoAgente agenteSeleccionado = this.heuristica.buscandoObjetivo(estadosAgentes, this.quedaFuel);
+
+                        // Si la siguiente accion es null, significa que nos hemos quedad sin fuel
+                        if(agenteSeleccionado.getNextAction() == null) {
+                            this.estadoActual = EstadosEjecucion.TERMINADO;
+                        }
+                        else {
+                            // Mandamos la accion al agente seleccionado
+                            this.asignarAccion(agenteSeleccionado);
+                        }
+                    }
                     break;
 
                 case TERMINADO:
@@ -259,7 +377,7 @@ public class Controlador extends SingleAgent {
                 if (resp.getConversationId().equals(AGENTES_CONVERSATION_ID)) //Recibido de un Agente
                 {
                     if (json.get("details").asString().contains("BAD_ENERGY")) {
-                        fuelMundoAcabado = true;
+                        this.quedaFuel = false;
                         break;
                     } else //Recibido directamente del Server
                     {
