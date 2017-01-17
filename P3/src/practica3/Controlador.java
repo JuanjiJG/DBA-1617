@@ -83,7 +83,8 @@ public class Controlador extends SingleAgent {
                 case INICIAL:
                     // Realizamos orden subscribe al servidor
                     this.suscribirse();
-
+                    //Imprimimos el estado del agente
+                    System.out.println("Mandamos la subcripción");
                     // Recibimos el mensaje que debería contener el conversationID
                     try {
                         this.recibir();
@@ -92,10 +93,13 @@ public class Controlador extends SingleAgent {
                     }
 
                     // Si hemos obtenido el conversationID, continuar
-                    if (!"".equals(this.conversationID)) {
+                    if (this.conversationID.compareTo("")!=0) {
                         // Obtener tamaño del mapa
+                        System.out.println("Estamos subcritos: "+conversationID);
+                        
                         int tamMapa = this.obtenerTamanoMapa();
-
+                        System.out.println("Tamaño del mapa actual: "+tamMapa);
+                        
                         // Cargar el mapa
                         boolean resultado = bc.cargarMapa(this.MUNDO_ELEGIDO, tamMapa);
 
@@ -111,13 +115,17 @@ public class Controlador extends SingleAgent {
                     break;
 
                 case BUSCANDO:
+                    //Estamos buscando
+                     System.out.println("Estamos buscando");
+                     
                     // Obtener un array de EstadoAgente
                     this.pedirEstadoAgente();
-                    
+                     
                     // Recopilar los estados de agente
                     for (int i = 0; i < this.agentesMAP.size(); i++) {
                         try {
                             this.recibir();
+                            System.out.println("Recibido el agente: "+i);
                         } catch (InterruptedException | IOException ex) {
                             Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -126,11 +134,21 @@ public class Controlador extends SingleAgent {
                     // Una vez recopilados, los pedimos a la base de conocimiento
                     estadosAgentes = bc.getConjuntoEstados();
                     
+                    //Imprimimos los estados
+                    for(int i=0;i<estadosAgentes.size();++i){
+                        System.out.println("ID CONTROLADOR Estado del agente: "+estadosAgentes.get(i).getReplyWithControlador());
+                        System.out.println("TIPO Estado del agente: "+estadosAgentes.get(i).getTipo().toString());
+                    }
                     // Si las percepciones han localizado el objetivo, pasaremos a otro estado
                     if (this.bc.getPosicionObjetivo() != null) {
                         // Pasar el array a la heurística y obtener el agente seleccionado
                         EstadoAgente agenteSeleccionado = this.heuristica.buscandoObjetivo(estadosAgentes, this.quedaFuel);
-
+                        
+                        //Imprimimos el agente seleccionado
+                        System.out.println("AGENTE SELECCIONADO ID CONTROLADOR Estado del agente: "+agenteSeleccionado.getReplyWithControlador());
+                        System.out.println("AGENTE SELECCIONADO Estado del agente: "+agenteSeleccionado.getTipo().toString());
+                        
+                        
                         // Si la siguiente accion es null, significa que nos hemos quedad sin fuel
                         if(agenteSeleccionado.getNextAction() == null) {
                             this.estadoActual = EstadosEjecucion.TERMINADO;
@@ -138,6 +156,7 @@ public class Controlador extends SingleAgent {
                         else {
                             // Mandamos la accion al agente seleccionado
                             this.asignarAccion(agenteSeleccionado);
+                             System.out.println("AGENTE SELECCIONADO Estado del agente ACCION: "+agenteSeleccionado.getNextAction().toString());
                         }
                     }
                     else {
