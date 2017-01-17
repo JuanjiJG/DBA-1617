@@ -59,26 +59,44 @@ public class Agente extends SingleAgent {
     public void execute(){
         System.out.println("Ejecutando el agente...");
         
-        //Llamo al metodo recibir para esperar el conversation id del server
         try {
+            //Falta una llamada para solicitar server id al controlador
+            
+            //Llamo al metodo recibir para esperar el conversation id del server
             this.recibir();
+        
+            //Una vez ya ha recibido el agente el id de conversaicon del server, hago checkin en este
+            this.checkin();
+
+            //Recibo una respuesta del servidor al checking con las capabilities
+            this.recibir();
+
+
+            while(true)
+            {
+                if(miEstado.isPisandoObjetivo()==false)
+                {
+                    //Solicito al servidor las percepciones del agente
+                    this.solicitarPercepcion();
+                    //Recibo las percepciones que el servidor me manda en respuesta a la solicitud
+                    this.recibir();
+                    //Espero a recibir un mensaje del controlador consultando el estado del agente
+                    //y envio el el estado del agente al controlador
+                    this.recibir();
+                    //Espero a recibir un mensaje del controlador con la acción que realizar
+                    //y mando esa accion al server
+                    this.recibir();
+                    //Espero a recibir un mensaje del servidor con la respuesta a la accion realizada
+                    //e informo al controlador del resultado
+                    this.recibir();
+                }
+                else
+                {
+                    break;
+                }
+            }
         } catch (InterruptedException ex) {
             Logger.getLogger(Agente.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        //Una vez ya ha recibido el agente el id de conversaicon del server, hago checkin en este
-        this.checkin();
-        
-        while(true)
-        {
-            this.solicitarPercepcion();
-            try {
-                this.recibir();
-                this.recibir();
-                this.informarResultadoAccion();
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Agente.class.getName()).log(Level.SEVERE, null, ex);
-            }
         }
     }
     
