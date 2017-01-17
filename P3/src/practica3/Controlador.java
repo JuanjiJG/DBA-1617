@@ -367,7 +367,7 @@ public class Controlador extends SingleAgent {
                                 jsonEstado.get("fuelActual").asInt(),
                                 jsonEstado.get("crashed").asBoolean(),
                                 jsonEstado.get("pisandoObjetivo").asBoolean(),
-                                jsonEstado.get("replayWithControlador").asString(),
+                                jsonEstado.get("replyWithControlador").asString(),
                                 TiposAgente.valueOf(jsonEstado.get("tipo").asString()),
                                 Acciones.valueOf(jsonEstado.get("nextAction").asString())
                         );
