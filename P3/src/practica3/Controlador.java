@@ -1,12 +1,19 @@
 package practica3;
 
 import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import es.upv.dsic.gti_ia.core.ACLMessage;
 import es.upv.dsic.gti_ia.core.AgentID;
 import es.upv.dsic.gti_ia.core.SingleAgent;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -19,10 +26,13 @@ public class Controlador extends SingleAgent {
     public static final String AGENT_ID = "controlador";
     private static final String AGENTES_CONVERSATION_ID = "grupo-6-agentes";
     private final int MUNDO_ELEGIDO;
+    private boolean fuelMundoAcabado;
+    private boolean terminado;
+    private EstadosEjecucion estadoActual;
     private String conversationID;
     private Map<String, AgentID> agentesMAP;
-    private boolean fuelMundoAcabado = false;
     private Heuristica heuristica;
+    private BaseConocimiento bc;
 
     /**
      * Constructor de la clase Controlador
@@ -45,8 +55,14 @@ public class Controlador extends SingleAgent {
      */
     @Override
     public void init() {
+        System.out.println("Iniciando estado del Controlador...");
         this.agentesMAP = new HashMap<>();
         this.heuristica = new Heuristica();
+        this.bc = BaseConocimiento.getInstance();
+        this.fuelMundoAcabado = false;
+        this.terminado = false;
+        this.estadoActual = EstadosEjecucion.INICIAL;
+        this.conversationID = "";
     }
 
     /**
@@ -57,7 +73,47 @@ public class Controlador extends SingleAgent {
      */
     @Override
     public void execute() {
-
+        
+        while(!terminado) {
+            switch(this.estadoActual) {
+                case INICIAL:
+                    // Realizamos orden subscribe al servidor
+                    this.suscribirse();
+                    
+                    // Recibimos el mensaje que debería contener el conversationID
+                    try {
+                        this.recibir();
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    
+                    // Si hemos obtenido el conversationID, continuar
+                    if(this.conversationID != "") {
+                        // Obtener tamaño del mapa
+                        int tamMapa = this.obtenerTamanoMapa();
+                        
+                        // Cargar el mapa
+                        boolean resultado = bc.cargarMapa(this.MUNDO_ELEGIDO, tamMapa);
+                    }
+                    // Si no lo hemos obtenido, ha habido un error
+                    else {
+                        this.estadoActual = EstadosEjecucion.ERROR;
+                    }
+                    break;
+                    
+                case BUSCANDO:
+                    break;
+                case ENCONTRADO:
+                    break;
+                case ALCANZADO:
+                    break;
+                case TERMINADO:
+                    this.terminado = true;
+                    break;
+                case ERROR:
+                    break;
+            }
+        }
     }
 
     /**
@@ -68,7 +124,9 @@ public class Controlador extends SingleAgent {
      */
     @Override
     public void finalize() {
-
+        
+        System.out.println("Finalizando agente...");
+        super.finalize();
     }
 
     /**
@@ -77,8 +135,40 @@ public class Controlador extends SingleAgent {
      *
      * @author Juan José Jiménez García
      */
-    public void obtenerTamanoMapa() {
+    public int obtenerTamanoMapa() {
 
+        return 1;
+    }
+    
+    /**
+     * Método para el procesamiento de la traza de imagen
+     *
+     * @author Juan José Jiménez García
+     * @author Gregorio Carvajal Expósito
+     * @param injson Objeto json que contiene la traza
+     * @throws java.io.IOException
+     */
+    public void procesarTraza(JsonObject injson) throws IOException {
+
+        try {
+
+            JsonArray ja = injson.get("trace").asArray();
+            byte data[] = new byte[ja.size()];
+
+            for (int i = 0; i < data.length; i++) {
+                data[i] = (byte) ja.get(i).asInt();
+            }
+
+            String filename = this.MUNDO_ELEGIDO + " - " + new SimpleDateFormat("yyyy-MM-dd-hh-mm").format(new Date()) + ".png";
+            FileOutputStream fos = new FileOutputStream(filename);
+            fos.write(data);
+            fos.close();
+            System.out.println("Traza guardada en el archivo " + filename);
+
+        } catch (IOException ex) {
+            System.err.println("Error procesando la traza");
+            System.err.println(ex.toString());
+        }
     }
 
     /**
@@ -138,7 +228,7 @@ public class Controlador extends SingleAgent {
         JsonObject json = new JsonObject();
         ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
 
-        json.add("command", agenteElegido.getNextAction());
+        json.add("command", agenteElegido.getNextAction().toString());
 
         msg.setSender(this.getAid());
         msg.setContent(json.toString());

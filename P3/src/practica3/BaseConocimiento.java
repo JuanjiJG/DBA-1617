@@ -53,6 +53,7 @@ public class BaseConocimiento {
      */
     public void inicializarMapa(int tamanio) {
 
+        this.tamanioMapa = tamanio;
         this.mapa = new int[tamanio][tamanio];
 
         for (int i = 0; i < tamanio; i++) {
@@ -68,9 +69,10 @@ public class BaseConocimiento {
      *
      * @param numMapa El número del mapa que se quiere cargar
      * @param tamMapa El tamaño del mapa que se quiere cargar
+     * @return Un booleano que indica si durante la carga se ha visto el objetivo
      * @author Juan José Jiménez García
      */
-    public void cargarMapa(int numMapa, int tamMapa) {
+    public boolean cargarMapa(int numMapa, int tamMapa) {
 
         /*
         Funcionamiento del método:
@@ -84,19 +86,49 @@ public class BaseConocimiento {
          */
         ObjectInputStream inputStream = null;
         String fileName = "map_" + numMapa + "_savefile.data";
+        this.tamanioMapa = tamMapa;
         boolean existeArchivo = false;
+        boolean existeObjetivo = false;
 
         try {
             inputStream = new ObjectInputStream(new FileInputStream(fileName));
             existeArchivo = true;
             this.mapa = (int[][]) inputStream.readObject();
+            if (this.buscarObjetivo()) {
+                existeObjetivo = true;
+            }
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(BaseConocimiento.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             if (!existeArchivo) {
-                this.inicializarMapa(tamMapa);
+                this.inicializarMapa(this.tamanioMapa);
             }
         }
+
+        return existeObjetivo;
+    }
+
+    /**
+     * Método para comprobar si el objetivo está en el mapa. Si se ha
+     * encontrado, se actualiza la posición del objetivo.
+     *
+     * @return Un booleano que indica si se ha encontrado el objetivo.
+     * @author Juan José Jiménez García
+     */
+    public boolean buscarObjetivo() {
+
+        boolean encontrado = false;
+
+        for (int i = 0; i < this.tamanioMapa; i++) {
+            for (int j = 0; j < this.tamanioMapa; j++) {
+                if (mapa[i][j] == 3) {
+                    encontrado = true;
+                    this.posicionObjetivo = new Pair(i, j);
+                }
+            }
+        }
+
+        return encontrado;
     }
 
     /**
@@ -178,7 +210,7 @@ public class BaseConocimiento {
                 }
             }
         }
-        
+
         if (mapa[posicion.getValue() + 2][posicion.getKey() + 2] != 3) {
             mapa[posicion.getValue() + 2][posicion.getKey() + 2] = antiguedad;
         }
@@ -216,7 +248,7 @@ public class BaseConocimiento {
     public int getTamMapa() {
         return this.tamanioMapa;
     }
-    
+
     /**
      * Método para devolver la posición del objetivo
      *
