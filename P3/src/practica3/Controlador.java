@@ -77,7 +77,7 @@ public class Controlador extends SingleAgent {
     public void execute() {
 
         ArrayList<EstadoAgente> estadosAgentes;
-        
+
         while (!terminado) {
             switch (this.estadoActual) {
                 case INICIAL:
@@ -93,6 +93,9 @@ public class Controlador extends SingleAgent {
 
                     // Si hemos obtenido el conversationID, continuar
                     if (!"".equals(this.conversationID)) {
+                        // Mandar conversationID a los demás agentes
+                        this.compartirConversationID();
+
                         // Obtener tamaño del mapa
                         int tamMapa = this.obtenerTamanoMapa();
 
@@ -113,7 +116,7 @@ public class Controlador extends SingleAgent {
                 case BUSCANDO:
                     // Obtener un array de EstadoAgente
                     this.pedirEstadoAgente();
-                    
+
                     // Recopilar los estados de agente
                     for (int i = 0; i < this.agentesMAP.size(); i++) {
                         try {
@@ -122,25 +125,23 @@ public class Controlador extends SingleAgent {
                             Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
-                    
+
                     // Una vez recopilados, los pedimos a la base de conocimiento
                     estadosAgentes = bc.getConjuntoEstados();
-                    
+
                     // Si las percepciones han localizado el objetivo, pasaremos a otro estado
                     if (this.bc.getPosicionObjetivo() != null) {
                         // Pasar el array a la heurística y obtener el agente seleccionado
                         EstadoAgente agenteSeleccionado = this.heuristica.buscandoObjetivo(estadosAgentes, this.quedaFuel);
 
                         // Si la siguiente accion es null, significa que nos hemos quedad sin fuel
-                        if(agenteSeleccionado.getNextAction() == null) {
+                        if (agenteSeleccionado.getNextAction() == null) {
                             this.estadoActual = EstadosEjecucion.TERMINADO;
-                        }
-                        else {
+                        } else {
                             // Mandamos la accion al agente seleccionado
                             this.asignarAccion(agenteSeleccionado);
                         }
-                    }
-                    else {
+                    } else {
                         this.estadoActual = EstadosEjecucion.ENCONTRADO;
                     }
                     break;
@@ -148,7 +149,7 @@ public class Controlador extends SingleAgent {
                 case ENCONTRADO:
                     // Obtener un array de EstadoAgente
                     this.pedirEstadoAgente();
-                    
+
                     // Recopilar los estados de agente
                     for (int i = 0; i < this.agentesMAP.size(); i++) {
                         try {
@@ -157,32 +158,31 @@ public class Controlador extends SingleAgent {
                             Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
-                    
+
                     // Una vez recopilados, los pedimos a la base de conocimiento
                     estadosAgentes = bc.getConjuntoEstados();
-                    
+
                     // Si alguno de los agentes está pisando el objetivo, pasamos al estado ALCANZADO
                     boolean unoPisando = false;
-                    
+
                     while (!unoPisando) {
                         for (EstadoAgente estado : estadosAgentes) {
-                            if (estado.isPisandoObjetivo())
+                            if (estado.isPisandoObjetivo()) {
                                 unoPisando = true;
+                            }
                         }
                     }
-                    
+
                     if (unoPisando) {
                         this.estadoActual = EstadosEjecucion.ALCANZADO;
-                    }
-                    else {
+                    } else {
                         // Pasar el array a la heurística y obtener el agente seleccionado
                         EstadoAgente agenteSeleccionado = this.heuristica.buscandoObjetivo(estadosAgentes, this.quedaFuel);
 
                         // Si la siguiente accion es null, significa que nos hemos quedad sin fuel
-                        if(agenteSeleccionado.getNextAction() == null) {
+                        if (agenteSeleccionado.getNextAction() == null) {
                             this.estadoActual = EstadosEjecucion.TERMINADO;
-                        }
-                        else {
+                        } else {
                             // Mandamos la accion al agente seleccionado
                             this.asignarAccion(agenteSeleccionado);
                         }
@@ -192,7 +192,7 @@ public class Controlador extends SingleAgent {
                 case ALCANZADO:
                     // Obtener un array de EstadoAgente
                     this.pedirEstadoAgente();
-                    
+
                     // Recopilar los estados de agente
                     for (int i = 0; i < this.agentesMAP.size(); i++) {
                         try {
@@ -201,35 +201,35 @@ public class Controlador extends SingleAgent {
                             Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
-                    
+
                     // Una vez recopilados, los pedimos a la base de conocimiento
                     estadosAgentes = bc.getConjuntoEstados();
-                    
+
                     // Si todos los agentes está pisando el objetivo, pasamos al estado TERMINADO
                     boolean todosPisando = false;
                     int contadorTodosPisando = 0;
-                    
+
                     while (!todosPisando) {
                         for (EstadoAgente estado : estadosAgentes) {
-                            if (estado.isPisandoObjetivo())
+                            if (estado.isPisandoObjetivo()) {
                                 contadorTodosPisando++;
+                            }
                         }
-                        if (contadorTodosPisando == 4)
+                        if (contadorTodosPisando == 4) {
                             todosPisando = true;
+                        }
                     }
-                    
+
                     if (todosPisando) {
                         this.estadoActual = EstadosEjecucion.TERMINADO;
-                    }
-                    else {
+                    } else {
                         // Pasar el array a la heurística y obtener el agente seleccionado
                         EstadoAgente agenteSeleccionado = this.heuristica.buscandoObjetivo(estadosAgentes, this.quedaFuel);
 
                         // Si la siguiente accion es null, significa que nos hemos quedad sin fuel
-                        if(agenteSeleccionado.getNextAction() == null) {
+                        if (agenteSeleccionado.getNextAction() == null) {
                             this.estadoActual = EstadosEjecucion.TERMINADO;
-                        }
-                        else {
+                        } else {
                             // Mandamos la accion al agente seleccionado
                             this.asignarAccion(agenteSeleccionado);
                         }
