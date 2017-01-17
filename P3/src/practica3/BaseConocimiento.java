@@ -167,16 +167,20 @@ public class BaseConocimiento {
             for (int j = 0; j < visibilidad; j++) {
 
                 //Nos interesa que primero actualice el mapa y despues compruebe si hay un 3 (objetivo)
-                if (mapa[posicion_inicial_y + i][posicion_inicial_x + j] == 3) {
+                if (mapa[posicion_inicial_y + i][posicion_inicial_x + j] == 5) {
                     mapa[posicion_inicial_y + i][posicion_inicial_x + j] = percepcion[i][j];
                 }
 
                 //Compruebo si hay un 3 (casilla de objetivo)
-                if (mapa[posicion_inicial_y + i][posicion_inicial_x + j] == 2) {
+                if (mapa[posicion_inicial_y + i][posicion_inicial_x + j] == 3) {
                     this.posicionObjetivo = new Pair(posicion_inicial_x + 2, posicion_inicial_y + 2);
                     objetivoEncontrado = true;
                 }
             }
+        }
+        
+        if (mapa[posicion.getValue() + 2][posicion.getKey() + 2] != 3) {
+            mapa[posicion.getValue() + 2][posicion.getKey() + 2] = antiguedad;
         }
 
         return objetivoEncontrado;
