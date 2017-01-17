@@ -6,5 +6,5 @@ package practica3;
  * @author Miguel Ángel Torres López
  */
 public enum TiposAgente {
-    camion, coche, dron
+    CAMION, COCHE, DRON
 }
