@@ -93,11 +93,13 @@ public class Controlador extends SingleAgent {
                     }
 
                     // Si hemos obtenido el conversationID, continuar
-                    if (!"".equals(this.conversationID)) {
+                    if (this.conversationID.compareTo("")!=0) {                    
                         // Recibir todas las peticiones de enviar conversationID a los agentes exploradores
-                        for(int i = 0; i < this.agentesMAP.size(); i++) {
+                        for(int i = 0; i < 4; i++) {
                             try {
+                                System.out.println("Recibiendo QUERY-REF");
                                 this.recibir();
+                                 System.out.println("Añadiendo agentes: "+this.agentesMAP.isEmpty());
                             } catch (InterruptedException | IOException ex) {
                                 Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
                             }
@@ -106,7 +108,7 @@ public class Controlador extends SingleAgent {
                         // Mandar conversationID a los demás agentes
                         this.compartirConversationID();
 
-                        // Obtener tamaño del mapa
+                        // Estamos subcritos
                         System.out.println("Estamos subcritos: "+conversationID);
                         
                         int tamMapa = this.obtenerTamanoMapa();
@@ -351,7 +353,7 @@ public class Controlador extends SingleAgent {
     public void recibir() throws InterruptedException, IOException {
         ACLMessage resp = receiveACLMessage();
         JsonObject json = Json.parse(resp.getContent()).asObject();
-
+        System.out.println("Performativa: "+resp.getPerformativeInt());
         switch (resp.getPerformativeInt()) {
             case ACLMessage.INFORM:
                 //Del servidor

@@ -29,7 +29,7 @@ public class Main {
         // Creamos el objeto Controlador y los 4 agentes exploradores
         try {
             gugel = new Controlador(new AgentID("GugelCarRedForest"), mundo);
-            
+        
             for (int i = 0; i < agentes.length; i++) {
                 agentes[i] = new Agente(new AgentID("Agente_" + i));
             }
@@ -38,7 +38,6 @@ public class Main {
             System.err.println(e.toString());
             System.exit(1);
         }
-
         // Iniciamos el agente controlador
         gugel.start();
         

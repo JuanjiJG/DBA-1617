@@ -372,6 +372,7 @@ public class Agente extends SingleAgent {
 		msg.setContent(json.toString());
 		msg.setReceiver(new AgentID(Controlador.AGENT_ID));
 		msg.setReplyWith(miEstado.getReplyWithControlador());
+                System.out.println("Respondeme con: "+miEstado.getReplyWithControlador());
 		
 		send(msg);
 	}
