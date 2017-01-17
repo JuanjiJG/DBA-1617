@@ -6,6 +6,7 @@
 package practica3;
 
 import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import es.upv.dsic.gti_ia.core.ACLMessage;
 import es.upv.dsic.gti_ia.core.AgentID;
@@ -13,6 +14,7 @@ import es.upv.dsic.gti_ia.core.SingleAgent;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.util.Pair;
 
 /**
  *
@@ -57,26 +59,44 @@ public class Agente extends SingleAgent {
     public void execute(){
         System.out.println("Ejecutando el agente...");
         
-        //Llamo al metodo recibir para esperar el conversation id del server
         try {
+            //Falta una llamada para solicitar server id al controlador
+            
+            //Llamo al metodo recibir para esperar el conversation id del server
             this.recibir();
+        
+            //Una vez ya ha recibido el agente el id de conversaicon del server, hago checkin en este
+            this.checkin();
+
+            //Recibo una respuesta del servidor al checking con las capabilities
+            this.recibir();
+
+
+            while(true)
+            {
+                if(miEstado.isPisandoObjetivo()==false)
+                {
+                    //Solicito al servidor las percepciones del agente
+                    this.solicitarPercepcion();
+                    //Recibo las percepciones que el servidor me manda en respuesta a la solicitud
+                    this.recibir();
+                    //Espero a recibir un mensaje del controlador consultando el estado del agente
+                    //y envio el el estado del agente al controlador
+                    this.recibir();
+                    //Espero a recibir un mensaje del controlador con la acción que realizar
+                    //y mando esa accion al server
+                    this.recibir();
+                    //Espero a recibir un mensaje del servidor con la respuesta a la accion realizada
+                    //e informo al controlador del resultado
+                    this.recibir();
+                }
+                else
+                {
+                    break;
+                }
+            }
         } catch (InterruptedException ex) {
             Logger.getLogger(Agente.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        //Una vez ya ha recibido el agente el id de conversaicon del server, hago checkin en este
-        this.checkin();
-        
-        while(true)
-        {
-            this.solicitarPercepcion();
-            try {
-                this.recibir();
-                this.recibir();
-                this.informarResultadoAccion();
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Agente.class.getName()).log(Level.SEVERE, null, ex);
-            }
         }
     }
     
@@ -112,14 +132,50 @@ public class Agente extends SingleAgent {
 				{
 					if (json.names().size() > 1) //Capabilities
 					{
-						//Meter tipo agente en EstadoAgente
+						JsonObject capabilities = json.get("capabilities").asObject();
+						
+						int visibilidad = capabilities.get("range").asInt();
+						
+						switch (visibilidad)
+						{
+							case CapacidadesAgentes.VISIBILIDAD_CAMION:
+								miEstado.setTipo(TiposAgente.camion);
+								break;
+								
+							case CapacidadesAgentes.VISIBILIDAD_COCHE:
+								miEstado.setTipo(TiposAgente.coche);
+								break;
+								
+							case CapacidadesAgentes.VISIBILIDAD_DRON:
+								miEstado.setTipo(TiposAgente.dron);
+								break;
+						}
+						
 					}
 					else //Accion ok
 						informarResultadoAccion();
 				}
 				else //Percepciones
 				{
-					//todo
+					JsonObject percepcion = json.get("result").asObject();
+					JsonArray radar = percepcion.get("sensor").asArray();
+                    int[][] radar_percibido = new int[miEstado.getVisibilidad()][miEstado.getVisibilidad()];
+					int x, y;
+					
+					miEstado.setFuelActual(percepcion.get("battery").asInt());
+					
+					x = percepcion.get("x").asInt();
+					y = percepcion.get("y").asInt();
+					miEstado.setPosicion(new Pair<>(y, x));
+
+                    for (int i = 0; i < miEstado.getVisibilidad()*miEstado.getVisibilidad(); i++) {
+                        radar_percibido[i / miEstado.getVisibilidad()][i % miEstado.getVisibilidad()] = radar.get(i).asInt();
+                    }
+					miEstado.setPercepcion(radar_percibido);
+					
+					miEstado.setPisandoObjetivo(percepcion.get("goal").asBoolean());
+					
+					percepcionRecibida = true;
 					
 					if (percepcionSolicitada)
 						enviarEstado();
@@ -138,11 +194,13 @@ public class Agente extends SingleAgent {
 				
 			case ACLMessage.REQUEST:
 				Acciones accion = Acciones.valueOf(json.get("command").asString());
+				miEstado.setNextAction(accion);
 				ejecutarAccion(accion);
 				break;
 			
 			default:
-				break; //Redirigirlo al controlador
+				informarError(resp);
+				break;
 		}
 	}
 	
@@ -155,8 +213,27 @@ public class Agente extends SingleAgent {
 	public void enviarEstado() {
 		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
 		JsonObject json = new JsonObject();
+		JsonObject estado = new JsonObject();
+		JsonArray radar = new JsonArray();
 		
-		json.add("estado", ""); //Aun no se como encapsular EstadoAgente
+		estado.add("i", miEstado.getPosicion().getKey());
+		estado.add("j", miEstado.getPosicion().getValue());
+		estado.add("fuelActual", miEstado.getFuelActual());
+		estado.add("crashed", miEstado.isCrashed());
+		estado.add("pisandoObjetivo", miEstado.isPisandoObjetivo());
+		estado.add("replyWithControlador", miEstado.getReplyWithControlador());
+		estado.add("tipo", miEstado.getTipo().toString());
+		estado.add("nextAction", miEstado.getNextAction().toString());
+		
+		//Meter la matriz en JsonArray
+		for (int i = 0; i < miEstado.getVisibilidad(); i++) {
+			for (int j = 0; j < miEstado.getVisibilidad(); j++) {
+				radar.add(miEstado.getPercepcion()[i][j]);
+			}
+		}
+		estado.add("percepcion", radar);
+		
+		json.add("estado", estado);
 		
 		msg.setSender(this.getAid());
 		msg.setContent(json.toString());
@@ -222,7 +299,7 @@ public class Agente extends SingleAgent {
 		msg.setSender(this.getAid());
 		msg.setContent(json.toString());
 		msg.setReceiver(new AgentID(Controlador.AGENT_ID));
-		msg.setConversationId(conversationIDServer);
+		msg.setConversationId(conversationIDControlador);
 		msg.setReplyWith(miEstado.getReplyWithControlador());
 		
 		send(msg);
@@ -241,6 +318,31 @@ public class Agente extends SingleAgent {
 		msg.setReceiver(new AgentID(Controlador.SERVER_NAME));
 		msg.setConversationId(conversationIDServer);
 		msg.setInReplyTo(repyWithServer);
+		
+		send(msg);
+	}
+	
+	/**
+	 * Manda un mensaje FAILURE al Controlador
+	 * indicando los motivos del error
+	 * 
+	 * @author Gregorio Carvajal Expósito
+	 * @param msg Mensaje recibido del Server
+	 */
+	public void informarError(ACLMessage msg) {
+		JsonObject jsonErr = new JsonObject();
+		JsonObject jsonMsg = Json.parse(msg.getContent()).asObject();
+		ACLMessage err = new ACLMessage(ACLMessage.FAILURE);
+		String str = msg.getPerformative().toString() + " -- ";
+		
+		str += jsonMsg.getString("details", "");
+		jsonErr.add("details", str);
+		
+		msg.setSender(this.getAid());
+		msg.setReceiver(new AgentID(Controlador.AGENT_ID));
+		msg.setContent(jsonErr.toString());
+		msg.setConversationId(conversationIDControlador);
+		msg.setReplyWith(miEstado.getReplyWithControlador());
 		
 		send(msg);
 	}
