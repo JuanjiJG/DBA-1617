@@ -22,13 +22,11 @@ public class BaseConocimiento {
     private int tamanioMapa;
     private int mapaElegido;
     private int antiguedad;
-    private ArrayList<EstadoAgente> estadoActivos;
-    private ArrayList<EstadoAgente> estadoInactivos;
+    private ArrayList<EstadoAgente> conjuntoEstados;
 
     // Constructor privado como parte del patrón Singleton
     private BaseConocimiento() {
-        this.estadoActivos = new ArrayList();
-        this.estadoInactivos = new ArrayList();
+        this.conjuntoEstados = new ArrayList();
     }
 
     /**
@@ -69,7 +67,7 @@ public class BaseConocimiento {
      *
      * @param numMapa El número del mapa que se quiere cargar
      * @param tamMapa El tamaño del mapa que se quiere cargar
-     * @return Un booleano que indica si durante la carga se ha visto el objetivo
+     * @return Un booleano que indica si se ha encontrado el objetivo durante la carga
      * @author Juan José Jiménez García
      */
     public boolean cargarMapa(int numMapa, int tamMapa) {
@@ -214,8 +212,27 @@ public class BaseConocimiento {
         if (mapa[posicion.getValue() + 2][posicion.getKey() + 2] != 3) {
             mapa[posicion.getValue() + 2][posicion.getKey() + 2] = antiguedad;
         }
+        
+        // Tras haber actualizado, añadimos el EstadoAgente al array
+        // BORRAR COMPROBACION AL TERMINAR PRUEBAS
+        if (this.conjuntoEstados.size() < 4) {
+            this.conjuntoEstados.add(estadoAgente);
+        }
+        else {
+            System.out.println("Habia ya 4 EstadoAgente en el conjunto...");
+        }
 
         return objetivoEncontrado;
+    }
+    
+    /**
+     * Método para vaciar el conjunto de elementos EstadoAgente.
+     * 
+     * @author Juan José Jiménez García
+     */
+    public void limpiarConjuntoEstados() {
+        
+        this.conjuntoEstados.clear();
     }
 
     /**
