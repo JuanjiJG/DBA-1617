@@ -9,6 +9,7 @@ import es.upv.dsic.gti_ia.core.SingleAgent;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +28,7 @@ public class Controlador extends SingleAgent {
     public static final String AGENT_ID = "controlador";
     private static final String AGENTES_CONVERSATION_ID = "grupo-6-agentes";
     private final int MUNDO_ELEGIDO;
-    private boolean fuelMundoAcabado;
+    private boolean quedaFuel;
     private boolean terminado;
     private EstadosEjecucion estadoActual;
     private String conversationID;
@@ -60,58 +61,193 @@ public class Controlador extends SingleAgent {
         this.agentesMAP = new HashMap<>();
         this.heuristica = new Heuristica();
         this.bc = BaseConocimiento.getInstance();
-        this.fuelMundoAcabado = false;
+        this.quedaFuel = true;
         this.terminado = false;
         this.estadoActual = EstadosEjecucion.INICIAL;
         this.conversationID = "";
     }
 
     /**
-     * Método que contiene la lógica que ejecutará el Controlador cuando se
-     * inicie
+     * Método que contiene la lógica que ejecutará el Controlador cuando
+     * finalice su ejecución
      *
      * @author Juan José Jiménez García
      */
     @Override
     public void execute() {
+
+        ArrayList<EstadoAgente> estadosAgentes;
         
-        while(!terminado) {
-            switch(this.estadoActual) {
+        while (!terminado) {
+            switch (this.estadoActual) {
                 case INICIAL:
                     // Realizamos orden subscribe al servidor
                     this.suscribirse();
-                    
+
                     // Recibimos el mensaje que debería contener el conversationID
                     try {
                         this.recibir();
-                    } catch (InterruptedException ex) {
+                    } catch (InterruptedException | IOException ex) {
                         Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    
+
                     // Si hemos obtenido el conversationID, continuar
-                    if(this.conversationID != "") {
+                    if (!"".equals(this.conversationID)) {
                         // Obtener tamaño del mapa
                         int tamMapa = this.obtenerTamanoMapa();
-                        
+
                         // Cargar el mapa
                         boolean resultado = bc.cargarMapa(this.MUNDO_ELEGIDO, tamMapa);
-                    }
-                    // Si no lo hemos obtenido, ha habido un error
+
+                        if (resultado) {
+                            this.estadoActual = EstadosEjecucion.ENCONTRADO;
+                        } else {
+                            this.estadoActual = EstadosEjecucion.BUSCANDO;
+                        }
+                    } // Si no lo hemos obtenido, ha habido un error
                     else {
                         this.estadoActual = EstadosEjecucion.ERROR;
                     }
                     break;
-                    
+
                 case BUSCANDO:
+                    // Obtener un array de EstadoAgente
+                    this.pedirEstadoAgente();
+                    
+                    // Recopilar los estados de agente
+                    for (int i = 0; i < this.agentesMAP.size(); i++) {
+                        try {
+                            this.recibir();
+                        } catch (InterruptedException | IOException ex) {
+                            Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                    
+                    // Una vez recopilados, los pedimos a la base de conocimiento
+                    estadosAgentes = bc.getConjuntoEstados();
+                    
+                    // Si las percepciones han localizado el objetivo, pasaremos a otro estado
+                    if (this.bc.getPosicionObjetivo() != null) {
+                        // Pasar el array a la heurística y obtener el agente seleccionado
+                        EstadoAgente agenteSeleccionado = this.heuristica.buscandoObjetivo(estadosAgentes, this.quedaFuel);
+
+                        // Si la siguiente accion es null, significa que nos hemos quedad sin fuel
+                        if(agenteSeleccionado.getNextAction() == null) {
+                            this.estadoActual = EstadosEjecucion.TERMINADO;
+                        }
+                        else {
+                            // Mandamos la accion al agente seleccionado
+                            this.asignarAccion(agenteSeleccionado);
+                        }
+                    }
+                    else {
+                        this.estadoActual = EstadosEjecucion.ENCONTRADO;
+                    }
                     break;
+
                 case ENCONTRADO:
+                    // Obtener un array de EstadoAgente
+                    this.pedirEstadoAgente();
+                    
+                    // Recopilar los estados de agente
+                    for (int i = 0; i < this.agentesMAP.size(); i++) {
+                        try {
+                            this.recibir();
+                        } catch (InterruptedException | IOException ex) {
+                            Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                    
+                    // Una vez recopilados, los pedimos a la base de conocimiento
+                    estadosAgentes = bc.getConjuntoEstados();
+                    
+                    // Si alguno de los agentes está pisando el objetivo, pasamos al estado ALCANZADO
+                    boolean unoPisando = false;
+                    
+                    while (!unoPisando) {
+                        for (EstadoAgente estado : estadosAgentes) {
+                            if (estado.isPisandoObjetivo())
+                                unoPisando = true;
+                        }
+                    }
+                    
+                    if (unoPisando) {
+                        this.estadoActual = EstadosEjecucion.ALCANZADO;
+                    }
+                    else {
+                        // Pasar el array a la heurística y obtener el agente seleccionado
+                        EstadoAgente agenteSeleccionado = this.heuristica.buscandoObjetivo(estadosAgentes, this.quedaFuel);
+
+                        // Si la siguiente accion es null, significa que nos hemos quedad sin fuel
+                        if(agenteSeleccionado.getNextAction() == null) {
+                            this.estadoActual = EstadosEjecucion.TERMINADO;
+                        }
+                        else {
+                            // Mandamos la accion al agente seleccionado
+                            this.asignarAccion(agenteSeleccionado);
+                        }
+                    }
                     break;
+
                 case ALCANZADO:
+                    // Obtener un array de EstadoAgente
+                    this.pedirEstadoAgente();
+                    
+                    // Recopilar los estados de agente
+                    for (int i = 0; i < this.agentesMAP.size(); i++) {
+                        try {
+                            this.recibir();
+                        } catch (InterruptedException | IOException ex) {
+                            Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                    
+                    // Una vez recopilados, los pedimos a la base de conocimiento
+                    estadosAgentes = bc.getConjuntoEstados();
+                    
+                    // Si todos los agentes está pisando el objetivo, pasamos al estado TERMINADO
+                    boolean todosPisando = false;
+                    int contadorTodosPisando = 0;
+                    
+                    while (!todosPisando) {
+                        for (EstadoAgente estado : estadosAgentes) {
+                            if (estado.isPisandoObjetivo())
+                                contadorTodosPisando++;
+                        }
+                        if (contadorTodosPisando == 4)
+                            todosPisando = true;
+                    }
+                    
+                    if (todosPisando) {
+                        this.estadoActual = EstadosEjecucion.TERMINADO;
+                    }
+                    else {
+                        // Pasar el array a la heurística y obtener el agente seleccionado
+                        EstadoAgente agenteSeleccionado = this.heuristica.buscandoObjetivo(estadosAgentes, this.quedaFuel);
+
+                        // Si la siguiente accion es null, significa que nos hemos quedad sin fuel
+                        if(agenteSeleccionado.getNextAction() == null) {
+                            this.estadoActual = EstadosEjecucion.TERMINADO;
+                        }
+                        else {
+                            // Mandamos la accion al agente seleccionado
+                            this.asignarAccion(agenteSeleccionado);
+                        }
+                    }
                     break;
+
                 case TERMINADO:
                     this.terminado = true;
+                    this.logout();
+                    try {
+                        this.recibir();
+                    } catch (InterruptedException | IOException ex) {
+                        Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                     break;
+
                 case ERROR:
+                    this.estadoActual = EstadosEjecucion.TERMINADO;
                     break;
             }
         }
@@ -125,22 +261,27 @@ public class Controlador extends SingleAgent {
      */
     @Override
     public void finalize() {
-        
+
         System.out.println("Finalizando agente...");
         super.finalize();
     }
 
     /**
-     * Método que lee una imagen de traza de un mapa y obtiene de ella el tamaño
-     * del mismo
+     * Método que obtiene el tamaño del mapa a usar según el nº de mapa
      *
      * @author Juan José Jiménez García
      */
     public int obtenerTamanoMapa() {
 
-        return 1;
+        int[] tamaniosMapa = {104, 104, 104, 104, 104, 154, 104, 104, 154, 504};
+
+        if (this.MUNDO_ELEGIDO <= 10) {
+            return tamaniosMapa[this.MUNDO_ELEGIDO + 1];
+        } else {
+            return tamaniosMapa[(this.MUNDO_ELEGIDO + 1) / 100];
+        }
     }
-    
+
     /**
      * Método para el procesamiento de la traza de imagen
      *
@@ -175,52 +316,51 @@ public class Controlador extends SingleAgent {
     /**
      * Ejecuta el receive y actualiza las variables necesarias del controlador
      *
-     * @author Gregorio Carvajal Expósito
      * @throws java.lang.InterruptedException
+     * @throws java.io.IOException
+     * @author Gregorio Carvajal Expósito
      */
-    public void recibir() throws InterruptedException {
+    public void recibir() throws InterruptedException, IOException {
         ACLMessage resp = receiveACLMessage();
         JsonObject json = Json.parse(resp.getContent()).asObject();
 
         switch (resp.getPerformativeInt()) {
             case ACLMessage.INFORM:
                 //Del servidor
-                if (!resp.getConversationId().equals(AGENTES_CONVERSATION_ID))
-				{
+                if (!resp.getConversationId().equals(AGENTES_CONVERSATION_ID)) {
                     if (json.get("result") != null) //OK to subscribe
                     {
                         conversationID = resp.getConversationId();
                     } else //Trace
                     {
-                        //PROCESAR TRAZA
+                        this.procesarTraza(json);
                     }
                 } else //De un agente
                 {
                     //Respuesta al QUERY_REF pidiendo el estado
-                    if (json.get("estado") != null)
-					{
+                    if (json.get("estado") != null) {
                         JsonObject jsonEstado = json.get("estado").asObject();
-						JsonArray jsonRadar = jsonEstado.get("percepcion").asArray();
+                        JsonArray jsonRadar = jsonEstado.get("percepcion").asArray();
 
-						EstadoAgente estado = new EstadoAgente(
-								new int[1][1],
-								new Pair<>(jsonEstado.get("i").asInt(), jsonEstado.get("j").asInt()),
-								jsonEstado.get("fuelActual").asInt(),
-								jsonEstado.get("crashed").asBoolean(),
-								jsonEstado.get("pisandoObjetivo").asBoolean(),
-								jsonEstado.get("replayWithControlador").asString(),
-								TiposAgente.valueOf(jsonEstado.get("tipo").asString()),
-								Acciones.valueOf(jsonEstado.get("nextAction").asString())
-						);
-						
-						int [][] radar = new int[estado.getVisibilidad()][estado.getVisibilidad()];
-						
-						for (int i = 0; i < estado.getVisibilidad()*estado.getVisibilidad(); i++) {
-						   radar[i / estado.getVisibilidad()][i % estado.getVisibilidad()] = jsonRadar.get(i).asInt();
-						}
-						
-						estado.setPercepcion(radar);
-						
+                        EstadoAgente estado = new EstadoAgente(
+                                new int[1][1],
+                                new Pair<>(jsonEstado.get("i").asInt(), jsonEstado.get("j").asInt()),
+                                jsonEstado.get("fuelActual").asInt(),
+                                jsonEstado.get("crashed").asBoolean(),
+                                jsonEstado.get("pisandoObjetivo").asBoolean(),
+                                jsonEstado.get("replayWithControlador").asString(),
+                                TiposAgente.valueOf(jsonEstado.get("tipo").asString()),
+                                Acciones.valueOf(jsonEstado.get("nextAction").asString())
+                        );
+
+                        int[][] radar = new int[estado.getVisibilidad()][estado.getVisibilidad()];
+
+                        for (int i = 0; i < estado.getVisibilidad() * estado.getVisibilidad(); i++) {
+                            radar[i / estado.getVisibilidad()][i % estado.getVisibilidad()] = jsonRadar.get(i).asInt();
+                        }
+
+                        estado.setPercepcion(radar);
+                        bc.actualizarMapa(estado);
                     } else //Respuesta al REQUEST de la accion escogida
                     {
                         //Do nothing
@@ -234,23 +374,21 @@ public class Controlador extends SingleAgent {
                 break;
 
             default:
-				if (resp.getConversationId().equals(AGENTES_CONVERSATION_ID)) //Recibido de un Agente
-				{
-					if (json.get("details").asString().contains("BAD_ENERGY"))
-					{
-						fuelMundoAcabado = true;
-						break;
-					}
-					else //Recibido directamente del Server
-					{
-						System.err.println("ERROR: Un agente ha recibido " + json.get("details").asString());
-						logout();
-					}
-				}
-				else
-					System.err.println("ERROR: El controlador ha recibido " + json.get("details").asString());
-                
-				//Hacer algo para detener la ejecucion de los agentes
+                if (resp.getConversationId().equals(AGENTES_CONVERSATION_ID)) //Recibido de un Agente
+                {
+                    if (json.get("details").asString().contains("BAD_ENERGY")) {
+                        this.quedaFuel = false;
+                        break;
+                    } else //Recibido directamente del Server
+                    {
+                        System.err.println("ERROR: Un agente ha recibido " + json.get("details").asString());
+                        logout();
+                    }
+                } else {
+                    System.err.println("ERROR: El controlador ha recibido " + json.get("details").asString());
+                }
+
+                //Hacer algo para detener la ejecucion de los agentes
                 break;
         }
     }
