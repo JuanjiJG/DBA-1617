@@ -15,6 +15,7 @@ public class Main {
         // Pedir al usuario el mundo al que conectarse
         Scanner keyboard = new Scanner(System.in);
 
+        System.out.println("NOTA PRÁCTICA 3: Añade dos ceros al final (00) para mapa sin límite de fuel.");
         System.out.println("Introduce el nº del mapa que quieres explorar (del 1 al 10):");
         int mundo = keyboard.nextInt();
 
