@@ -8,6 +8,7 @@ import java.util.Scanner;
  * Clase Main para comenzar la ejecución de nuestro agente
  *
  * @author Miguel Ángel Torres López
+ * @author Juan José Jiménez García
  */
 public class Main {
 
@@ -42,8 +43,8 @@ public class Main {
         gugel.start();
         
         // Iniciamos los agentes exploradores
-        for (int i = 0; i < agentes.length; i++) {
-            agentes[i].start();
+        for (Agente agente : agentes) {
+            agente.start();
         }
     }
     

@@ -216,6 +216,16 @@ public class BaseConocimiento {
     public int getTamMapa() {
         return this.tamanioMapa;
     }
+    
+    /**
+     * Método para devolver la posición del objetivo
+     *
+     * @return La posición del objetivo
+     * @author Juan José Jiménez García
+     */
+    public Pair<Integer, Integer> getPosicionObjetivo() {
+        return this.posicionObjetivo;
+    }
 
     /**
      * Método para decrementar la antigüedad.
