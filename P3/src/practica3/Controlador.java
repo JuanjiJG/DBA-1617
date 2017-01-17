@@ -94,6 +94,15 @@ public class Controlador extends SingleAgent {
 
                     // Si hemos obtenido el conversationID, continuar
                     if (!"".equals(this.conversationID)) {
+                        // Recibir todas las peticiones de enviar conversationID a los agentes exploradores
+                        for(int i = 0; i < this.agentesMAP.size(); i++) {
+                            try {
+                                this.recibir();
+                            } catch (InterruptedException | IOException ex) {
+                                Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+                        
                         // Mandar conversationID a los demás agentes
                         this.compartirConversationID();
 
