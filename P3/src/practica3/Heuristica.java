@@ -130,6 +130,8 @@ public class Heuristica {
                             break;
                     }
         }
+        
+        return accion_resultado;
     }
     
     //Por si falla segun dice antonio deberia de devolver EstadoAgente agente_seleccionado
@@ -370,11 +372,11 @@ public class Heuristica {
             int agente_seleccionado_empate = indices_posibles.get(0);
             for(int i =0; i < indices_posibles.size(); i++){
                 switch(estados.get(indices_posibles.get(i)).getTipo()){
-                    case TiposAgente.camion :
+                    case camion :
                         if(estados.get(agente_seleccionado_empate).getTipo() != TiposAgente.camion)
                             agente_seleccionado_empate = indices_posibles.get(i);
                         break;
-                    case TiposAgente.avion :
+                    case dron :
                         if(estados.get(agente_seleccionado_empate).getTipo() == TiposAgente.coche)
                             agente_seleccionado_empate = indices_posibles.get(i);                        
                         break;
@@ -418,7 +420,7 @@ public class Heuristica {
     public EstadoAgente objetivoAlcanzado(ArrayList<EstadoAgente> estados, Pair<Integer,Integer> objetivo,boolean tenemosFuelEnElMundo){
         ArrayList<EstadoAgente> agentes_no_en_el_objetivo = new ArrayList(estados);
          for(int i = 0; i < estados.size(); i++){
-             if(estados.get(i).getPisandoObjetivo()){
+             if(estados.get(i).isPisandoObjetivo()){
                  agentes_no_en_el_objetivo.remove(i);
              }
          }
@@ -434,10 +436,10 @@ public class Heuristica {
         
         
         ///Elegimos al agente que esté más cerca del objetivo
-        minPuntuacion = calcularPuntuacion(estados.get(0).getPosicion(),objetivo);
+        minPuntuacion = calcularPuntuacion(estados.get(0),objetivo);
         //Sacamos el agente que este mas cerca del objetivo, es decir, que su distancia hacia el objetivo sea la minima o que haya empatado con otro.
         for(int i = 1; i < estados.size(); i++){
-            double puntuacion_aux = calcularPuntuacion(estados.get(i).getPosicion(),objetivo);
+            double puntuacion_aux = calcularPuntuacion(estados.get(i),objetivo);
             
             if(puntuacion_aux < minPuntuacion){
                 minPuntuacion = puntuacion_aux;
@@ -447,7 +449,7 @@ public class Heuristica {
         
             
         for(int i = 0; i < estados.size(); i++){
-            double distancia_aux = calcularPuntuacion(estados.get(i).getPosicion(),objetivo);
+            double distancia_aux = calcularPuntuacion(estados.get(i),objetivo);
             if(distancia_aux <= minPuntuacion + this.UMBRAL_EMPATE_PUNTUACION ){
                 indices_posibles.add(i);
             }            
@@ -457,8 +459,8 @@ public class Heuristica {
         if(indices_posibles.size() > 0){
             int agente_seleccionado_empate = indices_posibles.get(0);
             for(int i =0; i < indices_posibles.size(); i++){
-                if(estados.get(indices_posibles.get(i)).getTipo()== TipoAgentes.AVION){
-                        if(estados.get(agente_seleccionado_empate).getTipo() != TipoAgentes.AVION)
+                if(estados.get(indices_posibles.get(i)).getTipo()== TiposAgente.dron){
+                        if(estados.get(agente_seleccionado_empate).getTipo() != TiposAgente.dron)
                             agente_seleccionado_empate = indices_posibles.get(i);
                 }
             }
