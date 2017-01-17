@@ -1,12 +1,14 @@
 package practica3;
 
 import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import es.upv.dsic.gti_ia.core.ACLMessage;
 import es.upv.dsic.gti_ia.core.AgentID;
 import es.upv.dsic.gti_ia.core.SingleAgent;
 import java.util.HashMap;
 import java.util.Map;
+import javafx.util.Pair;
 
 /**
  *
@@ -94,7 +96,8 @@ public class Controlador extends SingleAgent {
         switch (resp.getPerformativeInt()) {
             case ACLMessage.INFORM:
                 //Del servidor
-                if (!resp.getConversationId().equals(AGENTES_CONVERSATION_ID)) {
+                if (!resp.getConversationId().equals(AGENTES_CONVERSATION_ID))
+				{
                     if (json.get("result") != null) //OK to subscribe
                     {
                         conversationID = resp.getConversationId();
@@ -105,9 +108,30 @@ public class Controlador extends SingleAgent {
                 } else //De un agente
                 {
                     //Respuesta al QUERY_REF pidiendo el estado
-                    if (json.get("estado") != null) {
+                    if (json.get("estado") != null)
+					{
                         JsonObject jsonEstado = json.get("estado").asObject();
-                        //Aun no se como construir el objeto EstadoAgente
+						JsonArray jsonRadar = jsonEstado.get("percepcion").asArray();
+
+						EstadoAgente estado = new EstadoAgente(
+								new int[1][1],
+								new Pair<>(jsonEstado.get("i").asInt(), jsonEstado.get("j").asInt()),
+								jsonEstado.get("fuelActual").asInt(),
+								jsonEstado.get("crashed").asBoolean(),
+								jsonEstado.get("pisandoObjetivo").asBoolean(),
+								jsonEstado.get("replayWithControlador").asString(),
+								TiposAgente.valueOf(jsonEstado.get("tipo").asString()),
+								Acciones.valueOf(jsonEstado.get("nextAction").asString())
+						);
+						
+						int [][] radar = new int[estado.getVisibilidad()][estado.getVisibilidad()];
+						
+						for (int i = 0; i < estado.getVisibilidad()*estado.getVisibilidad(); i++) {
+						   radar[i / estado.getVisibilidad()][i % estado.getVisibilidad()] = jsonRadar.get(i).asInt();
+						}
+						
+						estado.setPercepcion(radar);
+						
                     } else //Respuesta al REQUEST de la accion escogida
                     {
                         //Do nothing
@@ -121,14 +145,29 @@ public class Controlador extends SingleAgent {
                 break;
 
             default:
-                System.err.println("ERROR: El controlador ha recibido " + json.get("details"));
-                //Hacer algo para detener la ejecucion de los agentes
+				if (resp.getConversationId().equals(AGENTES_CONVERSATION_ID)) //Recibido de un Agente
+				{
+					if (json.get("details").asString().contains("BAD_ENERGY"))
+					{
+						fuelMundoAcabado = true;
+						break;
+					}
+					else //Recibido directamente del Server
+					{
+						System.err.println("ERROR: Un agente ha recibido " + json.get("details").asString());
+						logout();
+					}
+				}
+				else
+					System.err.println("ERROR: El controlador ha recibido " + json.get("details").asString());
+                
+				//Hacer algo para detener la ejecucion de los agentes
                 break;
         }
     }
 
     /**
-     * Informa (send)Solo del al agente seleccionado su siguiente accion
+     * Informa (send) Solo del al agente seleccionado su siguiente accion
      *
      * @author Gregorio Carvajal Expósito
      * @param agenteElegido Clase en la que tenemos el agente elegido y la
@@ -138,7 +177,7 @@ public class Controlador extends SingleAgent {
         JsonObject json = new JsonObject();
         ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
 
-        json.add("command", agenteElegido.getNextAction());
+        json.add("command", agenteElegido.getNextAction().toString());
 
         msg.setSender(this.getAid());
         msg.setContent(json.toString());
