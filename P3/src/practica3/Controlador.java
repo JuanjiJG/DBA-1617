@@ -344,7 +344,7 @@ public class Controlador extends SingleAgent {
                 data[i] = (byte) ja.get(i).asInt();
             }
 
-            String filename = this.MUNDO_ELEGIDO + " - " + new SimpleDateFormat("yyyy-MM-dd-hh-mm").format(new Date()) + ".png";
+            String filename = this.MUNDO_ELEGIDO + " - " + new SimpleDateFormat("yyyy-MM-dd-hh-mm").format(new Date()) + " - " + this.conversationID + ".png";
             FileOutputStream fos = new FileOutputStream(filename);
             fos.write(data);
             fos.close();
