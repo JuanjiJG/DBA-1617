@@ -31,6 +31,8 @@ public class Agente extends SingleAgent {
 	private EstadoAgente miEstado;
 	private boolean percepcionRecibida;
 	private boolean percepcionSolicitada;
+	private boolean meHeMovido = false;
+	private boolean necesitoCapabilities = true;
 
     public Agente(AgentID aid) throws Exception {
         super(aid);
@@ -93,7 +95,12 @@ public class Agente extends SingleAgent {
 
 				//Espero a recibir un mensaje del servidor con la respuesta a la accion realizada
 				//e informo al controlador del resultado
-				this.recibir();
+				if (meHeMovido || necesitoCapabilities)
+				{
+					this.recibir();
+					necesitoCapabilities = false;
+					meHeMovido = false;
+				}
             }
         } catch (InterruptedException ex) {
             Logger.getLogger(Agente.class.getName()).log(Level.SEVERE, null, ex);
@@ -284,6 +291,8 @@ public class Agente extends SingleAgent {
 		msg.setInReplyTo(repyWithServer);
 		
 		send(msg);
+		
+		meHeMovido = true;
 	}
 	
 	/**
