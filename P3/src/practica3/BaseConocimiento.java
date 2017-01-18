@@ -68,7 +68,8 @@ public class BaseConocimiento {
      *
      * @param numMapa El número del mapa que se quiere cargar
      * @param tamMapa El tamaño del mapa que se quiere cargar
-     * @return Un booleano que indica si se ha encontrado el objetivo durante la carga
+     * @return Un booleano que indica si se ha encontrado el objetivo durante la
+     * carga
      * @author Juan José Jiménez García
      */
     public boolean cargarMapa(int numMapa, int tamMapa) {
@@ -84,7 +85,7 @@ public class BaseConocimiento {
         Se puede reiniciar un mapa borrando el archivo generado para que vuelva a inicializar
          */
         ObjectInputStream inputStream = null;
-		int auxmap=numMapa-1;
+        int auxmap = numMapa - 1;
         String fileName = "map_" + auxmap + "_savefile.data";
         this.tamanioMapa = tamMapa;
         boolean existeArchivo = false;
@@ -93,27 +94,25 @@ public class BaseConocimiento {
         try {
             //Comprueba si existe el archivo
             File f = new File(fileName);
-            if(f.exists() && !f.isDirectory()) { 
-                 inputStream = new ObjectInputStream(new FileInputStream(fileName));
+            if (f.exists() && !f.isDirectory()) {
+                inputStream = new ObjectInputStream(new FileInputStream(fileName));
                 existeArchivo = true;
                 this.mapa = (int[][]) inputStream.readObject();
-				
-						//DEBUGGING
-					for(int i = 0; i < tamMapa; i++){
-						for(int j = 0; j < tamMapa; j++){
-							System.out.print(mapa[i][j]+" ");
-						}
-						System.out.println();
-					}
-				System.out.println("POLLONIUS MAXIMUS");
+
+                //DEBUGGING
+                for (int i = 0; i < tamMapa; i++) {
+                    for (int j = 0; j < tamMapa; j++) {
+                        System.out.print(mapa[i][j] + " ");
+                    }
+                    System.out.println();
+                }
                 if (this.buscarObjetivo()) {
                     existeObjetivo = true;
-                }  
-            }else
-            {
+                }
+            } else {
                 existeArchivo = false;
             }
-            
+
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(BaseConocimiento.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
@@ -216,13 +215,13 @@ public class BaseConocimiento {
             for (int j = 0; j < visibilidad; j++) {
 
                 //Nos interesa que primero actualice el mapa y despues compruebe si hay un 3 (objetivo)
-                if (mapa[posicion_inicial_i - (visibilidad/2) + i][posicion_inicial_j - (visibilidad/2) + j] == 5) {
-                    mapa[posicion_inicial_i - (visibilidad/2) + i][posicion_inicial_j - (visibilidad/2) + j] = percepcion[i][j];
+                if (mapa[posicion_inicial_i - (visibilidad / 2) + i][posicion_inicial_j - (visibilidad / 2) + j] == 5) {
+                    mapa[posicion_inicial_i - (visibilidad / 2) + i][posicion_inicial_j - (visibilidad / 2) + j] = percepcion[i][j];
                 }
 
                 //Compruebo si hay un 3 (casilla de objetivo)
-                if (mapa[posicion_inicial_i - (visibilidad/2) + i][posicion_inicial_j - (visibilidad/2) + j] == 3) {
-                    this.posicionObjetivo = new Pair(posicion_inicial_i - (visibilidad/2)+i, posicion_inicial_j - (visibilidad/2) +j);
+                if (mapa[posicion_inicial_i - (visibilidad / 2) + i][posicion_inicial_j - (visibilidad / 2) + j] == 3) {
+                    this.posicionObjetivo = new Pair(posicion_inicial_i - (visibilidad / 2) + i, posicion_inicial_j - (visibilidad / 2) + j);
                     objetivoEncontrado = true;
                 }
             }
@@ -232,32 +231,31 @@ public class BaseConocimiento {
         // BORRAR COMPROBACION AL TERMINAR PRUEBAS
         if (this.conjuntoEstados.size() < 4) {
             this.conjuntoEstados.add(estadoAgente);
-        }
-        else {
+        } else {
             System.out.println("Habia ya 4 EstadoAgente en el conjunto...");
         }
-		guardarMapa();
+        guardarMapa();
         return objetivoEncontrado;
     }
-    
+
     /**
      * Método para vaciar el conjunto de elementos EstadoAgente.
-     * 
+     *
      * @author Juan José Jiménez García
      */
     public void limpiarConjuntoEstados() {
-        
+
         this.conjuntoEstados.clear();
     }
-    
+
     /**
      * Método para obtener el conjunto de elementos EstadoAgente.
-     * 
+     *
      * @return El conjunto de elementos EstadoAgente
      * @author Juan José Jiménez García
      */
     public ArrayList<EstadoAgente> getConjuntoEstados() {
-        
+
         return this.conjuntoEstados;
     }
 

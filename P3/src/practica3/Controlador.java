@@ -84,42 +84,42 @@ public class Controlador extends SingleAgent {
                 case INICIAL:
                     // Realizamos orden subscribe al servidor
                     this.suscribirse();
-					
-					//Recibimos el conversationID del server y las peticiones de los 4 agentes
-					for(int i = 0; i < 5; i++) {
-						try {
-							recibir();
-						} catch (InterruptedException | IOException ex) {
-							Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
-						}
-					}
 
-					// Mandar conversationID a los demás agentes
-					this.compartirConversationID();
+                    //Recibimos el conversationID del server y las peticiones de los 4 agentes
+                    for (int i = 0; i < 5; i++) {
+                        try {
+                            recibir();
+                        } catch (InterruptedException | IOException ex) {
+                            Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
 
-					// Estamos subcritos
-					int tamMapa = this.obtenerTamanoMapa();
-					heuristica.setTamMapa(tamMapa);
-					
-					// Cargar el mapa
-					boolean resultado = bc.cargarMapa(this.MUNDO_ELEGIDO, tamMapa);
+                    // Mandar conversationID a los demás agentes
+                    this.compartirConversationID();
 
-					if (resultado) {
-						this.estadoActual = EstadosEjecucion.ENCONTRADO;
-					} else {
-						this.estadoActual = EstadosEjecucion.BUSCANDO;
-					}
+                    // Estamos subcritos
+                    int tamMapa = this.obtenerTamanoMapa();
+                    heuristica.setTamMapa(tamMapa);
+
+                    // Cargar el mapa
+                    boolean resultado = bc.cargarMapa(this.MUNDO_ELEGIDO, tamMapa);
+
+                    if (resultado) {
+                        this.estadoActual = EstadosEjecucion.ENCONTRADO;
+                    } else {
+                        this.estadoActual = EstadosEjecucion.BUSCANDO;
+                    }
                     break;
 
                 case BUSCANDO:
                     // Obtener un array de EstadoAgente
                     this.pedirEstadoAgente();
-                     
+
                     // Recopilar los estados de agente
                     for (int i = 0; i < this.agentesMAP.size(); i++) {
                         try {
                             this.recibir();
-                            System.out.println("Recibido el agente: "+i);
+                            System.out.println("Recibido el agente: " + i);
                             System.out.flush();
                         } catch (InterruptedException | IOException ex) {
                             Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
@@ -128,12 +128,12 @@ public class Controlador extends SingleAgent {
 
                     // Una vez recopilados, los pedimos a la base de conocimiento
                     estadosAgentes = bc.getConjuntoEstados();
-                    
+
                     //Imprimimos los estados
-                    for(int i=0;i<estadosAgentes.size();++i){
-                        System.out.println("ID CONTROLADOR Estado del agente: "+estadosAgentes.get(i).getReplyWithControlador());
+                    for (int i = 0; i < estadosAgentes.size(); ++i) {
+                        System.out.println("ID CONTROLADOR Estado del agente: " + estadosAgentes.get(i).getReplyWithControlador());
                         System.out.flush();
-                        System.out.println("TIPO Estado del agente: "+estadosAgentes.get(i).getTipo().toString());
+                        System.out.println("TIPO Estado del agente: " + estadosAgentes.get(i).getTipo().toString());
                         System.out.flush();
                     }
                     // Si las percepciones han localizado el objetivo, pasaremos a otro estado
@@ -141,30 +141,29 @@ public class Controlador extends SingleAgent {
                         // Pasar el array a la heurística y obtener el agente seleccionado
                         EstadoAgente agenteSeleccionado = this.heuristica.buscandoObjetivo(estadosAgentes, this.quedaFuel);
                         this.bc.limpiarConjuntoEstados();
-						
+
                         //Imprimimos el agente seleccionado
-                        System.out.println("AGENTE SELECCIONADO ID CONTROLADOR Estado del agente: "+agenteSeleccionado.getReplyWithControlador());
+                        System.out.println("AGENTE SELECCIONADO ID CONTROLADOR Estado del agente: " + agenteSeleccionado.getReplyWithControlador());
                         System.out.flush();
-                        System.out.println("AGENTE SELECCIONADO Estado del agente: "+agenteSeleccionado.getTipo().toString());
+                        System.out.println("AGENTE SELECCIONADO Estado del agente: " + agenteSeleccionado.getTipo().toString());
                         System.out.flush();
-                        
-                        
+
                         // Si la siguiente accion es null, significa que nos hemos quedad sin fuel
                         if (agenteSeleccionado.getNextAction() == null) {
                             this.estadoActual = EstadosEjecucion.TERMINADO;
                         } else {
                             // Mandamos la accion al agente seleccionado
                             this.asignarAccion(agenteSeleccionado);
-							try {
-								this.recibir();
-							} catch (InterruptedException | IOException ex) {
-								Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
-							}
+                            try {
+                                this.recibir();
+                            } catch (InterruptedException | IOException ex) {
+                                Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
+                            }
                         }
                     } else {
                         this.estadoActual = EstadosEjecucion.ENCONTRADO;
                     }
-					
+
                     break;
 
                 case ENCONTRADO:
@@ -198,20 +197,20 @@ public class Controlador extends SingleAgent {
                         this.estadoActual = EstadosEjecucion.ALCANZADO;
                     } else {
                         // Pasar el array a la heurística y obtener el agente seleccionado
-                        EstadoAgente agenteSeleccionado = this.heuristica.objetivoEncontrado(estadosAgentes,bc.getPosicionObjetivo(), this.quedaFuel);
-						this.bc.limpiarConjuntoEstados();
-						
+                        EstadoAgente agenteSeleccionado = this.heuristica.objetivoEncontrado(estadosAgentes, bc.getPosicionObjetivo(), this.quedaFuel);
+                        this.bc.limpiarConjuntoEstados();
+
                         // Si la siguiente accion es null, significa que nos hemos quedad sin fuel
                         if (agenteSeleccionado.getNextAction() == null) {
                             this.estadoActual = EstadosEjecucion.TERMINADO;
                         } else {
                             // Mandamos la accion al agente seleccionado
                             this.asignarAccion(agenteSeleccionado);
-							try {
-								this.recibir();
-							} catch (InterruptedException | IOException ex) {
-								Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
-							}
+                            try {
+                                this.recibir();
+                            } catch (InterruptedException | IOException ex) {
+                                Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
+                            }
                         }
                     }
                     break;
@@ -252,19 +251,19 @@ public class Controlador extends SingleAgent {
                     } else {
                         // Pasar el array a la heurística y obtener el agente seleccionado
                         EstadoAgente agenteSeleccionado = this.heuristica.objetivoAlcanzado(estadosAgentes, bc.getPosicionObjetivo(), this.quedaFuel);
-						this.bc.limpiarConjuntoEstados();
-						
+                        this.bc.limpiarConjuntoEstados();
+
                         // Si la siguiente accion es null, significa que nos hemos quedad sin fuel
                         if (agenteSeleccionado.getNextAction() == null) {
                             this.estadoActual = EstadosEjecucion.TERMINADO;
                         } else {
                             // Mandamos la accion al agente seleccionado
                             this.asignarAccion(agenteSeleccionado);
-							try {
-								this.recibir();
-							} catch (InterruptedException | IOException ex) {
-								Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
-							}
+                            try {
+                                this.recibir();
+                            } catch (InterruptedException | IOException ex) {
+                                Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
+                            }
                         }
                     }
                     break;
@@ -310,9 +309,9 @@ public class Controlador extends SingleAgent {
         int[] tamaniosMapa = {110, 110, 110, 110, 110, 160, 110, 110, 160, 510};
 
         if (this.MUNDO_ELEGIDO <= 10) {
-            return tamaniosMapa[this.MUNDO_ELEGIDO + 1];
+            return tamaniosMapa[this.MUNDO_ELEGIDO-1];
         } else {
-            return tamaniosMapa[(this.MUNDO_ELEGIDO + 1) / 100];
+            return tamaniosMapa[(this.MUNDO_ELEGIDO-1) / 100];
         }
     }
 
@@ -358,12 +357,12 @@ public class Controlador extends SingleAgent {
      * @author Gregorio Carvajal Expósito
      */
     public void recibir() throws InterruptedException, IOException {
-        
+
         ACLMessage resp = receiveACLMessage();
         System.out.println("Controlador mensaje recibido");
         System.out.flush();
         JsonObject json = Json.parse(resp.getContent()).asObject();
-        System.out.println("Performativa: "+resp.getPerformativeInt());
+        System.out.println("Performativa: " + resp.getPerformativeInt());
         System.out.flush();
         switch (resp.getPerformativeInt()) {
             case ACLMessage.INFORM:
@@ -377,19 +376,19 @@ public class Controlador extends SingleAgent {
                         this.procesarTraza(json);
                     }
                 } else //De un agente
-                {
-                    //Respuesta al QUERY_REF pidiendo el estado
+                 //Respuesta al QUERY_REF pidiendo el estado
                     if (json.get("estado") != null) {
                         JsonObject jsonEstado = json.get("estado").asObject();
                         JsonArray jsonRadar = jsonEstado.get("percepcion").asArray();
-						Acciones accion;
-						
-						if (jsonEstado.get("nextAction").asString().equals(""))
-							accion = null;
-						else
-							accion = Acciones.valueOf(jsonEstado.get("nextAction").asString());
-                        
-						EstadoAgente estado = new EstadoAgente(
+                        Acciones accion;
+
+                        if (jsonEstado.get("nextAction").asString().equals("")) {
+                            accion = null;
+                        } else {
+                            accion = Acciones.valueOf(jsonEstado.get("nextAction").asString());
+                        }
+
+                        EstadoAgente estado = new EstadoAgente(
                                 new int[1][1],
                                 new Pair<>(jsonEstado.get("i").asInt(), jsonEstado.get("j").asInt()),
                                 jsonEstado.get("fuelActual").asInt(),
@@ -412,12 +411,11 @@ public class Controlador extends SingleAgent {
                     {
                         //Do nothing
                     }
-                }
 
                 break;
 
             case ACLMessage.QUERY_REF:
-                System.out.println("Agente que me ha respondido: "+resp.getReplyWith()+" "+resp.getSender().toString());
+                System.out.println("Agente que me ha respondido: " + resp.getReplyWith() + " " + resp.getSender().toString());
                 System.out.flush();
                 agentesMAP.put(resp.getReplyWith(), resp.getSender());
                 break;
