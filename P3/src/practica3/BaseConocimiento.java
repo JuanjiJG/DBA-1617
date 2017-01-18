@@ -84,7 +84,8 @@ public class BaseConocimiento {
         Se puede reiniciar un mapa borrando el archivo generado para que vuelva a inicializar
          */
         ObjectInputStream inputStream = null;
-        String fileName = "map_" + numMapa + "_savefile.data";
+		int auxmap=numMapa-1;
+        String fileName = "map_" + auxmap + "_savefile.data";
         this.tamanioMapa = tamMapa;
         boolean existeArchivo = false;
         boolean existeObjetivo = false;
@@ -199,29 +200,25 @@ public class BaseConocimiento {
         int visibilidad = estadoAgente.getVisibilidad();
 
         Pair<Integer, Integer> posicion = estadoAgente.getPosicion();
-        int posicion_inicial_x = posicion.getKey();
-        int posicion_inicial_y = posicion.getValue();
+        int posicion_inicial_i = posicion.getKey() +5;
+        int posicion_inicial_j = posicion.getValue() +5;
 
         for (int i = 0; i < visibilidad; i++) {
             for (int j = 0; j < visibilidad; j++) {
 
                 //Nos interesa que primero actualice el mapa y despues compruebe si hay un 3 (objetivo)
-                if (mapa[posicion_inicial_y + i][posicion_inicial_x + j] == 5) {
-                    mapa[posicion_inicial_y + i][posicion_inicial_x + j] = percepcion[i][j];
+                if (mapa[posicion_inicial_i - (visibilidad/2) + i][posicion_inicial_j - (visibilidad/2) + j] == 5) {
+                    mapa[posicion_inicial_i - (visibilidad/2) + i][posicion_inicial_j - (visibilidad/2) + j] = percepcion[i][j];
                 }
 
                 //Compruebo si hay un 3 (casilla de objetivo)
-                if (mapa[posicion_inicial_y + i][posicion_inicial_x + j] == 3) {
-                    this.posicionObjetivo = new Pair(posicion_inicial_x + 2, posicion_inicial_y + 2);
+                if (mapa[posicion_inicial_i - (visibilidad/2) + i][posicion_inicial_j - (visibilidad/2) + j] == 3) {
+                    this.posicionObjetivo = new Pair(posicion_inicial_i - (visibilidad/2)+i, posicion_inicial_j - (visibilidad/2) +j);
                     objetivoEncontrado = true;
                 }
             }
         }
 
-        if (mapa[posicion.getValue() + 2][posicion.getKey() + 2] != 3) {
-            mapa[posicion.getValue() + 2][posicion.getKey() + 2] = antiguedad;
-        }
-        
         // Tras haber actualizado, añadimos el EstadoAgente al array
         // BORRAR COMPROBACION AL TERMINAR PRUEBAS
         if (this.conjuntoEstados.size() < 4) {
@@ -230,7 +227,7 @@ public class BaseConocimiento {
         else {
             System.out.println("Habia ya 4 EstadoAgente en el conjunto...");
         }
-
+		guardarMapa();
         return objetivoEncontrado;
     }
     

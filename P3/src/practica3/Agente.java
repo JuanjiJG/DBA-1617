@@ -314,7 +314,7 @@ public class Agente extends SingleAgent {
 		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
 		JsonObject json = new JsonObject();
 		
-		json.add("result", "ok");
+		json.add("result", "OK");
 		
 		msg.setSender(this.getAid());
 		msg.setContent(json.toString());

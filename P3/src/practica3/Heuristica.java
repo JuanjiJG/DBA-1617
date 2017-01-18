@@ -85,8 +85,8 @@ public class Heuristica {
     
     private Acciones comprobarDireccion(Acciones[] acciones, int [][] mapa,Pair<Integer,Integer> posicion_agente){
         //Cambiamos los indices para que concuerden con los del profesor.
-        int j = posicion_agente.getKey();
-        int i = posicion_agente.getValue();
+        int i = posicion_agente.getKey();
+        int j = posicion_agente.getValue();
         Acciones accion_resultado = null;
         
         for(int h = 0; h < 7 && accion_resultado != null; h++){
@@ -140,8 +140,8 @@ public class Heuristica {
     //Por si falla segun dice antonio deberia de devolver EstadoAgente agente_seleccionado
     private void calcularSiguienteMovimiento(EstadoAgente agente_seleccionado,Pair<Integer,Integer> posicion_agente, Pair<Integer,Integer> posicion_destino){
         Pair<Acciones,Pair<Integer,Integer>> casilla = calcularMejorCasilla(posicion_agente,posicion_destino);
-        int i=casilla.getValue().getValue();//Invertimos las variables para nuestro mapa
-        int j=casilla.getValue().getKey();//Invertimos las variables para nuestro mapa
+        int j=casilla.getValue().getValue();//Invertimos las variables para nuestro mapa
+        int i=casilla.getValue().getKey();//Invertimos las variables para nuestro mapa
         int mapa [][] = this.linkbc.getMapa();
         Acciones direccion = casilla.getKey();
         
@@ -282,8 +282,8 @@ public class Heuristica {
     private Pair<Acciones,Pair<Integer,Integer>> calcularMejorCasilla(Pair<Integer,Integer> posicion_agente, Pair<Integer,Integer> posicion_destino){
         Pair<Integer,Integer> posicion_objetivo = new Pair(posicion_destino.getValue(),posicion_destino.getKey());
         //Cambiamos los indices para que concuerden con los del profesor.
-        int j = posicion_agente.getKey();
-        int i = posicion_agente.getValue();
+        int i = posicion_agente.getKey();
+        int j = posicion_agente.getValue();
         double minimo;
         Pair<Integer,Integer> resultado = null;
         Acciones direccion = null;
@@ -304,6 +304,9 @@ public class Heuristica {
         distancias[2][0] = calcularDistanciaEuclidea(new Pair(i+1,j-1),posicion_objetivo);
         
         minimo = distancias[0][0];
+		resultado = new Pair(i-1,j-1);
+		direccion = Acciones.moveNW;
+		
         //Puede fallar la conversion de los indices
         for(int c=0; c < 3; c++){
             for(int h=0; h<3; h++){
@@ -523,7 +526,14 @@ public class Heuristica {
         int cont_cuadrante_4 = 0;
         int maxCuadrante = 0;
         int cuadrante = 1;
-        
+        for(int i = 0; i < tamMapa; i++){
+            for(int j = 0; j < tamMapa; j++){
+				System.out.print(mapa[i][j]+" ");
+			}
+			System.out.println();
+		}
+		
+		
         for(int i = 5; i < tamMapa; i++){
             for(int j = 5; j < tamMapa; j++){
                 //Contamos el numero de casillas inexploras que hay en cada cuadrante. Los if filtran si los indices estan dentro de cada cuadrante.
