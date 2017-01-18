@@ -23,7 +23,7 @@ import javafx.util.Pair;
  */
 public class Agente extends SingleAgent {
     public static final String SERVER_NAME = "Furud";
-    public static final String AGENT_ID = "GugelCarRedForest";
+    public static final String AGENT_CONTROLADOR = "GugelCarRedForest";
     private static final String AGENTES_CONVERSATION_ID = "grupo-6-agentes";
     private String conversationIDServer;
 	private String conversationIDControlador;
@@ -45,7 +45,7 @@ public class Agente extends SingleAgent {
     @Override
     public void init(){
         System.out.println("\n\nInicializando estado del agente...");
-        
+        System.out.flush();
         this.conversationIDServer="";
         this.conversationIDControlador="";
         this.repyWithServer="";
@@ -61,20 +61,20 @@ public class Agente extends SingleAgent {
     @Override
     public void execute(){
         System.out.println("Ejecutando el agente...");
-        
+        System.out.flush();
         try {
             //Solicito el server id al controlador
             this.solicitarConversationID();
             System.out.println("Solicito el conversation ID");
-            
+            System.out.flush();
             //Llamo al metodo recibir para esperar el conversation id del server
             this.recibir();
             System.out.println("Recibo el conversation ID: "+conversationIDControlador);
-            
+            System.out.flush();
             //Una vez ya ha recibido el agente el id de conversaicon del server, hago checkin en este
             this.checkin();
             System.out.println("He hecho el checkin");
-            
+            System.out.flush();
             //Recibo una respuesta del servidor al checkin con las capabilities
             this.recibir();
 
@@ -85,21 +85,26 @@ public class Agente extends SingleAgent {
                     //Solicito al servidor las percepciones del agente
                     this.solicitarPercepcion();
                     System.out.println("Solicito percepcion");
+                    System.out.flush();
                     //Recibo las percepciones que el servidor me manda en respuesta a la solicitud
                     this.recibir();
                     System.out.println("He recibido las percepciones");
+                    System.out.flush();
                     //Espero a recibir un mensaje del controlador consultando el estado del agente
                     //y envio el el estado del agente al controlador
                     this.recibir();
                     System.out.println("He recibido un mensaje del controlado consultado el estado y enviado el estado al controlador");
+                    System.out.flush();
                     //Espero a recibir un mensaje del controlador con la acción que realizar
                     //y mando esa accion al server
                     this.recibir();
                     System.out.println("He recibido un mensaje del controlador con la acción que realizar");
+                    System.out.flush();
                     //Espero a recibir un mensaje del servidor con la respuesta a la accion realizada
                     //e informo al controlador del resultado
                     this.recibir();
                     System.out.println("He recibido un mensaje del servidor con la respuesta a la accion realizada");
+                    System.out.flush();
                 }
                 else
                 {
@@ -119,6 +124,7 @@ public class Agente extends SingleAgent {
     @Override
     public void finalize() {
         System.out.println("Finalizando agente...");
+        System.out.flush();
         super.finalize();
     }
 	
@@ -250,7 +256,7 @@ public class Agente extends SingleAgent {
 		
 		msg.setSender(this.getAid());
 		msg.setContent(json.toString());
-		msg.setReceiver(new AgentID("GugelCarRedForest"));
+		msg.setReceiver(new AgentID(AGENT_CONTROLADOR));
 		msg.setConversationId(conversationIDControlador);
 		msg.setReplyWith(miEstado.getReplyWithControlador());
 		
@@ -311,7 +317,7 @@ public class Agente extends SingleAgent {
 		
 		msg.setSender(this.getAid());
 		msg.setContent(json.toString());
-		msg.setReceiver(new AgentID("GugelCarRedForest"));
+		msg.setReceiver(new AgentID(AGENT_CONTROLADOR));
 		msg.setConversationId(conversationIDControlador);
 		msg.setReplyWith(miEstado.getReplyWithControlador());
 		
@@ -352,7 +358,7 @@ public class Agente extends SingleAgent {
 		jsonErr.add("details", str);
 		
 		msg.setSender(this.getAid());
-		msg.setReceiver(new AgentID("GugelCarRedForest"));
+		msg.setReceiver(new AgentID(AGENT_CONTROLADOR));
 		msg.setContent(jsonErr.toString());
 		msg.setConversationId(conversationIDControlador);
 		msg.setReplyWith(miEstado.getReplyWithControlador());
@@ -374,9 +380,13 @@ public class Agente extends SingleAgent {
 		
 		msg.setSender(this.getAid());
 		msg.setContent(json.toString());
-		msg.setReceiver(new AgentID("GugelCarRedForest"));
+		msg.setReceiver(new AgentID(AGENT_CONTROLADOR));
 		msg.setReplyWith(miEstado.getReplyWithControlador());
+                msg.setConversationId(AGENTES_CONVERSATION_ID);
                 System.out.println("Respondeme con: "+miEstado.getReplyWithControlador());
+                System.out.flush();
+                System.out.println("Se lo envio a: "+msg.getReceiver());
+                System.out.flush();
 		
 		send(msg);
 	}
