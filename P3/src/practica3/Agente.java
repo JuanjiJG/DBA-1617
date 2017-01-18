@@ -22,6 +22,9 @@ import javafx.util.Pair;
  * @author Gregorio Carvajal Expósito
  */
 public class Agente extends SingleAgent {
+    public static final String SERVER_NAME = "Furud";
+    public static final String AGENT_ID = "GugelCarRedForest";
+    private static final String AGENTES_CONVERSATION_ID = "grupo-6-agentes";
     private String conversationIDServer;
 	private String conversationIDControlador;
 	private String repyWithServer;
@@ -74,7 +77,6 @@ public class Agente extends SingleAgent {
             
             //Recibo una respuesta del servidor al checkin con las capabilities
             this.recibir();
-            System.out.println("Mis cabailities son: "+ this.miEstado.getTipo().toString());
 
             while(true)
             {
@@ -132,17 +134,19 @@ public class Agente extends SingleAgent {
 		
 		switch (resp.getPerformativeInt()) {
 			case ACLMessage.INFORM:
-				if (resp.getInReplyTo().equals(miEstado.getReplyWithControlador())) //Respuesta conversationID del server
+                            String resp_InReplyTo = resp.getInReplyTo();
+                            String miEstado_ReplyWith = miEstado.getReplyWithControlador();
+				if (resp_InReplyTo!=null&&miEstado_ReplyWith!=null&&resp!=null&&miEstado!=null&&resp_InReplyTo.compareTo(miEstado_ReplyWith)==0) //Respuesta conversationID del server
 				{
 					conversationIDServer = json.get("serverID").asString();
 					conversationIDControlador = resp.getConversationId();
 				}
-				else if (json.get("result").asString().equals("ok")) //Capabilities o Accion ok
+				else if (!json.get("result").isObject()&&json.get("result").asString().compareTo("OK")==0) //Capabilities o Accion ok
 				{
 					if (json.names().size() > 1) //Capabilities
 					{
 						JsonObject capabilities = json.get("capabilities").asObject();
-						
+						this.repyWithServer = resp.getReplyWith();
 						int visibilidad = capabilities.get("range").asInt();
 						
 						switch (visibilidad)
@@ -246,7 +250,7 @@ public class Agente extends SingleAgent {
 		
 		msg.setSender(this.getAid());
 		msg.setContent(json.toString());
-		msg.setReceiver(new AgentID(Controlador.AGENT_ID));
+		msg.setReceiver(new AgentID("GugelCarRedForest"));
 		msg.setConversationId(conversationIDControlador);
 		msg.setReplyWith(miEstado.getReplyWithControlador());
 		
@@ -268,7 +272,7 @@ public class Agente extends SingleAgent {
 		
 		msg.setSender(this.getAid());
 		msg.setContent(json.toString());
-		msg.setReceiver(new AgentID(Controlador.SERVER_NAME));
+		msg.setReceiver(new AgentID(SERVER_NAME));
 		msg.setConversationId(conversationIDServer);
 		msg.setInReplyTo(repyWithServer);
 		
@@ -288,7 +292,7 @@ public class Agente extends SingleAgent {
 		
 		msg.setSender(this.getAid());
 		msg.setContent(json.toString());
-		msg.setReceiver(new AgentID(Controlador.SERVER_NAME));
+		msg.setReceiver(new AgentID(SERVER_NAME));
 		msg.setConversationId(conversationIDServer);
 		
 		send(msg);
@@ -307,7 +311,7 @@ public class Agente extends SingleAgent {
 		
 		msg.setSender(this.getAid());
 		msg.setContent(json.toString());
-		msg.setReceiver(new AgentID(Controlador.AGENT_ID));
+		msg.setReceiver(new AgentID("GugelCarRedForest"));
 		msg.setConversationId(conversationIDControlador);
 		msg.setReplyWith(miEstado.getReplyWithControlador());
 		
@@ -324,7 +328,7 @@ public class Agente extends SingleAgent {
 		ACLMessage msg = new ACLMessage(ACLMessage.QUERY_REF);
 		
 		msg.setSender(this.getAid());
-		msg.setReceiver(new AgentID(Controlador.SERVER_NAME));
+		msg.setReceiver(new AgentID(SERVER_NAME));
 		msg.setConversationId(conversationIDServer);
 		msg.setInReplyTo(repyWithServer);
 		
@@ -348,7 +352,7 @@ public class Agente extends SingleAgent {
 		jsonErr.add("details", str);
 		
 		msg.setSender(this.getAid());
-		msg.setReceiver(new AgentID(Controlador.AGENT_ID));
+		msg.setReceiver(new AgentID("GugelCarRedForest"));
 		msg.setContent(jsonErr.toString());
 		msg.setConversationId(conversationIDControlador);
 		msg.setReplyWith(miEstado.getReplyWithControlador());
@@ -370,7 +374,7 @@ public class Agente extends SingleAgent {
 		
 		msg.setSender(this.getAid());
 		msg.setContent(json.toString());
-		msg.setReceiver(new AgentID(Controlador.AGENT_ID));
+		msg.setReceiver(new AgentID("GugelCarRedForest"));
 		msg.setReplyWith(miEstado.getReplyWithControlador());
                 System.out.println("Respondeme con: "+miEstado.getReplyWithControlador());
 		

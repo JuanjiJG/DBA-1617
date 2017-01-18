@@ -28,7 +28,7 @@ public class Main {
 
         // Creamos el objeto Controlador y los 4 agentes exploradores
         try {
-            gugel = new Controlador(new AgentID("GugelCarRedForest"), mundo);
+            gugel = new Controlador(new AgentID(Controlador.AGENT_ID), mundo);
         
             for (int i = 0; i < agentes.length; i++) {
                 agentes[i] = new Agente(new AgentID("Agente_" + i));

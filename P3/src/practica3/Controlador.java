@@ -25,7 +25,7 @@ import javafx.util.Pair;
 public class Controlador extends SingleAgent {
 
     public static final String SERVER_NAME = "Furud";
-    public static final String AGENT_ID = "controlador";
+    public static final String AGENT_ID = "GugelCarRedForest";
     private static final String AGENTES_CONVERSATION_ID = "grupo-6-agentes";
     private final int MUNDO_ELEGIDO;
     private boolean quedaFuel;
@@ -351,7 +351,9 @@ public class Controlador extends SingleAgent {
      * @author Gregorio Carvajal Expósito
      */
     public void recibir() throws InterruptedException, IOException {
+        
         ACLMessage resp = receiveACLMessage();
+        System.out.println("Controlador mensaje recibido");
         JsonObject json = Json.parse(resp.getContent()).asObject();
         System.out.println("Performativa: "+resp.getPerformativeInt());
         switch (resp.getPerformativeInt()) {
