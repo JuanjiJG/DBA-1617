@@ -84,60 +84,33 @@ public class Controlador extends SingleAgent {
                 case INICIAL:
                     // Realizamos orden subscribe al servidor
                     this.suscribirse();
-                    //Imprimimos el estado del agente
-                    System.out.println("Mandamos la subcripción");
-                    System.out.flush();
-                    // Recibimos el mensaje que debería contener el conversationID
-                    try {
-                        this.recibir();
-                    } catch (InterruptedException | IOException ex) {
-                        Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+					
+					//Recibimos el conversationID del server y las peticiones de los 4 agentes
+					for(int i = 0; i < 5; i++) {
+						try {
+							recibir();
+						} catch (InterruptedException | IOException ex) {
+							Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
+						}
+					}
 
-                    // Si hemos obtenido el conversationID, continuar
-                    if (this.conversationID.compareTo("")!=0) {                    
-                        // Recibir todas las peticiones de enviar conversationID a los agentes exploradores
-                        System.out.println("Recibiendo QUERY-REF");
-                        System.out.flush();
-                        for(int i = 0; i < 4; i++) {
-                            try {
-                                System.out.println("Recibiendo QUERY-REF");
-                                System.out.flush();
-                                this.recibir();
-                                 System.out.println("Añadiendo agentes");
-                                 System.out.flush();
-                            } catch (InterruptedException | IOException ex) {
-                                Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
-                            }
-                        }
-                        
-                        // Mandar conversationID a los demás agentes
-                        this.compartirConversationID();
+					// Mandar conversationID a los demás agentes
+					this.compartirConversationID();
 
-                        // Estamos subcritos
-                        System.out.println("Estamos subcritos: "+conversationID);
-                        System.out.flush();
-                        int tamMapa = this.obtenerTamanoMapa();
-                        System.out.println("Tamaño del mapa actual: "+tamMapa);
-                        System.out.flush();
-                        // Cargar el mapa
-                        boolean resultado = bc.cargarMapa(this.MUNDO_ELEGIDO, tamMapa);
+					// Estamos subcritos
+					int tamMapa = this.obtenerTamanoMapa();
+					
+					// Cargar el mapa
+					boolean resultado = bc.cargarMapa(this.MUNDO_ELEGIDO, tamMapa);
 
-                        if (resultado) {
-                            this.estadoActual = EstadosEjecucion.ENCONTRADO;
-                        } else {
-                            this.estadoActual = EstadosEjecucion.BUSCANDO;
-                        }
-                    } // Si no lo hemos obtenido, ha habido un error
-                    else {
-                        this.estadoActual = EstadosEjecucion.ERROR;
-                    }
+					if (resultado) {
+						this.estadoActual = EstadosEjecucion.ENCONTRADO;
+					} else {
+						this.estadoActual = EstadosEjecucion.BUSCANDO;
+					}
                     break;
 
                 case BUSCANDO:
-                    //Estamos buscando
-                     System.out.println("Estamos buscando");
-                     System.out.flush();
                     // Obtener un array de EstadoAgente
                     this.pedirEstadoAgente();
                      
@@ -186,6 +159,7 @@ public class Controlador extends SingleAgent {
                     } else {
                         this.estadoActual = EstadosEjecucion.ENCONTRADO;
                     }
+					
                     break;
 
                 case ENCONTRADO:
@@ -391,8 +365,14 @@ public class Controlador extends SingleAgent {
                     if (json.get("estado") != null) {
                         JsonObject jsonEstado = json.get("estado").asObject();
                         JsonArray jsonRadar = jsonEstado.get("percepcion").asArray();
-
-                        EstadoAgente estado = new EstadoAgente(
+						Acciones accion;
+						
+						if (jsonEstado.get("nextAction").asString().equals(""))
+							accion = null;
+						else
+							accion = Acciones.valueOf(jsonEstado.get("nextAction").asString());
+                        
+						EstadoAgente estado = new EstadoAgente(
                                 new int[1][1],
                                 new Pair<>(jsonEstado.get("i").asInt(), jsonEstado.get("j").asInt()),
                                 jsonEstado.get("fuelActual").asInt(),
@@ -400,7 +380,7 @@ public class Controlador extends SingleAgent {
                                 jsonEstado.get("pisandoObjetivo").asBoolean(),
                                 jsonEstado.get("replyWithControlador").asString(),
                                 TiposAgente.valueOf(jsonEstado.get("tipo").asString()),
-                                Acciones.valueOf(jsonEstado.get("nextAction").asString())
+                                accion
                         );
 
                         int[][] radar = new int[estado.getVisibilidad()][estado.getVisibilidad()];

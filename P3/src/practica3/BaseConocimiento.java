@@ -18,7 +18,7 @@ import javafx.util.Pair;
 public class BaseConocimiento {
 
     private static BaseConocimiento instancia = null; // Patrón Singleton
-    private Pair<Integer, Integer> posicionObjetivo; //Si la posicion es null significa que no hemos encontrado el objetivo aún.
+    private Pair<Integer, Integer> posicionObjetivo = null; //Si la posicion es null significa que no hemos encontrado el objetivo aún.
     private int[][] mapa;
     private int tamanioMapa;
     private int mapaElegido;

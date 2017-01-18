@@ -60,56 +60,40 @@ public class Agente extends SingleAgent {
      */
     @Override
     public void execute(){
-        System.out.println("Ejecutando el agente...");
-        System.out.flush();
         try {
             //Solicito el server id al controlador
             this.solicitarConversationID();
-            System.out.println("Solicito el conversation ID");
-            System.out.flush();
+            
             //Llamo al metodo recibir para esperar el conversation id del server
             this.recibir();
-            System.out.println("Recibo el conversation ID: "+conversationIDControlador);
-            System.out.flush();
+            
             //Una vez ya ha recibido el agente el id de conversaicon del server, hago checkin en este
             this.checkin();
-            System.out.println("He hecho el checkin");
-            System.out.flush();
+            
             //Recibo una respuesta del servidor al checkin con las capabilities
             this.recibir();
 
-            while(true)
+			
+			
+            while(!miEstado.isPisandoObjetivo())
             {
-                if(miEstado.isPisandoObjetivo()==false)
-                {
-                    //Solicito al servidor las percepciones del agente
-                    this.solicitarPercepcion();
-                    System.out.println("Solicito percepcion");
-                    System.out.flush();
-                    //Recibo las percepciones que el servidor me manda en respuesta a la solicitud
-                    this.recibir();
-                    System.out.println("He recibido las percepciones");
-                    System.out.flush();
-                    //Espero a recibir un mensaje del controlador consultando el estado del agente
-                    //y envio el el estado del agente al controlador
-                    this.recibir();
-                    System.out.println("He recibido un mensaje del controlado consultado el estado y enviado el estado al controlador");
-                    System.out.flush();
-                    //Espero a recibir un mensaje del controlador con la acción que realizar
-                    //y mando esa accion al server
-                    this.recibir();
-                    System.out.println("He recibido un mensaje del controlador con la acción que realizar");
-                    System.out.flush();
-                    //Espero a recibir un mensaje del servidor con la respuesta a la accion realizada
-                    //e informo al controlador del resultado
-                    this.recibir();
-                    System.out.println("He recibido un mensaje del servidor con la respuesta a la accion realizada");
-                    System.out.flush();
-                }
-                else
-                {
-                    break;
-                }
+				//Espero a recibir un mensaje del controlador consultando el estado del agente
+				//y envio el el estado del agente al controlador
+				this.recibir();
+
+				//Solicito al servidor las percepciones del agente
+				this.solicitarPercepcion();
+
+				//Recibo las percepciones que el servidor me manda en respuesta a la solicitud
+				this.recibir();        
+
+				//Espero a recibir un mensaje del controlador con la acción que realizar
+				//y mando esa accion al server
+				this.recibir();
+
+				//Espero a recibir un mensaje del servidor con la respuesta a la accion realizada
+				//e informo al controlador del resultado
+				this.recibir();
             }
         } catch (InterruptedException ex) {
             Logger.getLogger(Agente.class.getName()).log(Level.SEVERE, null, ex);
@@ -242,7 +226,11 @@ public class Agente extends SingleAgent {
 		estado.add("pisandoObjetivo", miEstado.isPisandoObjetivo());
 		estado.add("replyWithControlador", miEstado.getReplyWithControlador());
 		estado.add("tipo", miEstado.getTipo().toString());
-		estado.add("nextAction", miEstado.getNextAction().toString());
+		
+		if (miEstado.getNextAction() == null)
+			estado.add("nextAction", "");
+		else
+			estado.add("nextAction", miEstado.getNextAction().toString());
 		
 		//Meter la matriz en JsonArray
 		for (int i = 0; i < miEstado.getVisibilidad(); i++) {
