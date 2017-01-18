@@ -48,6 +48,7 @@ public class Heuristica {
 
 	public void setTamMapa(int tamMapa) {
 		this.tamMapa = tamMapa;
+		dividirCuadrantes();
 	}
     
     
@@ -396,7 +397,9 @@ public class Heuristica {
                 agente_seleccionado.setNextAction(Acciones.refuel);
 
                 return agente_seleccionado;
-            }
+            }else{
+				calcularSiguienteMovimiento(agente_seleccionado,agente_seleccionado.getPosicion(),this.subObjetivo);
+			}
         }else
         {
             //Sino combrobamos si tiene combustible el agente
@@ -479,6 +482,9 @@ public class Heuristica {
 
                 return agente_seleccionado;
             }
+			else{
+				calcularSiguienteMovimiento(agente_seleccionado,agente_seleccionado.getPosicion(),this.subObjetivo);
+			}
         }else
         {
             //Sino combrobamos si tiene combustible el agente
@@ -595,8 +601,8 @@ public class Heuristica {
         }
         
         //Se acabara el bucle cuando no haya un grupo de casillas inexploradas 3x3 o se haya encontrado un subObjetivo
-        for(int i = indice_i_inicio; (i < indice_i_final)&&(this.subObjetivo != null); i++){
-            for(int j = indice_j_inicio; (j < indice_j_final)&&(this.subObjetivo != null); j++){
+        for(int i = indice_i_inicio; (i < indice_i_final)&&(this.subObjetivo == null); i++){
+            for(int j = indice_j_inicio; (j < indice_j_final)&&(this.subObjetivo == null); j++){
                 int contador = 0;
                 if(mapa[i-1][j-1]==5)
                     contador++;

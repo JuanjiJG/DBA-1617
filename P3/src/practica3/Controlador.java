@@ -154,8 +154,11 @@ public class Controlador extends SingleAgent {
                         } else {
                             // Mandamos la accion al agente seleccionado
                             this.asignarAccion(agenteSeleccionado);
-                             System.out.println("AGENTE SELECCIONADO Estado del agente ACCION: "+agenteSeleccionado.getNextAction().toString());
-                             System.out.flush();
+							try {
+								this.recibir();
+							} catch (InterruptedException | IOException ex) {
+								Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
+							}
                         }
                     } else {
                         this.estadoActual = EstadosEjecucion.ENCONTRADO;

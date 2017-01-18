@@ -259,7 +259,7 @@ public class Agente extends SingleAgent {
 	 * @author Gregorio Carvajal Expósito
 	 */
 	public void ejecutarAccion(Acciones accion) {
-		ACLMessage msg = new ACLMessage(ACLMessage.QUERY_REF);
+		ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
 		JsonObject json = new JsonObject();
 		
 		json.add("command", accion.toString());
