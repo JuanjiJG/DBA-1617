@@ -295,7 +295,7 @@ public class Controlador extends SingleAgent {
     @Override
     public void finalize() {
 
-        System.out.println("Finalizando agente...");
+        System.out.println("Finalizando Controlador...");
         System.out.flush();
         super.finalize();
     }

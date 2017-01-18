@@ -61,7 +61,7 @@ public class EstadoAgente {
     * @author Miguel Ángel Torres López
     */
     public Pair<Integer, Integer> getPosicion() {
-        return posicion;
+        return new Pair<Integer,Integer>(posicion.getKey()+5,posicion.getValue()+5);
     }
 
     /**

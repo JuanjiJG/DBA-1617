@@ -32,7 +32,7 @@ public class Agente extends SingleAgent {
 	private boolean percepcionRecibida;
 	private boolean percepcionSolicitada;
 	private boolean meHeMovido = false;
-	private boolean necesitoCapabilities = true;
+	private boolean tengoCapabilities = false;
 
     public Agente(AgentID aid) throws Exception {
         super(aid);
@@ -84,8 +84,9 @@ public class Agente extends SingleAgent {
 				this.recibir();
 
 				//Solicito al servidor las percepciones del agente
-				this.solicitarPercepcion();
-
+				if (tengoCapabilities && percepcionSolicitada)
+					this.solicitarPercepcion();
+/*
 				//Recibo las percepciones que el servidor me manda en respuesta a la solicitud
 				this.recibir();        
 
@@ -101,6 +102,7 @@ public class Agente extends SingleAgent {
 					necesitoCapabilities = false;
 					meHeMovido = false;
 				}
+				*/
             }
         } catch (InterruptedException ex) {
             Logger.getLogger(Agente.class.getName()).log(Level.SEVERE, null, ex);
@@ -161,6 +163,8 @@ public class Agente extends SingleAgent {
 								miEstado.setTipo(TiposAgente.dron);
 								break;
 						}
+						
+						tengoCapabilities = true;
 						
 					}
 					else {//Accion ok

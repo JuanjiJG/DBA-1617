@@ -97,6 +97,15 @@ public class BaseConocimiento {
                  inputStream = new ObjectInputStream(new FileInputStream(fileName));
                 existeArchivo = true;
                 this.mapa = (int[][]) inputStream.readObject();
+				
+						//DEBUGGING
+					for(int i = 0; i < tamMapa; i++){
+						for(int j = 0; j < tamMapa; j++){
+							System.out.print(mapa[i][j]+" ");
+						}
+						System.out.println();
+					}
+				System.out.println("POLLONIUS MAXIMUS");
                 if (this.buscarObjetivo()) {
                     existeObjetivo = true;
                 }  
@@ -200,8 +209,8 @@ public class BaseConocimiento {
         int visibilidad = estadoAgente.getVisibilidad();
 
         Pair<Integer, Integer> posicion = estadoAgente.getPosicion();
-        int posicion_inicial_i = posicion.getKey() +5;
-        int posicion_inicial_j = posicion.getValue() +5;
+        int posicion_inicial_i = posicion.getKey();
+        int posicion_inicial_j = posicion.getValue();
 
         for (int i = 0; i < visibilidad; i++) {
             for (int j = 0; j < visibilidad; j++) {
