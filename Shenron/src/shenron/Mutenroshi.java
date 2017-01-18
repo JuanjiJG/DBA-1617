@@ -119,7 +119,7 @@ public class Mutenroshi extends SingleAgent {
                 System.out.println("Ultimo registro de actividad del servidor:");
                 System.out.println("    Fecha de conexión: "+injson.get("date").asString());
                 System.out.println("    Nombre del agente controlador privado: "+value.get("agent").asString());
-                System.out.println("    Conversation ID de la ultima sesion: "+value.get("key").asString());
+                System.out.println("    Conversation ID de la ultima sesion: "+value.get("conversation").asString());
                 System.out.println("    Descripción estado del controlador: "+content.get("status").asString());
                 
             }
