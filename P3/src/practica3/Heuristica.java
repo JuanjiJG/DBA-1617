@@ -44,9 +44,11 @@ public class Heuristica {
     
     public Heuristica(){
         linkbc = BaseConocimiento.getInstance();
-        
-        tamMapa = linkbc.getTamMapa();
     }
+
+	public void setTamMapa(int tamMapa) {
+		this.tamMapa = tamMapa;
+	}
     
     
     private boolean necesitaRepostar(EstadoAgente agente){

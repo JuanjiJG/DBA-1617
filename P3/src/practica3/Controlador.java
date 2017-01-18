@@ -99,6 +99,7 @@ public class Controlador extends SingleAgent {
 
 					// Estamos subcritos
 					int tamMapa = this.obtenerTamanoMapa();
+					heuristica.setTamMapa(tamMapa);
 					
 					// Cargar el mapa
 					boolean resultado = bc.cargarMapa(this.MUNDO_ELEGIDO, tamMapa);
@@ -136,7 +137,7 @@ public class Controlador extends SingleAgent {
                         System.out.flush();
                     }
                     // Si las percepciones han localizado el objetivo, pasaremos a otro estado
-                    if (this.bc.getPosicionObjetivo() != null) {
+                    if (this.bc.getPosicionObjetivo() == null) {
                         // Pasar el array a la heurística y obtener el agente seleccionado
                         EstadoAgente agenteSeleccionado = this.heuristica.buscandoObjetivo(estadosAgentes, this.quedaFuel);
                         
