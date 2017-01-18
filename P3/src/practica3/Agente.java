@@ -124,8 +124,9 @@ public class Agente extends SingleAgent {
 		
 		switch (resp.getPerformativeInt()) {
 			case ACLMessage.INFORM:
-                            String resp_InReplyTo = resp.getInReplyTo();
-                            String miEstado_ReplyWith = miEstado.getReplyWithControlador();
+				String resp_InReplyTo = resp.getInReplyTo();
+				String miEstado_ReplyWith = miEstado.getReplyWithControlador();
+				
 				if (resp_InReplyTo!=null&&miEstado_ReplyWith!=null&&resp!=null&&miEstado!=null&&resp_InReplyTo.compareTo(miEstado_ReplyWith)==0) //Respuesta conversationID del server
 				{
 					conversationIDServer = json.get("serverID").asString();
@@ -136,7 +137,7 @@ public class Agente extends SingleAgent {
 					if (json.names().size() > 1) //Capabilities
 					{
 						JsonObject capabilities = json.get("capabilities").asObject();
-						this.repyWithServer = resp.getReplyWith();
+						repyWithServer = resp.getReplyWith();
 						int visibilidad = capabilities.get("range").asInt();
 						
 						switch (visibilidad)
@@ -155,11 +156,14 @@ public class Agente extends SingleAgent {
 						}
 						
 					}
-					else //Accion ok
+					else {//Accion ok
 						informarResultadoAccion();
+						repyWithServer = resp.getReplyWith();
+					}
 				}
 				else //Percepciones
 				{
+					repyWithServer = resp.getReplyWith();
 					JsonObject percepcion = json.get("result").asObject();
 					JsonArray radar = percepcion.get("sensor").asArray();
                     int[][] radar_percibido = new int[miEstado.getVisibilidad()][miEstado.getVisibilidad()];
@@ -174,6 +178,15 @@ public class Agente extends SingleAgent {
                     for (int i = 0; i < miEstado.getVisibilidad()*miEstado.getVisibilidad(); i++) {
                         radar_percibido[i / miEstado.getVisibilidad()][i % miEstado.getVisibilidad()] = radar.get(i).asInt();
                     }
+					
+					//DEBUGGING
+					for (int i = 0; i < miEstado.getVisibilidad(); i++) {
+						for (int j=0; j < miEstado.getVisibilidad(); j++){
+							System.out.print(radar_percibido[i][j] + " ");
+						}
+						System.out.println();
+					}
+					
 					miEstado.setPercepcion(radar_percibido);
 					
 					miEstado.setPisandoObjetivo(percepcion.get("goal").asBoolean());

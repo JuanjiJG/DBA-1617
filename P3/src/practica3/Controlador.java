@@ -205,6 +205,11 @@ public class Controlador extends SingleAgent {
                         } else {
                             // Mandamos la accion al agente seleccionado
                             this.asignarAccion(agenteSeleccionado);
+							try {
+								this.recibir();
+							} catch (InterruptedException | IOException ex) {
+								Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
+							}
                         }
                     }
                     break;
@@ -252,6 +257,11 @@ public class Controlador extends SingleAgent {
                         } else {
                             // Mandamos la accion al agente seleccionado
                             this.asignarAccion(agenteSeleccionado);
+							try {
+								this.recibir();
+							} catch (InterruptedException | IOException ex) {
+								Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
+							}
                         }
                     }
                     break;
