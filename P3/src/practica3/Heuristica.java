@@ -279,7 +279,7 @@ public class Heuristica {
     
     //Devolveremos la direccion (norte sur, este...) donde teoricamente nos deberiamos mover si no hay obstaculos y la casilla que es el mapa del profesor.
     private Pair<Acciones,Pair<Integer,Integer>> calcularMejorCasilla(Pair<Integer,Integer> posicion_agente, Pair<Integer,Integer> posicion_destino){
-        Pair<Integer,Integer> posicion_objetivo = new Pair(posicion_destino.getValue(),posicion_destino.getKey());
+        Pair<Integer,Integer> posicion_objetivo = new Pair(posicion_destino.getKey(),posicion_destino.getValue());
         //Cambiamos los indices para que concuerden con los del profesor.
         int i = posicion_agente.getKey();
         int j = posicion_agente.getValue();
@@ -309,7 +309,8 @@ public class Heuristica {
         //Puede fallar la conversion de los indices
         for(int c=0; c < 3; c++){
             for(int h=0; h<3; h++){
-                if((c!=1)&&(h!=1)){
+                if((c==1)&&(h==1)){//do nothing =)
+                }else{
                     if(distancias[c][h]<minimo)
                     {
                         minimo = distancias[c][h];
