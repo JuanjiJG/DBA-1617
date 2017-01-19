@@ -541,7 +541,11 @@ public class Controlador extends SingleAgent {
 
         cancel.setSender(this.getAid());
         cancel.setReceiver(new AgentID(SERVER_NAME));
-
-        send(cancel);
+		
+		for (Map.Entry<String, AgentID> agente : agentesMAP.entrySet()) {
+			cancel.addReceiver(agente.getValue());
+		}
+        
+		send(cancel);
     }
 }
