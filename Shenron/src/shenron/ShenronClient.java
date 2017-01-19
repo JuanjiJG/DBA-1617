@@ -35,7 +35,7 @@ public class ShenronClient {
 
         try {
             System.out.println("Lanzando a Mutenroshi...");
-            Mutenroshi m = new Mutenroshi(new AgentID("Mutenroshi"), controller, user, password, accion);
+            Mutenroshi m = new Mutenroshi(new AgentID("Mutenroshi_5"), controller, user, password, accion);
             m.start();
         } catch (Exception ex) {
             System.err.println("Ha habido un error al intentar lanzar a Mutenroshi");

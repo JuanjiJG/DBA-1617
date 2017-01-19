@@ -124,8 +124,6 @@ public class Controlador extends SingleAgent {
                     for (int i = 0; i < this.agentesMAP.size(); i++) {
                         try {
                             this.recibir();
-                            //System.out.println("Recibido el agente: " + i);
-                            System.out.flush();
                         } catch (InterruptedException | IOException ex) {
                             Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -134,25 +132,14 @@ public class Controlador extends SingleAgent {
                     // Una vez recopilados, los pedimos a la base de conocimiento
                     estadosAgentes = bc.getConjuntoEstados();
 
-                    //Imprimimos los estados
-                    /*for (int i = 0; i < estadosAgentes.size(); ++i) {
-                        System.out.println("ID CONTROLADOR Estado del agente: " + estadosAgentes.get(i).getReplyWithControlador());
-                        System.out.flush();
-                        System.out.println("TIPO Estado del agente: " + estadosAgentes.get(i).getTipo().toString());
-                        System.out.flush();
-                    }*/
+
                     // Si las percepciones han localizado el objetivo, pasaremos a otro estado
                     if (this.bc.getPosicionObjetivo() == null) {
                         // Pasar el array a la heurística y obtener el agente seleccionado
                         EstadoAgente agenteSeleccionado = this.heuristica.buscandoObjetivo(estadosAgentes, this.quedaFuel);
                         this.bc.limpiarConjuntoEstados();
 
-                        //Imprimimos el agente seleccionado
-                        /*  System.out.println("AGENTE SELECCIONADO ID CONTROLADOR Estado del agente: " + agenteSeleccionado.getReplyWithControlador());
-                        System.out.flush();
-                        System.out.println("AGENTE SELECCIONADO Estado del agente: " + agenteSeleccionado.getTipo().toString());
-                        System.out.flush();
-                         */
+
                         // Si la siguiente accion es null, significa que nos hemos quedad sin fuel
                         if (agenteSeleccionado.getNextAction() == null) {
                             this.estadoActual = EstadosEjecucion.TERMINADO;
@@ -364,8 +351,6 @@ public class Controlador extends SingleAgent {
         System.out.println("Controlador mensaje recibido");
         System.out.flush();
         JsonObject json = Json.parse(resp.getContent()).asObject();
-        System.out.println("Performativa: " + resp.getPerformativeInt());
-        System.out.flush();
         switch (resp.getPerformativeInt()) {
             case ACLMessage.INFORM:
                 //Del servidor
@@ -421,8 +406,6 @@ public class Controlador extends SingleAgent {
                 break;
 
             case ACLMessage.QUERY_REF:
-                System.out.println("Agente que me ha respondido: " + resp.getReplyWith() + " " + resp.getSender().toString());
-                System.out.flush();
                 agentesMAP.put(resp.getReplyWith(), resp.getSender());
                 break;
             case ACLMessage.AGREE:

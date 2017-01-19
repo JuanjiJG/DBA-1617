@@ -13,12 +13,12 @@ public class CapacidadesAgentes {
     
     //Capacidades dron
     public static final int VISIBILIDAD_DRON=3;
-    public static final int GASTO_DRON=1;
+    public static final int GASTO_DRON=2;
     public static final boolean VUELA_DRON=true;
     
     //Capacidades coche
     public static final int VISIBILIDAD_COCHE=5;
-    public static final int GASTO_COCHE=2;
+    public static final int GASTO_COCHE=1;
     public static final boolean VUELA_COCHE=false;
     
 }

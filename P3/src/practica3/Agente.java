@@ -187,13 +187,15 @@ public class Agente extends SingleAgent {
                     }
 
                     //DEBUGGING
+                    if(miEstado.getReplyWithControlador()!=null)
+                        System.out.println("Agente: "+miEstado.getReplyWithControlador());
                     for (int i = 0; i < miEstado.getVisibilidad(); i++) {
                         for (int j = 0; j < miEstado.getVisibilidad(); j++) {
                             System.out.print(radar_percibido[i][j] + " ");
                         }
                         System.out.println();
                     }
-
+                    
                     miEstado.setPercepcion(radar_percibido);
 
                     miEstado.setPisandoObjetivo(percepcion.get("goal").asBoolean());
