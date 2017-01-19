@@ -39,7 +39,7 @@ public class Heuristica {
     private int cuadrante_4_i_final;
     private int cuadrante_4_j_inicio;
     private int cuadrante_4_j_final;
-    
+    private EstadoAgente agenteAnterior=null;
     
     
     public Heuristica(){
@@ -84,50 +84,49 @@ public class Heuristica {
     }
     
     private Acciones comprobarDireccion(Acciones[] acciones, int [][] mapa,Pair<Integer,Integer> posicion_agente){
-        //Cambiamos los indices para que concuerden con los del profesor.
         int i = posicion_agente.getKey();
         int j = posicion_agente.getValue();
         Acciones accion_resultado = null;
         
-        for(int h = 0; h < 7 && accion_resultado != null; h++){
+        for(int h = 0; h < 7 && accion_resultado == null; h++){
             switch(acciones[h]){
                         case moveNW:
-                            if(mapa[i-1][j-1] == 0){
+                            if(mapa[i-1][j-1] == 0 || mapa[i-1][j-1] == 3){
                                 accion_resultado = acciones[h];
                             }
                             break;
                         case moveN:
-                            if(mapa[i][j-1] == 0){
+                            if(mapa[i-1][j] == 0|| mapa[i-1][j] == 3){
                                 accion_resultado = acciones[h];
                             }
                             break;
                         case moveNE:
-                            if(mapa[i+1][j-1] == 0){
+                            if(mapa[i-1][j+1] == 0|| mapa[i-1][j+1] == 3){
                                 accion_resultado = acciones[h];
                             }                       
                             break;
                         case moveW:
-                            if(mapa[i-1][j] == 0){
+                            if(mapa[i][j-1] == 0|| mapa[i][j-1] == 3){
                                 accion_resultado = acciones[h];
                             }
                             break;
                         case moveE:
-                            if(mapa[i+1][j] == 0){
+                            if(mapa[i][j+1] == 0|| mapa[i][j+1] == 3){
                                 accion_resultado = acciones[h];
                             }
                             break;
                         case moveSW:
-                            if(mapa[i-1][j+1] == 0){
+                            if(mapa[i+1][j-1] == 0|| mapa[i+1][j-1] == 3){
                                 accion_resultado = acciones[h];
                             }
                             break;
                         case moveS:
-                            if(mapa[i][j+1] == 0){
+                            if(mapa[i+1][j] == 0|| mapa[i+1][j] == 3){
                                 accion_resultado = acciones[h];
                             }
                             break;
                         case moveSE:
-                            if(mapa[i+1][j+1] == 0){
+                            if(mapa[i+1][j+1] == 0|| mapa[i+1][j+1] == 3){
                                 accion_resultado = acciones[h];
                             }
                             break;
@@ -208,7 +207,7 @@ public class Heuristica {
         
         //Si es un muro o es un agente
         //Si ya esabamos siguiendo el muro o es la primera vez que lo encontramos
-        if((mapa[i][j]==1 || mapa[i][j]==2 || mapa[i][j]==4 || siguiendo_muro) &&(agente_seleccionado.getTipo() != TiposAgente.dron)  ){
+        if(mapa[i][j]==4 || ((mapa[i][j]==1 || mapa[i][j]==2 || siguiendo_muro) &&(agente_seleccionado.getTipo() != TiposAgente.dron))){
             siguiendo_muro=true;
             switch(direccion){
                 case moveNW:
@@ -392,6 +391,11 @@ public class Heuristica {
         }
         
         agente_seleccionado = estados.get(indice_agente_seleccionado);
+        if(agenteAnterior!=null && agente_seleccionado.getReplyWithControlador().compareTo(agenteAnterior.getReplyWithControlador())!=0){
+            siguiendo_muro=false;
+            gradiente_muro_encontrado = Double.MAX_VALUE;
+        }
+        agenteAnterior = agente_seleccionado;
         
         //Una vez seleccionado el agente que queremos comprobamos si hay fuel en el mundo
         //Si hay combustible lo hacemos repostar
@@ -477,6 +481,12 @@ public class Heuristica {
         
         agente_seleccionado = estados.get(indice_agente_seleccionado);
         
+        if(agenteAnterior!=null && agente_seleccionado.getReplyWithControlador().compareTo(agenteAnterior.getReplyWithControlador())!=0){
+            siguiendo_muro=false;
+            gradiente_muro_encontrado = Double.MAX_VALUE;
+        }
+        agenteAnterior = agente_seleccionado;
+        
         //Una vez seleccionado el agente que queremos comprobamos si hay fuel en el mundo
         //Si hay combustible lo hacemos repostar
         if(tenemosFuelEnElMundo){
@@ -486,7 +496,7 @@ public class Heuristica {
                 return agente_seleccionado;
             }
 			else{
-				calcularSiguienteMovimiento(agente_seleccionado,agente_seleccionado.getPosicion(),this.subObjetivo);
+				calcularSiguienteMovimiento(agente_seleccionado,agente_seleccionado.getPosicion(),objetivo);
 			}
         }else
         {

@@ -85,8 +85,7 @@ public class BaseConocimiento {
         Se puede reiniciar un mapa borrando el archivo generado para que vuelva a inicializar
          */
         ObjectInputStream inputStream = null;
-        int auxmap = numMapa - 1;
-        String fileName = "map_" + auxmap + "_savefile.data";
+        String fileName = "map_" + numMapa + "_savefile.data";
         this.tamanioMapa = tamMapa;
         boolean existeArchivo = false;
         boolean existeObjetivo = false;
@@ -147,6 +146,10 @@ public class BaseConocimiento {
         return encontrado;
     }
 
+    public void setMapaElegido(int mapaElegido) {
+        this.mapaElegido = mapaElegido;
+    }
+
     /**
      * Método para guardar el estado del mapa en un fichero.
      *
@@ -185,7 +188,7 @@ public class BaseConocimiento {
      * ha encontrado el objetivo
      * @author Juan José Jiménez García
      */
-    public boolean actualizarMapa(EstadoAgente estadoAgente) {
+    public boolean actualizarMapa(EstadoAgente estadoAgente,ArrayList<EstadoAgente> agentesEnObjetivo) {
 
         /*
         La idea del método sería:
@@ -237,14 +240,16 @@ public class BaseConocimiento {
         } else {
             System.out.println("Habia ya 4 EstadoAgente en el conjunto...");
         }
-
+        for(int i=0;i<agentesEnObjetivo.size();++i){
+            mapa[agentesEnObjetivo.get(i).getPosicion().getKey()][agentesEnObjetivo.get(i).getPosicion().getValue()] = 4;
+        }
         //DEBUGGING
-        for (int i = 0; i < this.tamanioMapa; i++) {
+        /*for (int i = 0; i < this.tamanioMapa; i++) {
             for (int j = 0; j < this.tamanioMapa; j++) {
                 System.out.print(mapa[i][j] + " ");
             }
             System.out.println();
-        }
+        }*/
         guardarMapa();
         return objetivoEncontrado;
     }
