@@ -34,6 +34,8 @@ public class Agente extends SingleAgent {
     private boolean percepcionSolicitada;
     private boolean meHeMovido = false;
     private boolean tengoCapabilities = false;
+	private boolean quedaFuel = true;
+	private boolean harakiri = false;
 
     public Agente(AgentID aid) throws Exception {
         super(aid);
@@ -76,7 +78,7 @@ public class Agente extends SingleAgent {
             //Recibo una respuesta del servidor al checkin con las capabilities
             this.recibir();
 
-            while (!miEstado.isPisandoObjetivo()) {
+            while (!miEstado.isPisandoObjetivo() && !harakiri) {
                 //Espero a recibir un mensaje del controlador consultando el estado del agente
                 //y envio el el estado del agente al controlador
                 this.recibir();
@@ -196,6 +198,11 @@ public class Agente extends SingleAgent {
                     miEstado.setPercepcion(radar_percibido);
 
                     miEstado.setPisandoObjetivo(percepcion.get("goal").asBoolean());
+					
+					if (percepcion.get("energy").asInt() > 0)
+						quedaFuel = true;
+					else
+						quedaFuel = false;
 
                     percepcionRecibida = true;
 
@@ -221,6 +228,10 @@ public class Agente extends SingleAgent {
                 miEstado.setNextAction(accion);
                 ejecutarAccion(accion);
                 break;
+				
+			case ACLMessage.CANCEL:
+				harakiri = true;
+				break;
 
             default:
                 informarError(resp);
@@ -263,6 +274,7 @@ public class Agente extends SingleAgent {
         estado.add("percepcion", radar);
 
         json.add("estado", estado);
+		json.add("quedafuel", quedaFuel);
 
         msg.setSender(this.getAid());
         msg.setContent(json.toString());
@@ -343,14 +355,16 @@ public class Agente extends SingleAgent {
      * @author Gregorio Carvajal Expósito
      */
     public void solicitarPercepcion() {
-        ACLMessage msg = new ACLMessage(ACLMessage.QUERY_REF);
+        if (!harakiri) {
+			ACLMessage msg = new ACLMessage(ACLMessage.QUERY_REF);
 
-        msg.setSender(this.getAid());
-        msg.setReceiver(new AgentID(SERVER_NAME));
-        msg.setConversationId(conversationIDServer);
-        msg.setInReplyTo(repyWithServer);
+			msg.setSender(this.getAid());
+			msg.setReceiver(new AgentID(SERVER_NAME));
+			msg.setConversationId(conversationIDServer);
+			msg.setInReplyTo(repyWithServer);
 
-        send(msg);
+			send(msg);
+		}
     }
 
     /**

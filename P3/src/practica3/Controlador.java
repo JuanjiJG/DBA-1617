@@ -409,6 +409,7 @@ public class Controlador extends SingleAgent {
 
                         estado.setPercepcion(radar);
                         bc.actualizarMapa(estado,agentesEnObjetivo);
+						quedaFuel = json.get("quedafuel").asBoolean();
                     } else //Respuesta al REQUEST de la accion escogida
                     {
                         //Do nothing
@@ -540,7 +541,11 @@ public class Controlador extends SingleAgent {
 
         cancel.setSender(this.getAid());
         cancel.setReceiver(new AgentID(SERVER_NAME));
-
-        send(cancel);
+		
+		for (Map.Entry<String, AgentID> agente : agentesMAP.entrySet()) {
+			cancel.addReceiver(agente.getValue());
+		}
+        
+		send(cancel);
     }
 }
