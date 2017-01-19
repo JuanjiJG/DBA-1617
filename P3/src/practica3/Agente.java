@@ -32,9 +32,8 @@ public class Agente extends SingleAgent {
     private EstadoAgente miEstado;
     private boolean percepcionRecibida;
     private boolean percepcionSolicitada;
-    private boolean meHeMovido = false;
     private boolean tengoCapabilities = false;
-	private boolean quedaFuel = true;
+	private int fuelMundo = 0;
 	private boolean harakiri = false;
 
     public Agente(AgentID aid) throws Exception {
@@ -199,10 +198,8 @@ public class Agente extends SingleAgent {
 
                     miEstado.setPisandoObjetivo(percepcion.get("goal").asBoolean());
 					
-					if (percepcion.get("energy").asInt() > 0)
-						quedaFuel = true;
-					else
-						quedaFuel = false;
+					fuelMundo = percepcion.get("energy").asInt();
+					
 
                     percepcionRecibida = true;
 
@@ -274,7 +271,7 @@ public class Agente extends SingleAgent {
         estado.add("percepcion", radar);
 
         json.add("estado", estado);
-		json.add("quedafuel", quedaFuel);
+		json.add("fuelmundo", fuelMundo);
 
         msg.setSender(this.getAid());
         msg.setContent(json.toString());
