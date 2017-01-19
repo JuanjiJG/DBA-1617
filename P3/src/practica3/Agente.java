@@ -302,8 +302,6 @@ public class Agente extends SingleAgent {
         msg.setInReplyTo(repyWithServer);
 
         send(msg);
-
-        meHeMovido = true;
     }
 
     /**
