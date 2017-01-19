@@ -36,6 +36,7 @@ public class Controlador extends SingleAgent {
     private Heuristica heuristica;
     private BaseConocimiento bc;
     private ArrayList<EstadoAgente> agentesEnObjetivo;
+	private int fuelMundo;
 
     /**
      * Constructor de la clase Controlador
@@ -408,8 +409,9 @@ public class Controlador extends SingleAgent {
                         }
 
                         estado.setPercepcion(radar);
-                        bc.actualizarMapa(estado, agentesEnObjetivo);
-                        quedaFuel = json.get("quedafuel").asBoolean();
+                        bc.actualizarMapa(estado,agentesEnObjetivo);
+						fuelMundo = json.get("fuelmundo").asInt();
+						quedaFuel = fuelMundo > 0;
                     } else //Respuesta al REQUEST de la accion escogida
                     {
                         //Do nothing
@@ -442,7 +444,6 @@ public class Controlador extends SingleAgent {
                     System.err.println("ERROR: El controlador ha recibido " + json.get("details").asString());
                 }
 
-                //Hacer algo para detener la ejecucion de los agentes
                 break;
         }
     }
