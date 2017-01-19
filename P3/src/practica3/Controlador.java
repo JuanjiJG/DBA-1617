@@ -113,6 +113,7 @@ public class Controlador extends SingleAgent {
 
                 case BUSCANDO:
                     // Obtener un array de EstadoAgente
+                    this.bc.limpiarConjuntoEstados();
                     this.pedirEstadoAgente();
 
                     // Recopilar los estados de agente
@@ -168,6 +169,7 @@ public class Controlador extends SingleAgent {
 
                 case ENCONTRADO:
                     // Obtener un array de EstadoAgente
+                    this.bc.limpiarConjuntoEstados();
                     this.pedirEstadoAgente();
 
                     // Recopilar los estados de agente
@@ -185,11 +187,10 @@ public class Controlador extends SingleAgent {
                     // Si alguno de los agentes está pisando el objetivo, pasamos al estado ALCANZADO
                     boolean unoPisando = false;
 
-                    while (!unoPisando) {
-                        for (EstadoAgente estado : estadosAgentes) {
-                            if (estado.isPisandoObjetivo()) {
-                                unoPisando = true;
-                            }
+                    for (int i = 0; i < estadosAgentes.size() && !unoPisando; i++) {
+                        if (estadosAgentes.get(i).isPisandoObjetivo()) {
+                            unoPisando = true;
+                            agentesMAP.remove(estadosAgentes.get(i).getReplyWithControlador());
                         }
                     }
 
@@ -217,6 +218,7 @@ public class Controlador extends SingleAgent {
 
                 case ALCANZADO:
                     // Obtener un array de EstadoAgente
+                    this.bc.limpiarConjuntoEstados();
                     this.pedirEstadoAgente();
 
                     // Recopilar los estados de agente
@@ -231,22 +233,15 @@ public class Controlador extends SingleAgent {
                     // Una vez recopilados, los pedimos a la base de conocimiento
                     estadosAgentes = bc.getConjuntoEstados();
 
-                    // Si todos los agentes está pisando el objetivo, pasamos al estado TERMINADO
-                    boolean todosPisando = false;
-                    int contadorTodosPisando = 0;
-
-                    while (!todosPisando) {
-                        for (EstadoAgente estado : estadosAgentes) {
-                            if (estado.isPisandoObjetivo()) {
-                                contadorTodosPisando++;
-                            }
-                        }
-                        if (contadorTodosPisando == 4) {
-                            todosPisando = true;
+                    
+                    for (int i = 0; i < estadosAgentes.size(); i++) {
+                        if (estadosAgentes.get(i).isPisandoObjetivo()) {
+                            agentesMAP.remove(estadosAgentes.get(i).getReplyWithControlador());
                         }
                     }
-
-                    if (todosPisando) {
+                  
+                    // Si todos los agentes está pisando el objetivo, pasamos al estado TERMINADO
+                    if (agentesMAP.size()==0) {
                         this.estadoActual = EstadosEjecucion.TERMINADO;
                     } else {
                         // Pasar el array a la heurística y obtener el agente seleccionado
@@ -309,9 +304,9 @@ public class Controlador extends SingleAgent {
         int[] tamaniosMapa = {110, 110, 110, 110, 110, 160, 110, 110, 160, 510};
 
         if (this.MUNDO_ELEGIDO <= 10) {
-            return tamaniosMapa[this.MUNDO_ELEGIDO-1];
+            return tamaniosMapa[this.MUNDO_ELEGIDO - 1];
         } else {
-            return tamaniosMapa[(this.MUNDO_ELEGIDO-1) / 100];
+            return tamaniosMapa[(this.MUNDO_ELEGIDO - 1) / 100];
         }
     }
 
@@ -376,8 +371,8 @@ public class Controlador extends SingleAgent {
                         this.procesarTraza(json);
                     }
                 } else //De un agente
-                 //Respuesta al QUERY_REF pidiendo el estado
-                    if (json.get("estado") != null) {
+                //Respuesta al QUERY_REF pidiendo el estado
+                 if (json.get("estado") != null) {
                         JsonObject jsonEstado = json.get("estado").asObject();
                         JsonArray jsonRadar = jsonEstado.get("percepcion").asArray();
                         Acciones accion;

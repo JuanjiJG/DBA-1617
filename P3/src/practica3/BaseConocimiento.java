@@ -213,26 +213,37 @@ public class BaseConocimiento {
 
         for (int i = 0; i < visibilidad; i++) {
             for (int j = 0; j < visibilidad; j++) {
-
+              
                 //Nos interesa que primero actualice el mapa y despues compruebe si hay un 3 (objetivo)
-                if (mapa[posicion_inicial_i - (visibilidad / 2) + i][posicion_inicial_j - (visibilidad / 2) + j] == 5) {
+                //if (mapa[posicion_inicial_i - (visibilidad / 2) + i][posicion_inicial_j - (visibilidad / 2) + j] > 3) {
                     mapa[posicion_inicial_i - (visibilidad / 2) + i][posicion_inicial_j - (visibilidad / 2) + j] = percepcion[i][j];
-                }
+                //}
 
-                //Compruebo si hay un 3 (casilla de objetivo)
+                  //Compruebo si hay un 3 (casilla de objetivo)
                 if (mapa[posicion_inicial_i - (visibilidad / 2) + i][posicion_inicial_j - (visibilidad / 2) + j] == 3) {
                     this.posicionObjetivo = new Pair(posicion_inicial_i - (visibilidad / 2) + i, posicion_inicial_j - (visibilidad / 2) + j);
                     objetivoEncontrado = true;
                 }
+               
             }
+            
         }
-
+        //Nos situamos en el mapa
+         mapa[posicion_inicial_i][posicion_inicial_j] = 4;
         // Tras haber actualizado, añadimos el EstadoAgente al array
         // BORRAR COMPROBACION AL TERMINAR PRUEBAS
         if (this.conjuntoEstados.size() < 4) {
             this.conjuntoEstados.add(estadoAgente);
         } else {
             System.out.println("Habia ya 4 EstadoAgente en el conjunto...");
+        }
+
+        //DEBUGGING
+        for (int i = 0; i < this.tamanioMapa; i++) {
+            for (int j = 0; j < this.tamanioMapa; j++) {
+                System.out.print(mapa[i][j] + " ");
+            }
+            System.out.println();
         }
         guardarMapa();
         return objetivoEncontrado;
