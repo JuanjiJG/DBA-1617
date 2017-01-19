@@ -11,6 +11,7 @@ import javafx.util.Pair;
 public class Heuristica {
 
     private Pair<Integer, Integer> subObjetivo;
+    private Pair<Integer, Integer> posicionInicioMuro = null;
     private BaseConocimiento linkbc;
     private int tamMapa;
     private final double UMBRAL_EMPATE = 5;
@@ -60,25 +61,25 @@ public class Heuristica {
     }
 
     private void dividirCuadrantes() {
-        this.cuadrante_1_i_inicio = 0;
+        this.cuadrante_1_i_inicio = 5;
         this.cuadrante_1_i_final = (tamMapa / 2) - 1;
-        this.cuadrante_1_j_inicio = 0;
+        this.cuadrante_1_j_inicio = 5;
         this.cuadrante_1_j_final = (tamMapa / 2) - 1;
 
         this.cuadrante_2_i_inicio = tamMapa / 2;
-        this.cuadrante_2_i_final = tamMapa - 1;
-        this.cuadrante_2_j_inicio = 0;
+        this.cuadrante_2_i_final = tamMapa - 6;
+        this.cuadrante_2_j_inicio = 5;
         this.cuadrante_2_j_final = (tamMapa / 2) - 1;
 
-        this.cuadrante_3_i_inicio = 0;
+        this.cuadrante_3_i_inicio = 5;
         this.cuadrante_3_i_final = (tamMapa / 2) - 1;
         this.cuadrante_3_j_inicio = tamMapa / 2;
-        this.cuadrante_3_j_final = tamMapa - 1;
+        this.cuadrante_3_j_final = tamMapa - 6;
 
         this.cuadrante_4_i_inicio = tamMapa / 2;
-        this.cuadrante_4_i_final = tamMapa - 1;
+        this.cuadrante_4_i_final = tamMapa - 6;
         this.cuadrante_4_j_inicio = tamMapa / 2;
-        this.cuadrante_4_j_final = tamMapa - 1;
+        this.cuadrante_4_j_final = tamMapa - 6;
 
     }
 
@@ -206,6 +207,9 @@ public class Heuristica {
 
         //Si es un muro o es un agente
         //Si ya esabamos siguiendo el muro o es la primera vez que lo encontramos
+        if (((mapa[i][j] == 1 || mapa[i][j] == 2) && !siguiendo_muro) && (agente_seleccionado.getTipo() != TiposAgente.dron)) {
+            posicionInicioMuro = agente_seleccionado.getPosicion();
+        }
         if (mapa[i][j] == 4 || ((mapa[i][j] == 1 || mapa[i][j] == 2 || siguiendo_muro) && (agente_seleccionado.getTipo() != TiposAgente.dron))) {
             siguiendo_muro = true;
             switch (direccion) {
@@ -313,37 +317,35 @@ public class Heuristica {
         for (int c = 0; c < 3; c++) {
             for (int h = 0; h < 3; h++) {
                 if ((c == 1) && (h == 1)) {//do nothing =)
-                } else {
-                    if (distancias[c][h] < minimo) {
-                        minimo = distancias[c][h];
-                        resultado = new Pair(i + (c - 1), j + (h - 1));
-                        int indice_i = c;
-                        int indice_j = h;
+                } else if (distancias[c][h] < minimo) {
+                    minimo = distancias[c][h];
+                    resultado = new Pair(i + (c - 1), j + (h - 1));
+                    int indice_i = c;
+                    int indice_j = h;
 
-                        if ((indice_i == 0) && (indice_j == 0)) {
-                            direccion = Acciones.moveNW;
-                        }
-                        if ((indice_i == 0) && (indice_j == 1)) {
-                            direccion = Acciones.moveN;
-                        }
-                        if ((indice_i == 0) && (indice_j == 2)) {
-                            direccion = Acciones.moveNE;
-                        }
-                        if ((indice_i == 1) && (indice_j == 0)) {
-                            direccion = Acciones.moveW;
-                        }
-                        if ((indice_i == 1) && (indice_j == 2)) {
-                            direccion = Acciones.moveE;
-                        }
-                        if ((indice_i == 2) && (indice_j == 0)) {
-                            direccion = Acciones.moveSW;
-                        }
-                        if ((indice_i == 2) && (indice_j == 1)) {
-                            direccion = Acciones.moveS;
-                        }
-                        if ((indice_i == 2) && (indice_j == 2)) {
-                            direccion = Acciones.moveSE;
-                        }
+                    if ((indice_i == 0) && (indice_j == 0)) {
+                        direccion = Acciones.moveNW;
+                    }
+                    if ((indice_i == 0) && (indice_j == 1)) {
+                        direccion = Acciones.moveN;
+                    }
+                    if ((indice_i == 0) && (indice_j == 2)) {
+                        direccion = Acciones.moveNE;
+                    }
+                    if ((indice_i == 1) && (indice_j == 0)) {
+                        direccion = Acciones.moveW;
+                    }
+                    if ((indice_i == 1) && (indice_j == 2)) {
+                        direccion = Acciones.moveE;
+                    }
+                    if ((indice_i == 2) && (indice_j == 0)) {
+                        direccion = Acciones.moveSW;
+                    }
+                    if ((indice_i == 2) && (indice_j == 1)) {
+                        direccion = Acciones.moveS;
+                    }
+                    if ((indice_i == 2) && (indice_j == 2)) {
+                        direccion = Acciones.moveSE;
                     }
                 }
             }
@@ -365,6 +367,10 @@ public class Heuristica {
             for (int i = 0; i < estados.size(); i++) {
                 if (this.agenteAnterior.getReplyWithControlador().compareTo(estados.get(i).getReplyWithControlador()) == 0) {
                     if (estados.get(i).getPosicion().getKey() == this.subObjetivo.getKey() && estados.get(i).getPosicion().getValue() == this.subObjetivo.getValue()) {
+                        calcularSubObjetivo();
+                    }
+                    if (posicionInicioMuro != null && estados.get(i).getPosicion().getKey() == this.posicionInicioMuro.getKey() && estados.get(i).getPosicion().getValue() == this.posicionInicioMuro.getValue()) {
+                        posicionInicioMuro=null;
                         calcularSubObjetivo();
                     }
                 }
@@ -427,13 +433,13 @@ public class Heuristica {
             } else {
                 calcularSiguienteMovimiento(agente_seleccionado, agente_seleccionado.getPosicion(), this.subObjetivo);
             }
-        } else {
-            //Sino combrobamos si tiene combustible el agente
-            if (agente_seleccionado.getFuelActual() >= agente_seleccionado.getGasto()) {
+        } else //Sino combrobamos si tiene combustible el agente
+        {
+            if (agente_seleccionado.getFuelActual() > agente_seleccionado.getGasto()) {
                 calcularSiguienteMovimiento(agente_seleccionado, agente_seleccionado.getPosicion(), this.subObjetivo);
-            } else {
-                //Si tenemos agentes en el array eliminamos el agente seleccionado 
-                //porque no tiene fuel y no hay fuel en el mundo por lo que ya no nos sirve
+            } else //Si tenemos agentes en el array eliminamos el agente seleccionado 
+            //porque no tiene fuel y no hay fuel en el mundo por lo que ya no nos sirve
+            {
                 if (estados.size() > 0) {
                     estados.remove(agente_seleccionado);
                     return buscandoObjetivo(estados, false);
@@ -514,13 +520,13 @@ public class Heuristica {
             } else {
                 calcularSiguienteMovimiento(agente_seleccionado, agente_seleccionado.getPosicion(), objetivo);
             }
-        } else {
-            //Sino combrobamos si tiene combustible el agente
-            if (agente_seleccionado.getFuelActual() >= agente_seleccionado.getGasto()) {
+        } else //Sino combrobamos si tiene combustible el agente
+        {
+            if (agente_seleccionado.getFuelActual() > agente_seleccionado.getGasto()) {
                 calcularSiguienteMovimiento(agente_seleccionado, agente_seleccionado.getPosicion(), objetivo);
-            } else {
-                //Si tenemos agentes en el array eliminamos el agente seleccionado 
-                //porque no tiene fuel y no hay fuel en el mundo por lo que ya no nos sirve
+            } else //Si tenemos agentes en el array eliminamos el agente seleccionado 
+            //porque no tiene fuel y no hay fuel en el mundo por lo que ya no nos sirve
+            {
                 if (estados.size() > 0) {
                     estados.remove(agente_seleccionado);
                     return objetivoEncontrado(estados, objetivo, false);
@@ -557,8 +563,8 @@ public class Heuristica {
             System.out.println();
         }
 
-        for (int i = 5; i < tamMapa; i++) {
-            for (int j = 5; j < tamMapa; j++) {
+        for (int i = 5; i < tamMapa - 5; i++) {
+            for (int j = 5; j < tamMapa - 5; j++) {
                 //Contamos el numero de casillas inexploras que hay en cada cuadrante. Los if filtran si los indices estan dentro de cada cuadrante.
                 if ((i >= this.cuadrante_1_i_inicio) && (i <= this.cuadrante_1_i_final) && (j >= this.cuadrante_1_j_inicio) && (j <= this.cuadrante_1_j_final)) {
                     if (mapa[i][j] == 5) {
@@ -585,7 +591,7 @@ public class Heuristica {
 
         //Sacamos el cuadrante con mas ceros
         maxCuadrante = cont_cuadrante_1;
-
+        cuadrante = 1;
         if (maxCuadrante < cont_cuadrante_2) {
             maxCuadrante = cont_cuadrante_2;
             cuadrante = 2;
@@ -603,46 +609,53 @@ public class Heuristica {
 
         int indice_i_inicio = 0, indice_i_final = 0, indice_j_inicio = 0, indice_j_final = 0;
 
-        //Vamos a quitarle 6 a los limites porque la matriz es mas grande y no nos interesa asignar como objetivo los bordes del mapa.
+        //Vamos a quitarle 1 a los limites porque la matriz es mas grande y no nos interesa asignar como objetivo los bordes del mapa.
         switch (cuadrante) {
             case 1:
-                indice_i_inicio = this.cuadrante_1_i_inicio + 6;
+                indice_i_inicio = this.cuadrante_1_i_inicio + 1;
                 indice_i_final = this.cuadrante_1_i_final;
 
-                indice_j_inicio = this.cuadrante_1_j_inicio + 6;
+                indice_j_inicio = this.cuadrante_1_j_inicio + 1;
                 indice_j_final = this.cuadrante_1_j_final;
 
                 break;
             case 2:
                 indice_i_inicio = this.cuadrante_2_i_inicio;
-                indice_i_final = this.cuadrante_2_i_final - 6;
+                indice_i_final = this.cuadrante_2_i_final - 1;
 
-                indice_j_inicio = this.cuadrante_2_j_inicio + 6;
+                indice_j_inicio = this.cuadrante_2_j_inicio + 1;
                 indice_j_final = this.cuadrante_2_j_final;
                 break;
             case 3:
-                indice_i_inicio = this.cuadrante_3_i_inicio + 6;
+                indice_i_inicio = this.cuadrante_3_i_inicio + 1;
                 indice_i_final = this.cuadrante_3_i_final;
 
                 indice_j_inicio = this.cuadrante_3_j_inicio;
-                indice_j_final = this.cuadrante_3_j_final - 6;
+                indice_j_final = this.cuadrante_3_j_final - 1;
                 break;
             case 4:
                 indice_i_inicio = this.cuadrante_4_i_inicio;
-                indice_i_final = this.cuadrante_4_i_final - 6;
+                indice_i_final = this.cuadrante_4_i_final - 1;
 
                 indice_j_inicio = this.cuadrante_4_j_inicio;
-                indice_j_final = this.cuadrante_4_j_final - 6;
+                indice_j_final = this.cuadrante_4_j_final - 1;
                 break;
         }
 
-        //Se acabara el bucle cuando no haya un grupo de casillas inexploradas 3x3 o se haya encontrado un subObjetivo
+        this.subObjetivo = null;
+
+        //Se acabara el bucle cuando no haya un grupo de casillas inexploradas 5x5 o se haya encontrado un subObjetivo
         for (int i = indice_i_inicio; (i < indice_i_final) && (this.subObjetivo == null); i++) {
             for (int j = indice_j_inicio; (j < indice_j_final) && (this.subObjetivo == null); j++) {
                 int contador = 0;
-                if (mapa[i - 1][j - 1] == 5) {
-                    contador++;
+                for (int c = 0; c < 5; c++) {
+                    for (int h = 0; h < 5; h++) {
+                        if (mapa[i - 2 + c][j - 2 + h] == 5) {
+                            contador++;
+                        }
+                    }
                 }
+                /*
                 if (mapa[i - 1][j + 1] == 5) {
                     contador++;
                 }
@@ -667,8 +680,8 @@ public class Heuristica {
                 if (mapa[i + 1][j + 1] == 5) {
                     contador++;
                 }
-
-                if (contador == 9) {
+                 */
+                if (contador == 25) {
                     this.subObjetivo = new Pair<Integer, Integer>(i, j);
                 }
             }

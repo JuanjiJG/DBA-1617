@@ -147,11 +147,11 @@ public class Controlador extends SingleAgent {
                         this.bc.limpiarConjuntoEstados();
 
                         //Imprimimos el agente seleccionado
-                      /*  System.out.println("AGENTE SELECCIONADO ID CONTROLADOR Estado del agente: " + agenteSeleccionado.getReplyWithControlador());
+                        /*  System.out.println("AGENTE SELECCIONADO ID CONTROLADOR Estado del agente: " + agenteSeleccionado.getReplyWithControlador());
                         System.out.flush();
                         System.out.println("AGENTE SELECCIONADO Estado del agente: " + agenteSeleccionado.getTipo().toString());
                         System.out.flush();
-*/
+                         */
                         // Si la siguiente accion es null, significa que nos hemos quedad sin fuel
                         if (agenteSeleccionado.getNextAction() == null) {
                             this.estadoActual = EstadosEjecucion.TERMINADO;
@@ -237,15 +237,14 @@ public class Controlador extends SingleAgent {
                     // Una vez recopilados, los pedimos a la base de conocimiento
                     estadosAgentes = bc.getConjuntoEstados();
 
-                    
                     for (int i = 0; i < estadosAgentes.size(); i++) {
                         if (estadosAgentes.get(i).isPisandoObjetivo()) {
                             agentesEnObjetivo.add(estadosAgentes.get(i));
                             agentesMAP.remove(estadosAgentes.get(i).getReplyWithControlador());
-                            
+
                         }
                     }
-                  
+
                     // Si todos los agentes está pisando el objetivo, pasamos al estado TERMINADO
                     if (agentesMAP.isEmpty()) {
                         this.estadoActual = EstadosEjecucion.TERMINADO;
@@ -379,7 +378,8 @@ public class Controlador extends SingleAgent {
                     }
                 } else //De un agente
                 //Respuesta al QUERY_REF pidiendo el estado
-                 if (json.get("estado") != null) {
+                {
+                    if (json.get("estado") != null) {
                         JsonObject jsonEstado = json.get("estado").asObject();
                         JsonArray jsonRadar = jsonEstado.get("percepcion").asArray();
                         Acciones accion;
@@ -408,12 +408,13 @@ public class Controlador extends SingleAgent {
                         }
 
                         estado.setPercepcion(radar);
-                        bc.actualizarMapa(estado,agentesEnObjetivo);
-						quedaFuel = json.get("quedafuel").asBoolean();
+                        bc.actualizarMapa(estado, agentesEnObjetivo);
+                        quedaFuel = json.get("quedafuel").asBoolean();
                     } else //Respuesta al REQUEST de la accion escogida
                     {
                         //Do nothing
                     }
+                }
 
                 break;
 
@@ -541,11 +542,11 @@ public class Controlador extends SingleAgent {
 
         cancel.setSender(this.getAid());
         cancel.setReceiver(new AgentID(SERVER_NAME));
-		
-		for (Map.Entry<String, AgentID> agente : agentesMAP.entrySet()) {
-			cancel.addReceiver(agente.getValue());
-		}
-        
-		send(cancel);
+
+        for (Map.Entry<String, AgentID> agente : agentesMAP.entrySet()) {
+            cancel.addReceiver(agente.getValue());
+        }
+
+        send(cancel);
     }
 }
