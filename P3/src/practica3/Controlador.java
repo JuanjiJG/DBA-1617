@@ -409,6 +409,7 @@ public class Controlador extends SingleAgent {
 
                         estado.setPercepcion(radar);
                         bc.actualizarMapa(estado,agentesEnObjetivo);
+						quedaFuel = json.get("quedafuel").asBoolean();
                     } else //Respuesta al REQUEST de la accion escogida
                     {
                         //Do nothing
