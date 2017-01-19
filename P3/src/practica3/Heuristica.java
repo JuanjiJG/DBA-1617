@@ -42,6 +42,7 @@ public class Heuristica {
     private int cuadrante_4_j_inicio;
     private int cuadrante_4_j_final;
     private EstadoAgente agenteAnterior = null;
+    private Acciones direccionAnteriorMuro = null;
 
     public Heuristica() {
         linkbc = BaseConocimiento.getInstance();
@@ -211,64 +212,135 @@ public class Heuristica {
             posicionInicioMuro = agente_seleccionado.getPosicion();
         }
         if (mapa[i][j] == 4 || ((mapa[i][j] == 1 || mapa[i][j] == 2 || siguiendo_muro) && (agente_seleccionado.getTipo() != TiposAgente.dron))) {
-            siguiendo_muro = true;
-            switch (direccion) {
-                case moveNW:
-                    if (distancias[0][0] < gradiente_muro_encontrado) {
-                        gradiente_muro_encontrado = distancias[0][0];
-                    }
-                    this.acciones_posibles = new Acciones[]{Acciones.moveW, Acciones.moveSW, Acciones.moveS, Acciones.moveSE, Acciones.moveE, Acciones.moveNE, Acciones.moveN};
-                    agente_seleccionado.setNextAction(comprobarDireccion(this.acciones_posibles, mapa, posicion_agente));
-                    break;
-                case moveN:
-                    if (distancias[0][1] < gradiente_muro_encontrado) {
-                        gradiente_muro_encontrado = distancias[0][1];
-                    }
-                    this.acciones_posibles = new Acciones[]{Acciones.moveNW, Acciones.moveW, Acciones.moveSW, Acciones.moveS, Acciones.moveSE, Acciones.moveE, Acciones.moveNE};
-                    agente_seleccionado.setNextAction(comprobarDireccion(this.acciones_posibles, mapa, posicion_agente));
-                    break;
-                case moveNE:
-                    if (distancias[0][2] < gradiente_muro_encontrado) {
-                        gradiente_muro_encontrado = distancias[0][2];
-                    }
-                    this.acciones_posibles = new Acciones[]{Acciones.moveN, Acciones.moveNW, Acciones.moveW, Acciones.moveSW, Acciones.moveS, Acciones.moveSE, Acciones.moveE};
-                    agente_seleccionado.setNextAction(comprobarDireccion(this.acciones_posibles, mapa, posicion_agente));
-                    break;
-                case moveW:
-                    if (distancias[1][0] < gradiente_muro_encontrado) {
-                        gradiente_muro_encontrado = distancias[1][0];
-                    }
-                    this.acciones_posibles = new Acciones[]{Acciones.moveSW, Acciones.moveS, Acciones.moveSE, Acciones.moveE, Acciones.moveNE, Acciones.moveN, Acciones.moveNW};
-                    agente_seleccionado.setNextAction(comprobarDireccion(this.acciones_posibles, mapa, posicion_agente));
-                    break;
-                case moveE:
-                    if (distancias[1][2] < gradiente_muro_encontrado) {
-                        gradiente_muro_encontrado = distancias[1][2];
-                    }
-                    this.acciones_posibles = new Acciones[]{Acciones.moveNE, Acciones.moveN, Acciones.moveNW, Acciones.moveW, Acciones.moveSW, Acciones.moveS, Acciones.moveSE};
-                    agente_seleccionado.setNextAction(comprobarDireccion(this.acciones_posibles, mapa, posicion_agente));
-                    break;
-                case moveSW:
-                    if (distancias[2][0] < gradiente_muro_encontrado) {
-                        gradiente_muro_encontrado = distancias[2][0];
-                    }
-                    this.acciones_posibles = new Acciones[]{Acciones.moveS, Acciones.moveSE, Acciones.moveE, Acciones.moveNE, Acciones.moveN, Acciones.moveNW, Acciones.moveW};
-                    agente_seleccionado.setNextAction(comprobarDireccion(this.acciones_posibles, mapa, posicion_agente));
-                    break;
-                case moveS:
-                    if (distancias[2][1] < gradiente_muro_encontrado) {
-                        gradiente_muro_encontrado = distancias[2][1];
-                    }
-                    this.acciones_posibles = new Acciones[]{Acciones.moveSE, Acciones.moveE, Acciones.moveNE, Acciones.moveN, Acciones.moveNW, Acciones.moveW, Acciones.moveSW};
-                    agente_seleccionado.setNextAction(comprobarDireccion(this.acciones_posibles, mapa, posicion_agente));
-                    break;
-                case moveSE:
-                    if (distancias[2][2] < gradiente_muro_encontrado) {
-                        gradiente_muro_encontrado = distancias[2][2];
-                    }
-                    this.acciones_posibles = new Acciones[]{Acciones.moveE, Acciones.moveNE, Acciones.moveN, Acciones.moveNW, Acciones.moveW, Acciones.moveSW, Acciones.moveS};
-                    agente_seleccionado.setNextAction(comprobarDireccion(this.acciones_posibles, mapa, posicion_agente));
-                    break;
+            if (!siguiendo_muro) {
+                siguiendo_muro = true;
+                this.direccionAnteriorMuro = direccion;
+                switch (direccion) {
+                    case moveNW:
+                        if (distancias[0][0] < gradiente_muro_encontrado) {
+                            gradiente_muro_encontrado = distancias[0][0];
+                        }
+                        this.acciones_posibles = new Acciones[]{Acciones.moveW, Acciones.moveSW, Acciones.moveS, Acciones.moveSE, Acciones.moveE, Acciones.moveNE, Acciones.moveN};
+                        agente_seleccionado.setNextAction(comprobarDireccion(this.acciones_posibles, mapa, posicion_agente));
+                        break;
+                    case moveN:
+                        if (distancias[0][1] < gradiente_muro_encontrado) {
+                            gradiente_muro_encontrado = distancias[0][1];
+                        }
+                        this.acciones_posibles = new Acciones[]{Acciones.moveNW, Acciones.moveW, Acciones.moveSW, Acciones.moveS, Acciones.moveSE, Acciones.moveE, Acciones.moveNE};
+                        agente_seleccionado.setNextAction(comprobarDireccion(this.acciones_posibles, mapa, posicion_agente));
+                        break;
+                    case moveNE:
+                        if (distancias[0][2] < gradiente_muro_encontrado) {
+                            gradiente_muro_encontrado = distancias[0][2];
+                        }
+                        this.acciones_posibles = new Acciones[]{Acciones.moveN, Acciones.moveNW, Acciones.moveW, Acciones.moveSW, Acciones.moveS, Acciones.moveSE, Acciones.moveE};
+                        agente_seleccionado.setNextAction(comprobarDireccion(this.acciones_posibles, mapa, posicion_agente));
+                        break;
+                    case moveW:
+                        if (distancias[1][0] < gradiente_muro_encontrado) {
+                            gradiente_muro_encontrado = distancias[1][0];
+                        }
+                        this.acciones_posibles = new Acciones[]{Acciones.moveSW, Acciones.moveS, Acciones.moveSE, Acciones.moveE, Acciones.moveNE, Acciones.moveN, Acciones.moveNW};
+                        agente_seleccionado.setNextAction(comprobarDireccion(this.acciones_posibles, mapa, posicion_agente));
+                        break;
+                    case moveE:
+                        if (distancias[1][2] < gradiente_muro_encontrado) {
+                            gradiente_muro_encontrado = distancias[1][2];
+                        }
+                        this.acciones_posibles = new Acciones[]{Acciones.moveNE, Acciones.moveN, Acciones.moveNW, Acciones.moveW, Acciones.moveSW, Acciones.moveS, Acciones.moveSE};
+                        agente_seleccionado.setNextAction(comprobarDireccion(this.acciones_posibles, mapa, posicion_agente));
+                        break;
+                    case moveSW:
+                        if (distancias[2][0] < gradiente_muro_encontrado) {
+                            gradiente_muro_encontrado = distancias[2][0];
+                        }
+                        this.acciones_posibles = new Acciones[]{Acciones.moveS, Acciones.moveSE, Acciones.moveE, Acciones.moveNE, Acciones.moveN, Acciones.moveNW, Acciones.moveW};
+                        agente_seleccionado.setNextAction(comprobarDireccion(this.acciones_posibles, mapa, posicion_agente));
+                        break;
+                    case moveS:
+                        if (distancias[2][1] < gradiente_muro_encontrado) {
+                            gradiente_muro_encontrado = distancias[2][1];
+                        }
+                        this.acciones_posibles = new Acciones[]{Acciones.moveSE, Acciones.moveE, Acciones.moveNE, Acciones.moveN, Acciones.moveNW, Acciones.moveW, Acciones.moveSW};
+                        agente_seleccionado.setNextAction(comprobarDireccion(this.acciones_posibles, mapa, posicion_agente));
+                        break;
+                    case moveSE:
+                        if (distancias[2][2] < gradiente_muro_encontrado) {
+                            gradiente_muro_encontrado = distancias[2][2];
+                        }
+                        this.acciones_posibles = new Acciones[]{Acciones.moveE, Acciones.moveNE, Acciones.moveN, Acciones.moveNW, Acciones.moveW, Acciones.moveSW, Acciones.moveS};
+                        agente_seleccionado.setNextAction(comprobarDireccion(this.acciones_posibles, mapa, posicion_agente));
+                        break;
+                }
+            }else{
+            switch (this.direccionAnteriorMuro) {
+                    case moveNW:
+                        if (distancias[0][0] < gradiente_muro_encontrado) {
+                            gradiente_muro_encontrado = distancias[0][0];
+                        }
+                        this.acciones_posibles = new Acciones[]{Acciones.moveW, Acciones.moveSW, Acciones.moveS, Acciones.moveSE, Acciones.moveE, Acciones.moveNE, Acciones.moveN};
+                        this.direccionAnteriorMuro = this.acciones_posibles[0];
+                        agente_seleccionado.setNextAction(comprobarDireccion(this.acciones_posibles, mapa, posicion_agente));
+                        break;
+                    case moveN:
+                        if (distancias[0][1] < gradiente_muro_encontrado) {
+                            gradiente_muro_encontrado = distancias[0][1];
+                        }
+                        this.acciones_posibles = new Acciones[]{Acciones.moveNW, Acciones.moveW, Acciones.moveSW, Acciones.moveS, Acciones.moveSE, Acciones.moveE, Acciones.moveNE};
+                        this.direccionAnteriorMuro = this.acciones_posibles[0];
+                        agente_seleccionado.setNextAction(comprobarDireccion(this.acciones_posibles, mapa, posicion_agente));
+                        break;
+                    case moveNE:
+                        if (distancias[0][2] < gradiente_muro_encontrado) {
+                            gradiente_muro_encontrado = distancias[0][2];
+                        }
+                        this.acciones_posibles = new Acciones[]{Acciones.moveN, Acciones.moveNW, Acciones.moveW, Acciones.moveSW, Acciones.moveS, Acciones.moveSE, Acciones.moveE};
+                        this.direccionAnteriorMuro = this.acciones_posibles[0];
+                        agente_seleccionado.setNextAction(comprobarDireccion(this.acciones_posibles, mapa, posicion_agente));
+                        break;
+                    case moveW:
+                        if (distancias[1][0] < gradiente_muro_encontrado) {
+                            gradiente_muro_encontrado = distancias[1][0];
+                        }
+                        this.acciones_posibles = new Acciones[]{Acciones.moveSW, Acciones.moveS, Acciones.moveSE, Acciones.moveE, Acciones.moveNE, Acciones.moveN, Acciones.moveNW};
+                        this.direccionAnteriorMuro = this.acciones_posibles[0];
+                        agente_seleccionado.setNextAction(comprobarDireccion(this.acciones_posibles, mapa, posicion_agente));
+                        break;
+                    case moveE:
+                        if (distancias[1][2] < gradiente_muro_encontrado) {
+                            gradiente_muro_encontrado = distancias[1][2];
+                        }
+                        this.acciones_posibles = new Acciones[]{Acciones.moveNE, Acciones.moveN, Acciones.moveNW, Acciones.moveW, Acciones.moveSW, Acciones.moveS, Acciones.moveSE};
+                        this.direccionAnteriorMuro = this.acciones_posibles[0];
+                        agente_seleccionado.setNextAction(comprobarDireccion(this.acciones_posibles, mapa, posicion_agente));
+                        break;
+                    case moveSW:
+                        if (distancias[2][0] < gradiente_muro_encontrado) {
+                            gradiente_muro_encontrado = distancias[2][0];
+                        }
+                        this.acciones_posibles = new Acciones[]{Acciones.moveS, Acciones.moveSE, Acciones.moveE, Acciones.moveNE, Acciones.moveN, Acciones.moveNW, Acciones.moveW};
+                        this.direccionAnteriorMuro = this.acciones_posibles[0];
+                        agente_seleccionado.setNextAction(comprobarDireccion(this.acciones_posibles, mapa, posicion_agente));
+                        break;
+                    case moveS:
+                        if (distancias[2][1] < gradiente_muro_encontrado) {
+                            gradiente_muro_encontrado = distancias[2][1];
+                        }
+                        this.acciones_posibles = new Acciones[]{Acciones.moveSE, Acciones.moveE, Acciones.moveNE, Acciones.moveN, Acciones.moveNW, Acciones.moveW, Acciones.moveSW};
+                        this.direccionAnteriorMuro = this.acciones_posibles[0];
+                        agente_seleccionado.setNextAction(comprobarDireccion(this.acciones_posibles, mapa, posicion_agente));
+                        break;
+                    case moveSE:
+                        if (distancias[2][2] < gradiente_muro_encontrado) {
+                            gradiente_muro_encontrado = distancias[2][2];
+                        }
+                        this.acciones_posibles = new Acciones[]{Acciones.moveE, Acciones.moveNE, Acciones.moveN, Acciones.moveNW, Acciones.moveW, Acciones.moveSW, Acciones.moveS};
+                        this.direccionAnteriorMuro = this.acciones_posibles[0];
+                        agente_seleccionado.setNextAction(comprobarDireccion(this.acciones_posibles, mapa, posicion_agente));
+                        break;
+                }
+            
             }
 
         }
@@ -370,7 +442,7 @@ public class Heuristica {
                         calcularSubObjetivo();
                     }
                     if (posicionInicioMuro != null && estados.get(i).getPosicion().getKey() == this.posicionInicioMuro.getKey() && estados.get(i).getPosicion().getValue() == this.posicionInicioMuro.getValue()) {
-                        posicionInicioMuro=null;
+                        posicionInicioMuro = null;
                         calcularSubObjetivo();
                     }
                 }
@@ -434,21 +506,17 @@ public class Heuristica {
                 calcularSiguienteMovimiento(agente_seleccionado, agente_seleccionado.getPosicion(), this.subObjetivo);
             }
         } else //Sino combrobamos si tiene combustible el agente
-        {
-            if (agente_seleccionado.getFuelActual() > agente_seleccionado.getGasto()) {
+         if (agente_seleccionado.getFuelActual() > agente_seleccionado.getGasto()) {
                 calcularSiguienteMovimiento(agente_seleccionado, agente_seleccionado.getPosicion(), this.subObjetivo);
             } else //Si tenemos agentes en el array eliminamos el agente seleccionado 
             //porque no tiene fuel y no hay fuel en el mundo por lo que ya no nos sirve
-            {
-                if (estados.size() > 0) {
+             if (estados.size() > 0) {
                     estados.remove(agente_seleccionado);
                     return buscandoObjetivo(estados, false);
                 } else { //Sino tenemos más agentes que podamos mover devolvemos un EstadoAgente a null porque ya solo queda hacer el logout 
                     //CONDICIÓN DE PARADA SI NO HEMOS ENCONTRADO EL OBJETIVO
                     return null;
                 }
-            }
-        }
 
         return agente_seleccionado;
     }
@@ -521,21 +589,17 @@ public class Heuristica {
                 calcularSiguienteMovimiento(agente_seleccionado, agente_seleccionado.getPosicion(), objetivo);
             }
         } else //Sino combrobamos si tiene combustible el agente
-        {
-            if (agente_seleccionado.getFuelActual() > agente_seleccionado.getGasto()) {
+         if (agente_seleccionado.getFuelActual() > agente_seleccionado.getGasto()) {
                 calcularSiguienteMovimiento(agente_seleccionado, agente_seleccionado.getPosicion(), objetivo);
             } else //Si tenemos agentes en el array eliminamos el agente seleccionado 
             //porque no tiene fuel y no hay fuel en el mundo por lo que ya no nos sirve
-            {
-                if (estados.size() > 0) {
+             if (estados.size() > 0) {
                     estados.remove(agente_seleccionado);
                     return objetivoEncontrado(estados, objetivo, false);
                 } else { //Sino tenemos más agentes que podamos mover devolvemos un EstadoAgente a null porque ya solo queda hacer el logout 
                     //CONDICIÓN DE PARADA SI NO HEMOS ENCONTRADO EL OBJETIVO
                     return null;
                 }
-            }
-        }
 
         return agente_seleccionado;
     }

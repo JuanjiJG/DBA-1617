@@ -36,7 +36,7 @@ public class Controlador extends SingleAgent {
     private Heuristica heuristica;
     private BaseConocimiento bc;
     private ArrayList<EstadoAgente> agentesEnObjetivo;
-	private int fuelMundo;
+    private int fuelMundo;
 
     /**
      * Constructor de la clase Controlador
@@ -364,8 +364,7 @@ public class Controlador extends SingleAgent {
                     }
                 } else //De un agente
                 //Respuesta al QUERY_REF pidiendo el estado
-                {
-                    if (json.get("estado") != null) {
+                 if (json.get("estado") != null) {
                         JsonObject jsonEstado = json.get("estado").asObject();
                         JsonArray jsonRadar = jsonEstado.get("percepcion").asArray();
                         Acciones accion;
@@ -394,14 +393,13 @@ public class Controlador extends SingleAgent {
                         }
 
                         estado.setPercepcion(radar);
-                        bc.actualizarMapa(estado,agentesEnObjetivo);
-						fuelMundo = json.get("fuelmundo").asInt();
-						quedaFuel = fuelMundo > 0;
+                        bc.actualizarMapa(estado, agentesEnObjetivo);
+                        fuelMundo = json.get("fuelmundo").asInt();
+                        quedaFuel = fuelMundo > 0;
                     } else //Respuesta al REQUEST de la accion escogida
                     {
                         //Do nothing
                     }
-                }
 
                 break;
 
