@@ -43,6 +43,7 @@ public class Heuristica {
     private int cuadrante_4_j_final;
     private EstadoAgente agenteAnterior = null;
     private Acciones direccionAnteriorMuro = null;
+    private int contador_muro =0;
 
     public Heuristica() {
         linkbc = BaseConocimiento.getInstance();
@@ -210,6 +211,7 @@ public class Heuristica {
         //Si ya esabamos siguiendo el muro o es la primera vez que lo encontramos
         if (((mapa[i][j] == 1 || mapa[i][j] == 2) && !siguiendo_muro) && (agente_seleccionado.getTipo() != TiposAgente.dron)) {
             posicionInicioMuro = agente_seleccionado.getPosicion();
+            this.contador_muro = 6;
         }
         if (mapa[i][j] == 4 || ((mapa[i][j] == 1 || mapa[i][j] == 2 || siguiendo_muro) && (agente_seleccionado.getTipo() != TiposAgente.dron))) {
             siguiendo_muro = true;
@@ -389,8 +391,8 @@ public class Heuristica {
     }
 
     public EstadoAgente buscandoObjetivo(ArrayList<EstadoAgente> estados, boolean tenemosFuelEnElMundo) {
-        EstadoAgente agente_seleccionado;
-        double minDistancia;
+        EstadoAgente agente_seleccionado = null;
+        double minDistancia = Double.MAX_VALUE;
         ArrayList<Integer> indices_posibles = new ArrayList();
         int indice_agente_seleccionado = 0;
 
@@ -403,7 +405,7 @@ public class Heuristica {
                     if (estados.get(i).getPosicion().getKey() == this.subObjetivo.getKey() && estados.get(i).getPosicion().getValue() == this.subObjetivo.getValue()) {
                         calcularSubObjetivo();
                     }
-                    if (posicionInicioMuro != null && estados.get(i).getPosicion().getKey() == this.posicionInicioMuro.getKey() && estados.get(i).getPosicion().getValue() == this.posicionInicioMuro.getValue()) {
+                    if (contador_muro<0&&posicionInicioMuro != null && Math.abs(estados.get(i).getPosicion().getKey() - this.posicionInicioMuro.getKey())<5 && Math.abs(estados.get(i).getPosicion().getValue()- this.posicionInicioMuro.getValue())<5) {
                         posicionInicioMuro = null;
                         calcularSubObjetivo();
                     }
@@ -412,6 +414,11 @@ public class Heuristica {
         }
 
         ///Elegimos al agente que esté más cerca del objetivo
+        if(estados.isEmpty()){
+            return null;
+        }
+        
+        
         minDistancia = calcularDistanciaEuclidea(estados.get(0).getPosicion(), this.subObjetivo);
         //Sacamos el agente que este mas cerca del objetivo, es decir, que su distancia hacia el objetivo sea la minima o que haya empatado con otro.
         for (int i = 1; i < estados.size(); i++) {
@@ -466,10 +473,14 @@ public class Heuristica {
                 return agente_seleccionado;
             } else {
                 calcularSiguienteMovimiento(agente_seleccionado, agente_seleccionado.getPosicion(), this.subObjetivo);
+                if(this.contador_muro > -1)
+                    this.contador_muro--;
             }
         } else //Sino combrobamos si tiene combustible el agente
         if (agente_seleccionado.getFuelActual() > agente_seleccionado.getGasto()) {
             calcularSiguienteMovimiento(agente_seleccionado, agente_seleccionado.getPosicion(), this.subObjetivo);
+            if(this.contador_muro > -1)
+                    this.contador_muro--;
         } else //Si tenemos agentes en el array eliminamos el agente seleccionado 
         //porque no tiene fuel y no hay fuel en el mundo por lo que ya no nos sirve
         if (estados.size() > 0) {

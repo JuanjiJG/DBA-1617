@@ -140,6 +140,10 @@ public class Controlador extends SingleAgent {
                         this.bc.limpiarConjuntoEstados();
 
 
+                        if(agenteSeleccionado==null){
+                            this.estadoActual = EstadosEjecucion.TERMINADO;
+                            break;
+                        }
                         // Si la siguiente accion es null, significa que nos hemos quedad sin fuel
                         if (agenteSeleccionado.getNextAction() == null) {
                             this.estadoActual = EstadosEjecucion.TERMINADO;
@@ -284,7 +288,6 @@ public class Controlador extends SingleAgent {
     public void finalize() {
 
         System.out.println("Finalizando Controlador...");
-        System.out.flush();
         super.finalize();
     }
 
