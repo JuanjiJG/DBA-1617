@@ -7,6 +7,7 @@ import javafx.util.Pair;
  *
  * @author Antonio Javier Benítez Guijarro
  * @author Emilio Manuel Chica Jiménez
+ * @author Gregorio Carvajal Expósito
  */
 public class Heuristica {
 
@@ -45,16 +46,36 @@ public class Heuristica {
     private Acciones direccionAnteriorMuro = null;
     private int contador_muro =0;
 
+	/**
+	 * Metodo constructor
+	 * 
+	 * @author Antonio Javier Benítez Guijarro
+	 * @author Emilio Manuel Chica Jiménez
+	 */
     public Heuristica() {
         linkbc = BaseConocimiento.getInstance();
     }
 
+	/**
+	 * Establece el tamaño de la matriz del mapa
+	 * 
+	 * @author Antonio Javier Benítez Guijarro
+	 * @author Emilio Manuel Chica Jiménez
+	 */
     public void setTamMapa(int tamMapa) {
         this.tamMapa = tamMapa;
         dividirCuadrantes();
     }
 
-    private boolean necesitaRepostar(EstadoAgente agente) {
+    /**
+	 * Comprueba si el agente tiene que repostar porque tiene menos
+	 * combustible del umbral. Esto es asi para que las recargas sean
+	 * de poca cantidad, en lugar de recargar de 100 en 100
+	 * 
+	 * @author Antonio Javier Benítez Guijarro
+	 * @author Emilio Manuel Chica Jiménez
+	 */
+	private boolean necesitaRepostar(EstadoAgente agente) {
         if (agente.getFuelActual() < UMBRAL_COMBUSTIBLE) {
             return true;
         } else {
@@ -62,7 +83,13 @@ public class Heuristica {
         }
     }
 
-    private void dividirCuadrantes() {
+    /**
+	 * Obtenemos las esquinas de los 4 cuadrantes del mapa
+	 * 
+	 * @author Antonio Javier Benítez Guijarro
+	 * @author Emilio Manuel Chica Jiménez
+	 */
+	private void dividirCuadrantes() {
         this.cuadrante_1_i_inicio = 5;
         this.cuadrante_1_i_final = (tamMapa / 2) - 1;
         this.cuadrante_1_j_inicio = 5;
@@ -85,7 +112,14 @@ public class Heuristica {
 
     }
 
-    private Acciones comprobarDireccion(Acciones[] acciones, int[][] mapa, Pair<Integer, Integer> posicion_agente) {
+    /**
+	 * Comprobamos si la direccion que queremos realizar es posible y
+	 * devuelve una accion alternativa en caso negativo
+	 * 
+	 * @author Antonio Javier Benítez Guijarro
+	 * @author Emilio Manuel Chica Jiménez
+	 */
+	private Acciones comprobarDireccion(Acciones[] acciones, int[][] mapa, Pair<Integer, Integer> posicion_agente) {
         int i = posicion_agente.getKey();
         int j = posicion_agente.getValue();
         Acciones accion_resultado = null;
@@ -138,11 +172,16 @@ public class Heuristica {
         return accion_resultado;
     }
 
-    //Por si falla segun dice antonio deberia de devolver EstadoAgente agente_seleccionado
+    /**
+	 * Funcion que "piensa" cual es el siguiente movimieto a ejecutar
+	 * 
+	 * @author Antonio Javier Benítez Guijarro
+	 * @author Emilio Manuel Chica Jiménez
+	 */
     private void calcularSiguienteMovimiento(EstadoAgente agente_seleccionado, Pair<Integer, Integer> posicion_agente, Pair<Integer, Integer> posicion_destino) {
         Pair<Acciones, Pair<Integer, Integer>> casilla = calcularMejorCasilla(posicion_agente, posicion_destino);
-        int j = casilla.getValue().getValue();//Invertimos las variables para nuestro mapa
-        int i = casilla.getValue().getKey();//Invertimos las variables para nuestro mapa
+        int j = casilla.getValue().getValue();
+        int i = casilla.getValue().getKey();
         int mapa[][] = this.linkbc.getMapa();
         Acciones direccion = casilla.getKey();
 
@@ -224,11 +263,12 @@ public class Heuristica {
                     this.acciones_posibles = new Acciones[]{Acciones.moveW, Acciones.moveSW, Acciones.moveS, Acciones.moveSE, Acciones.moveE, Acciones.moveNE, Acciones.moveN};
                     action_resultante = comprobarDireccion(this.acciones_posibles, mapa, posicion_agente);
 
-                    if (action_resultante == accion_inversa(agente_seleccionado.getNextAction())) {
-                        //Buscar la siguiente en el array
-                        this.acciones_posibles = new Acciones[]{Acciones.moveSW, Acciones.moveS, Acciones.moveSE, Acciones.moveE, Acciones.moveNE, Acciones.moveN, Acciones.moveW};
-                        action_resultante = comprobarDireccion(this.acciones_posibles, mapa, posicion_agente);
-                    }
+					if (action_resultante != null && agente_seleccionado.getNextAction() != null)
+						if (action_resultante == accion_inversa(agente_seleccionado.getNextAction())) {
+							//Buscar la siguiente en el array
+							this.acciones_posibles = new Acciones[]{Acciones.moveSW, Acciones.moveS, Acciones.moveSE, Acciones.moveE, Acciones.moveNE, Acciones.moveN, Acciones.moveW};
+							action_resultante = comprobarDireccion(this.acciones_posibles, mapa, posicion_agente);
+						}
 
                     agente_seleccionado.setNextAction(action_resultante);
                     break;
@@ -246,11 +286,12 @@ public class Heuristica {
                     this.acciones_posibles = new Acciones[]{Acciones.moveN, Acciones.moveNW, Acciones.moveW, Acciones.moveSW, Acciones.moveS, Acciones.moveSE, Acciones.moveE};
                     action_resultante = comprobarDireccion(this.acciones_posibles, mapa, posicion_agente);
 
-                    if (action_resultante == accion_inversa(agente_seleccionado.getNextAction())) {
-                        //Buscar la siguiente en el array
-                        this.acciones_posibles = new Acciones[]{Acciones.moveNW, Acciones.moveW, Acciones.moveSW, Acciones.moveS, Acciones.moveSE, Acciones.moveE, Acciones.moveN};
-                        action_resultante = comprobarDireccion(this.acciones_posibles, mapa, posicion_agente);
-                    }
+					if (action_resultante != null && agente_seleccionado.getNextAction() != null)
+						if (action_resultante == accion_inversa(agente_seleccionado.getNextAction())) {
+							//Buscar la siguiente en el array
+							this.acciones_posibles = new Acciones[]{Acciones.moveNW, Acciones.moveW, Acciones.moveSW, Acciones.moveS, Acciones.moveSE, Acciones.moveE, Acciones.moveN};
+							action_resultante = comprobarDireccion(this.acciones_posibles, mapa, posicion_agente);
+						}
 
                     agente_seleccionado.setNextAction(action_resultante);
                     break;
@@ -275,11 +316,12 @@ public class Heuristica {
                     this.acciones_posibles = new Acciones[]{Acciones.moveS, Acciones.moveSE, Acciones.moveE, Acciones.moveNE, Acciones.moveN, Acciones.moveNW, Acciones.moveW};
                     action_resultante = comprobarDireccion(this.acciones_posibles, mapa, posicion_agente);
 
-                    if (action_resultante == accion_inversa(agente_seleccionado.getNextAction())) {
-                        //Buscar la siguiente en el array
-                        this.acciones_posibles = new Acciones[]{Acciones.moveSE, Acciones.moveE, Acciones.moveNE, Acciones.moveN, Acciones.moveNW, Acciones.moveW, Acciones.moveS};
-                        action_resultante = comprobarDireccion(this.acciones_posibles, mapa, posicion_agente);
-                    }
+					if (action_resultante != null && agente_seleccionado.getNextAction() != null)
+						if (action_resultante == accion_inversa(agente_seleccionado.getNextAction())) {
+							//Buscar la siguiente en el array
+							this.acciones_posibles = new Acciones[]{Acciones.moveSE, Acciones.moveE, Acciones.moveNE, Acciones.moveN, Acciones.moveNW, Acciones.moveW, Acciones.moveS};
+							action_resultante = comprobarDireccion(this.acciones_posibles, mapa, posicion_agente);
+						}
 
                     agente_seleccionado.setNextAction(action_resultante);
                     break;
@@ -297,11 +339,12 @@ public class Heuristica {
                     this.acciones_posibles = new Acciones[]{Acciones.moveE, Acciones.moveNE, Acciones.moveN, Acciones.moveNW, Acciones.moveW, Acciones.moveSW, Acciones.moveS};
                     action_resultante = comprobarDireccion(this.acciones_posibles, mapa, posicion_agente);
 
-                    if (action_resultante == accion_inversa(agente_seleccionado.getNextAction())) {
-                        //Buscar la siguiente en el array
-                        this.acciones_posibles = new Acciones[]{Acciones.moveNE, Acciones.moveN, Acciones.moveNW, Acciones.moveW, Acciones.moveSW, Acciones.moveS, Acciones.moveE};
-                        action_resultante = comprobarDireccion(this.acciones_posibles, mapa, posicion_agente);
-                    }
+					if (action_resultante != null && agente_seleccionado.getNextAction() != null)
+						if (action_resultante == accion_inversa(agente_seleccionado.getNextAction())) {
+							//Buscar la siguiente en el array
+							this.acciones_posibles = new Acciones[]{Acciones.moveNE, Acciones.moveN, Acciones.moveNW, Acciones.moveW, Acciones.moveSW, Acciones.moveS, Acciones.moveE};
+							action_resultante = comprobarDireccion(this.acciones_posibles, mapa, posicion_agente);
+						}
 
                     agente_seleccionado.setNextAction(action_resultante);
                     break;
@@ -311,7 +354,13 @@ public class Heuristica {
 
     }
 
-    private double calcularPuntuacion(EstadoAgente estado, Pair<Integer, Integer> posicion_destino) {
+    /**
+	 * Calcula la mejor de las casillas de alrededor
+	 * 
+	 * @author Antonio Javier Benítez Guijarro
+	 * @author Emilio Manuel Chica Jiménez
+	 */
+	private double calcularPuntuacion(EstadoAgente estado, Pair<Integer, Integer> posicion_destino) {
         double puntuacion = 0;
         double distancia = calcularDistanciaEuclidea(estado.getPosicion(), posicion_destino);
         puntuacion = distancia * estado.getGasto();
@@ -322,8 +371,16 @@ public class Heuristica {
         return puntuacion;
     }
 
-    //Devolveremos la direccion (norte sur, este...) donde teoricamente nos deberiamos mover si no hay obstaculos y la casilla que es el mapa del profesor.
-    private Pair<Acciones, Pair<Integer, Integer>> calcularMejorCasilla(Pair<Integer, Integer> posicion_agente, Pair<Integer, Integer> posicion_destino) {
+    
+    /**
+	 * Devolveremos la direccion (norte sur, este...)
+	 * donde teoricamente nos deberiamos mover si no hay
+	 * obstaculos y la casilla que es el mapa del profesor.
+	 * 
+	 * @author Antonio Javier Benítez Guijarro
+	 * @author Emilio Manuel Chica Jiménez
+	 */
+	private Pair<Acciones, Pair<Integer, Integer>> calcularMejorCasilla(Pair<Integer, Integer> posicion_agente, Pair<Integer, Integer> posicion_destino) {
         Pair<Integer, Integer> posicion_objetivo = new Pair(posicion_destino.getKey(), posicion_destino.getValue());
         //Cambiamos los indices para que concuerden con los del profesor.
         int i = posicion_agente.getKey();
@@ -390,7 +447,14 @@ public class Heuristica {
         return new Pair(direccion, resultado);
     }
 
-    public EstadoAgente buscandoObjetivo(ArrayList<EstadoAgente> estados, boolean tenemosFuelEnElMundo) {
+    /**
+	 * Funcion heuristica a ejecutar cuando estamos en el estado
+	 * buscandoObjetivo
+	 * 
+	 * @author Antonio Javier Benítez Guijarro
+	 * @author Emilio Manuel Chica Jiménez
+	 */
+	public EstadoAgente buscandoObjetivo(ArrayList<EstadoAgente> estados, boolean tenemosFuelEnElMundo) {
         EstadoAgente agente_seleccionado = null;
         double minDistancia = Double.MAX_VALUE;
         ArrayList<Integer> indices_posibles = new ArrayList();
@@ -494,18 +558,35 @@ public class Heuristica {
         return agente_seleccionado;
     }
 
+	/**
+	 * Funcion heuristica a ejecutar cuando estamos en el estado
+	 * objetivoAlcanzado
+	 * 
+	 * @author Antonio Javier Benítez Guijarro
+	 * @author Emilio Manuel Chica Jiménez
+	 */
     public EstadoAgente objetivoAlcanzado(ArrayList<EstadoAgente> estados, Pair<Integer, Integer> objetivo, boolean tenemosFuelEnElMundo) {
         ArrayList<EstadoAgente> agentes_no_en_el_objetivo = new ArrayList(estados);
         for (int i = 0; i < estados.size(); i++) {
-            if (estados.get(i).isPisandoObjetivo()) {
+            if (estados.get(i).isPisandoObjetivo() && agentes_no_en_el_objetivo.size() > i) {
                 agentes_no_en_el_objetivo.remove(i);
             }
         }
-
-        return objetivoEncontrado(agentes_no_en_el_objetivo, objetivo, tenemosFuelEnElMundo);
+		
+		if (agentes_no_en_el_objetivo.isEmpty())
+			return null;
+		else
+			return objetivoEncontrado(agentes_no_en_el_objetivo, objetivo, tenemosFuelEnElMundo);
     }
 
-    public EstadoAgente objetivoEncontrado(ArrayList<EstadoAgente> estados, Pair<Integer, Integer> objetivo, boolean tenemosFuelEnElMundo) {
+    /**
+	 * Funcion heuristica a ejecutar cuando estamos en el estado
+	 * objetivoEncontrado
+	 * 
+	 * @author Antonio Javier Benítez Guijarro
+	 * @author Emilio Manuel Chica Jiménez
+	 */
+	public EstadoAgente objetivoEncontrado(ArrayList<EstadoAgente> estados, Pair<Integer, Integer> objetivo, boolean tenemosFuelEnElMundo) {
         EstadoAgente agente_seleccionado;
         double minPuntuacion;
         ArrayList<Integer> indices_posibles = new ArrayList();
@@ -577,15 +658,27 @@ public class Heuristica {
         return agente_seleccionado;
     }
 
-    //Puede que no este correcto. IMPORTANTE.
+    /**
+	 * Calcula la distancia entre 2 casillas
+	 * 
+	 * @author Antonio Javier Benítez Guijarro
+	 * @author Emilio Manuel Chica Jiménez
+	 */
     private double calcularDistanciaEuclidea(Pair<Integer, Integer> posicion_objetivo, Pair<Integer, Integer> posicion_agente) {
         double d = 0;
         d = Math.sqrt(((posicion_objetivo.getValue() - posicion_agente.getValue()) * (posicion_objetivo.getValue() - posicion_agente.getValue())) + ((posicion_objetivo.getKey() - posicion_agente.getKey()) * (posicion_objetivo.getKey() - posicion_agente.getKey())));
         return d;
     }
 
-    //Calcula el numero de casillas inexploradas de cada cuadrante y elegimos el cuadrante con mas inexploradas y asignamos el nuevo objetivo.
-    private void calcularSubObjetivo() {
+    /**
+	 * Calcula el numero de casillas inexploradas de cada cuadrante
+	 * y elegimos el cuadrante con mas inexploradas y
+	 * asignamos el nuevo objetivo.
+	 * 
+	 * @author Antonio Javier Benítez Guijarro
+	 * @author Emilio Manuel Chica Jiménez
+	 */
+	private void calcularSubObjetivo() {
         int mapa[][] = this.linkbc.getMapa();
         int cont_cuadrante_1 = 0;
         int cont_cuadrante_2 = 0;
@@ -725,6 +818,14 @@ public class Heuristica {
         }
     }
 
+	/**
+	 * Devuelve la accion opuesta a una dada. Por ejemplo,
+	 * si recibe moveN, devolverá moveS
+	 * 
+	 * @param nextAction Accion a la cual se le quiere calcular la opuesta
+	 * @return La Accion opuesta
+	 * @author Gregorio Carvajal Expósito
+	 */
     private Acciones accion_inversa(Acciones nextAction) {
         Acciones devolver = null;
 

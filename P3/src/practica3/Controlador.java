@@ -191,9 +191,9 @@ public class Controlador extends SingleAgent {
                     }
 
                     if (unoPisando) {
-                        //this.estadoActual = EstadosEjecucion.ALCANZADO;
+                        this.estadoActual = EstadosEjecucion.ALCANZADO;
 						//CAPADOR
-						this.estadoActual = EstadosEjecucion.TERMINADO;
+						//this.estadoActual = EstadosEjecucion.TERMINADO;
                     } else {
                         // Pasar el array a la heurística y obtener el agente seleccionado
                         EstadoAgente agenteSeleccionado = this.heuristica.objetivoEncontrado(estadosAgentes, bc.getPosicionObjetivo(), this.quedaFuel);
@@ -248,7 +248,9 @@ public class Controlador extends SingleAgent {
                         this.bc.limpiarConjuntoEstados();
 
                         // Si la siguiente accion es null, significa que nos hemos quedad sin fuel
-                        if (agenteSeleccionado.getNextAction() == null) {
+						if (agenteSeleccionado == null)
+							this.estadoActual = EstadosEjecucion.TERMINADO;
+						else if (agenteSeleccionado.getNextAction() == null) {
                             this.estadoActual = EstadosEjecucion.TERMINADO;
                         } else {
                             // Mandamos la accion al agente seleccionado
