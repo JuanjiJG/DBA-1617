@@ -25,7 +25,7 @@ import javafx.util.Pair;
 public class Controlador extends SingleAgent {
 
     public static final String SERVER_NAME = "Furud";
-    public static final String AGENT_ID = "GugelCarRedForest";
+    public static final String AGENT_ID = "GugelCarRedForest3";
     public static final String AGENTES_CONVERSATION_ID = "grupo-6-agentes";
     private final int MUNDO_ELEGIDO;
     private boolean quedaFuel;
@@ -191,7 +191,9 @@ public class Controlador extends SingleAgent {
                     }
 
                     if (unoPisando) {
-                        this.estadoActual = EstadosEjecucion.ALCANZADO;
+                        //this.estadoActual = EstadosEjecucion.ALCANZADO;
+						//CAPADOR
+						this.estadoActual = EstadosEjecucion.TERMINADO;
                     } else {
                         // Pasar el array a la heurística y obtener el agente seleccionado
                         EstadoAgente agenteSeleccionado = this.heuristica.objetivoEncontrado(estadosAgentes, bc.getPosicionObjetivo(), this.quedaFuel);

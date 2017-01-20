@@ -113,6 +113,7 @@ public class BaseConocimiento {
             }
 
         } catch (IOException | ClassNotFoundException ex) {
+			System.err.println("ERROR DE HDD LOAD");
             Logger.getLogger(BaseConocimiento.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             if (!existeArchivo) {
@@ -174,6 +175,7 @@ public class BaseConocimiento {
             try {
                 outputStream.close();
             } catch (IOException ex) {
+				System.err.println("ERROR DE HDD SAVE");
                 Logger.getLogger(BaseConocimiento.class.getName()).log(Level.SEVERE, null, ex);
             }
         }

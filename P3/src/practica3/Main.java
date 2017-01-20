@@ -3,6 +3,7 @@ package practica3;
 import es.upv.dsic.gti_ia.core.AgentID;
 import es.upv.dsic.gti_ia.core.AgentsConnection;
 import java.util.Scanner;
+import org.apache.log4j.BasicConfigurator;
 
 /**
  * Clase Main para comenzar la ejecución de nuestro agente
@@ -13,6 +14,7 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) throws Exception {
+		BasicConfigurator.configure();
         // Pedir al usuario el mundo al que conectarse
         Scanner keyboard = new Scanner(System.in);
 
@@ -31,7 +33,7 @@ public class Main {
             gugel = new Controlador(new AgentID(Controlador.AGENT_ID), mundo);
         
             for (int i = 0; i < agentes.length; i++) {
-                agentes[i] = new Agente(new AgentID("Agente_" + i));
+                agentes[i] = new Agente(new AgentID("AAAgente_" + i));
             }
         } catch (Exception e) {
             System.err.println("Ha habido un error creando a los agentes.");
