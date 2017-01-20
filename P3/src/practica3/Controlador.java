@@ -25,7 +25,7 @@ import javafx.util.Pair;
 public class Controlador extends SingleAgent {
 
     public static final String SERVER_NAME = "Furud";
-    public static final String AGENT_ID = "GugelCarRedForest3";
+    public static final String AGENT_ID = "GugelCarRedForest4";
     public static final String AGENTES_CONVERSATION_ID = "grupo-6-agentes";
     private final int MUNDO_ELEGIDO;
     private boolean quedaFuel;

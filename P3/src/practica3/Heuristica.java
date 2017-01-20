@@ -455,11 +455,14 @@ public class Heuristica {
 	 * @author Emilio Manuel Chica Jiménez
 	 */
 	public EstadoAgente buscandoObjetivo(ArrayList<EstadoAgente> estados, boolean tenemosFuelEnElMundo) {
-        EstadoAgente agente_seleccionado = null;
+		if(estados.isEmpty())
+			return null;
+		EstadoAgente agente_seleccionado = null;
         double minDistancia = Double.MAX_VALUE;
         ArrayList<Integer> indices_posibles = new ArrayList();
         int indice_agente_seleccionado = 0;
 
+		
         if (this.subObjetivo == null) {
             calcularSubObjetivo();//Analiza los cuadrantes y asigna un subObjetivo que sea un grupo de casillas inexploradas 3x3
         }
@@ -587,11 +590,14 @@ public class Heuristica {
 	 * @author Emilio Manuel Chica Jiménez
 	 */
 	public EstadoAgente objetivoEncontrado(ArrayList<EstadoAgente> estados, Pair<Integer, Integer> objetivo, boolean tenemosFuelEnElMundo) {
-        EstadoAgente agente_seleccionado;
+        if(estados.isEmpty())
+			return null;
+		EstadoAgente agente_seleccionado;
         double minPuntuacion;
         ArrayList<Integer> indices_posibles = new ArrayList();
         int indice_agente_seleccionado = 0;
 
+		
         ///Elegimos al agente que esté más cerca del objetivo
         minPuntuacion = calcularPuntuacion(estados.get(0), objetivo);
         //Sacamos el agente que este mas cerca del objetivo, es decir, que su distancia hacia el objetivo sea la minima o que haya empatado con otro.
@@ -645,16 +651,16 @@ public class Heuristica {
         } else //Sino combrobamos si tiene combustible el agente
         if (agente_seleccionado.getFuelActual() > agente_seleccionado.getGasto()) {
             calcularSiguienteMovimiento(agente_seleccionado, agente_seleccionado.getPosicion(), objetivo);
-        } else //Si tenemos agentes en el array eliminamos el agente seleccionado 
+        } else { //Si tenemos agentes en el array eliminamos el agente seleccionado 
         //porque no tiene fuel y no hay fuel en el mundo por lo que ya no nos sirve
-        if (estados.size() > 0) {
-            estados.remove(agente_seleccionado);
-            return objetivoEncontrado(estados, objetivo, false);
-        } else { //Sino tenemos más agentes que podamos mover devolvemos un EstadoAgente a null porque ya solo queda hacer el logout 
-            //CONDICIÓN DE PARADA SI NO HEMOS ENCONTRADO EL OBJETIVO
-            return null;
-        }
-
+			if (estados.size() > 0) {
+				estados.remove(agente_seleccionado);
+				return objetivoEncontrado(estados, objetivo, false);
+			} else { //Sino tenemos más agentes que podamos mover devolvemos un EstadoAgente a null porque ya solo queda hacer el logout 
+				//CONDICIÓN DE PARADA SI NO HEMOS ENCONTRADO EL OBJETIVO
+				return null;
+			}
+		}
         return agente_seleccionado;
     }
 

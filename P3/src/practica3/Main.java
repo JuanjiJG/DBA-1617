@@ -33,7 +33,7 @@ public class Main {
             gugel = new Controlador(new AgentID(Controlador.AGENT_ID), mundo);
         
             for (int i = 0; i < agentes.length; i++) {
-                agentes[i] = new Agente(new AgentID("AAAgente_" + i));
+                agentes[i] = new Agente(new AgentID("BAgente_" + i));
             }
         } catch (Exception e) {
             System.err.println("Ha habido un error creando a los agentes.");
