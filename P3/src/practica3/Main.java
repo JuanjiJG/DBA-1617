@@ -14,7 +14,7 @@ import org.apache.log4j.BasicConfigurator;
 public class Main {
 
     public static void main(String[] args) throws Exception {
-		BasicConfigurator.configure();
+        BasicConfigurator.configure();
         // Pedir al usuario el mundo al que conectarse
         Scanner keyboard = new Scanner(System.in);
 
@@ -31,7 +31,7 @@ public class Main {
         // Creamos el objeto Controlador y los 4 agentes exploradores
         try {
             gugel = new Controlador(new AgentID(Controlador.AGENT_ID), mundo);
-        
+
             for (int i = 0; i < agentes.length; i++) {
                 agentes[i] = new Agente(new AgentID("AAAgente_" + i));
             }
@@ -42,11 +42,11 @@ public class Main {
         }
         // Iniciamos el agente controlador
         gugel.start();
-        
+
         // Iniciamos los agentes exploradores
         for (Agente agente : agentes) {
             agente.start();
         }
     }
-    
+
 }

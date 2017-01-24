@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package practica3;
 
 import com.eclipsesource.json.Json;
@@ -11,7 +6,6 @@ import com.eclipsesource.json.JsonObject;
 import es.upv.dsic.gti_ia.core.ACLMessage;
 import es.upv.dsic.gti_ia.core.AgentID;
 import es.upv.dsic.gti_ia.core.SingleAgent;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.util.Pair;
@@ -33,8 +27,8 @@ public class Agente extends SingleAgent {
     private boolean percepcionRecibida;
     private boolean percepcionSolicitada;
     private boolean tengoCapabilities = false;
-	private int fuelMundo = 0;
-	private boolean harakiri = false;
+    private int fuelMundo = 0;
+    private boolean harakiri = false;
 
     public Agente(AgentID aid) throws Exception {
         super(aid);
@@ -86,23 +80,6 @@ public class Agente extends SingleAgent {
                 if (tengoCapabilities && percepcionSolicitada) {
                     this.solicitarPercepcion();
                 }
-                /*
-				//Recibo las percepciones que el servidor me manda en respuesta a la solicitud
-				this.recibir();        
-
-				//Espero a recibir un mensaje del controlador con la acción que realizar
-				//y mando esa accion al server
-				this.recibir();
-
-				//Espero a recibir un mensaje del servidor con la respuesta a la accion realizada
-				//e informo al controlador del resultado
-				if (meHeMovido || necesitoCapabilities)
-				{
-					this.recibir();
-					necesitoCapabilities = false;
-					meHeMovido = false;
-				}
-                 */
             }
         } catch (InterruptedException ex) {
             Logger.getLogger(Agente.class.getName()).log(Level.SEVERE, null, ex);
@@ -180,28 +157,28 @@ public class Agente extends SingleAgent {
 
                     x = percepcion.get("x").asInt();
                     y = percepcion.get("y").asInt();
-                    miEstado.setPosicion(new Pair<>(y+5, x+5));
+                    miEstado.setPosicion(new Pair<>(y + 5, x + 5));
 
                     for (int i = 0; i < miEstado.getVisibilidad() * miEstado.getVisibilidad(); i++) {
                         radar_percibido[i / miEstado.getVisibilidad()][i % miEstado.getVisibilidad()] = radar.get(i).asInt();
                     }
 
                     //DEBUGGING
-                    if(miEstado.getReplyWithControlador()!=null)
-                        System.out.println("Agente: "+miEstado.getReplyWithControlador());
+                    if (miEstado.getReplyWithControlador() != null) {
+                        System.out.println("Agente: " + miEstado.getReplyWithControlador());
+                    }
                     for (int i = 0; i < miEstado.getVisibilidad(); i++) {
                         for (int j = 0; j < miEstado.getVisibilidad(); j++) {
                             System.out.print(radar_percibido[i][j] + " ");
                         }
                         System.out.println();
                     }
-                    
+
                     miEstado.setPercepcion(radar_percibido);
 
                     miEstado.setPisandoObjetivo(percepcion.get("goal").asBoolean());
-					
-					fuelMundo = percepcion.get("energy").asInt();
-					
+
+                    fuelMundo = percepcion.get("energy").asInt();
 
                     percepcionRecibida = true;
 
@@ -227,10 +204,10 @@ public class Agente extends SingleAgent {
                 miEstado.setNextAction(accion);
                 ejecutarAccion(accion);
                 break;
-				
-			case ACLMessage.CANCEL:
-				harakiri = true;
-				break;
+
+            case ACLMessage.CANCEL:
+                harakiri = true;
+                break;
 
             default:
                 informarError(resp);
@@ -273,7 +250,7 @@ public class Agente extends SingleAgent {
         estado.add("percepcion", radar);
 
         json.add("estado", estado);
-		json.add("fuelmundo", fuelMundo);
+        json.add("fuelmundo", fuelMundo);
 
         msg.setSender(this.getAid());
         msg.setContent(json.toString());
@@ -353,15 +330,15 @@ public class Agente extends SingleAgent {
      */
     public void solicitarPercepcion() {
         if (!harakiri) {
-			ACLMessage msg = new ACLMessage(ACLMessage.QUERY_REF);
+            ACLMessage msg = new ACLMessage(ACLMessage.QUERY_REF);
 
-			msg.setSender(this.getAid());
-			msg.setReceiver(new AgentID(SERVER_NAME));
-			msg.setConversationId(conversationIDServer);
-			msg.setInReplyTo(repyWithServer);
+            msg.setSender(this.getAid());
+            msg.setReceiver(new AgentID(SERVER_NAME));
+            msg.setConversationId(conversationIDServer);
+            msg.setInReplyTo(repyWithServer);
 
-			send(msg);
-		}
+            send(msg);
+        }
     }
 
     /**

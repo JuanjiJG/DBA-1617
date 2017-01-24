@@ -132,15 +132,13 @@ public class Controlador extends SingleAgent {
                     // Una vez recopilados, los pedimos a la base de conocimiento
                     estadosAgentes = bc.getConjuntoEstados();
 
-
                     // Si las percepciones han localizado el objetivo, pasaremos a otro estado
                     if (this.bc.getPosicionObjetivo() == null) {
                         // Pasar el array a la heurística y obtener el agente seleccionado
                         EstadoAgente agenteSeleccionado = this.heuristica.buscandoObjetivo(estadosAgentes, this.quedaFuel);
                         this.bc.limpiarConjuntoEstados();
 
-
-                        if(agenteSeleccionado==null){
+                        if (agenteSeleccionado == null) {
                             this.estadoActual = EstadosEjecucion.TERMINADO;
                             break;
                         }
@@ -192,8 +190,8 @@ public class Controlador extends SingleAgent {
 
                     if (unoPisando) {
                         this.estadoActual = EstadosEjecucion.ALCANZADO;
-						//CAPADOR
-						//this.estadoActual = EstadosEjecucion.TERMINADO;
+                        //CAPADOR
+                        //this.estadoActual = EstadosEjecucion.TERMINADO;
                     } else {
                         // Pasar el array a la heurística y obtener el agente seleccionado
                         EstadoAgente agenteSeleccionado = this.heuristica.objetivoEncontrado(estadosAgentes, bc.getPosicionObjetivo(), this.quedaFuel);
@@ -248,9 +246,9 @@ public class Controlador extends SingleAgent {
                         this.bc.limpiarConjuntoEstados();
 
                         // Si la siguiente accion es null, significa que nos hemos quedad sin fuel
-						if (agenteSeleccionado == null)
-							this.estadoActual = EstadosEjecucion.TERMINADO;
-						else if (agenteSeleccionado.getNextAction() == null) {
+                        if (agenteSeleccionado == null) {
+                            this.estadoActual = EstadosEjecucion.TERMINADO;
+                        } else if (agenteSeleccionado.getNextAction() == null) {
                             this.estadoActual = EstadosEjecucion.TERMINADO;
                         } else {
                             // Mandamos la accion al agente seleccionado
@@ -371,42 +369,42 @@ public class Controlador extends SingleAgent {
                     }
                 } else //De un agente
                 //Respuesta al QUERY_REF pidiendo el estado
-                 if (json.get("estado") != null) {
-                        JsonObject jsonEstado = json.get("estado").asObject();
-                        JsonArray jsonRadar = jsonEstado.get("percepcion").asArray();
-                        Acciones accion;
+                if (json.get("estado") != null) {
+                    JsonObject jsonEstado = json.get("estado").asObject();
+                    JsonArray jsonRadar = jsonEstado.get("percepcion").asArray();
+                    Acciones accion;
 
-                        if (jsonEstado.get("nextAction").asString().equals("")) {
-                            accion = null;
-                        } else {
-                            accion = Acciones.valueOf(jsonEstado.get("nextAction").asString());
-                        }
-
-                        EstadoAgente estado = new EstadoAgente(
-                                new int[1][1],
-                                new Pair<>(jsonEstado.get("i").asInt(), jsonEstado.get("j").asInt()),
-                                jsonEstado.get("fuelActual").asInt(),
-                                jsonEstado.get("crashed").asBoolean(),
-                                jsonEstado.get("pisandoObjetivo").asBoolean(),
-                                jsonEstado.get("replyWithControlador").asString(),
-                                TiposAgente.valueOf(jsonEstado.get("tipo").asString()),
-                                accion
-                        );
-
-                        int[][] radar = new int[estado.getVisibilidad()][estado.getVisibilidad()];
-
-                        for (int i = 0; i < estado.getVisibilidad() * estado.getVisibilidad(); i++) {
-                            radar[i / estado.getVisibilidad()][i % estado.getVisibilidad()] = jsonRadar.get(i).asInt();
-                        }
-
-                        estado.setPercepcion(radar);
-                        bc.actualizarMapa(estado, agentesEnObjetivo);
-                        fuelMundo = json.get("fuelmundo").asInt();
-                        quedaFuel = fuelMundo > 0;
-                    } else //Respuesta al REQUEST de la accion escogida
-                    {
-                        //Do nothing
+                    if (jsonEstado.get("nextAction").asString().equals("")) {
+                        accion = null;
+                    } else {
+                        accion = Acciones.valueOf(jsonEstado.get("nextAction").asString());
                     }
+
+                    EstadoAgente estado = new EstadoAgente(
+                            new int[1][1],
+                            new Pair<>(jsonEstado.get("i").asInt(), jsonEstado.get("j").asInt()),
+                            jsonEstado.get("fuelActual").asInt(),
+                            jsonEstado.get("crashed").asBoolean(),
+                            jsonEstado.get("pisandoObjetivo").asBoolean(),
+                            jsonEstado.get("replyWithControlador").asString(),
+                            TiposAgente.valueOf(jsonEstado.get("tipo").asString()),
+                            accion
+                    );
+
+                    int[][] radar = new int[estado.getVisibilidad()][estado.getVisibilidad()];
+
+                    for (int i = 0; i < estado.getVisibilidad() * estado.getVisibilidad(); i++) {
+                        radar[i / estado.getVisibilidad()][i % estado.getVisibilidad()] = jsonRadar.get(i).asInt();
+                    }
+
+                    estado.setPercepcion(radar);
+                    bc.actualizarMapa(estado, agentesEnObjetivo);
+                    fuelMundo = json.get("fuelmundo").asInt();
+                    quedaFuel = fuelMundo > 0;
+                } else //Respuesta al REQUEST de la accion escogida
+                {
+                    //Do nothing
+                }
 
                 break;
 
