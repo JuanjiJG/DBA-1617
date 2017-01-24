@@ -18,7 +18,7 @@ import javafx.util.Pair;
 public class Agente extends SingleAgent {
 
     public static final String SERVER_NAME = "Furud";
-    public static final String AGENT_CONTROLADOR = "GugelCarRedForest3";
+    public static final String AGENT_CONTROLADOR = "GugelCarRedForest4";
     private static final String AGENTES_CONVERSATION_ID = "grupo-6-agentes";
     private String conversationIDServer;
     private String conversationIDControlador;

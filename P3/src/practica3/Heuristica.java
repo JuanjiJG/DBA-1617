@@ -472,6 +472,7 @@ public class Heuristica {
         ArrayList<Integer> indices_posibles = new ArrayList();
         int indice_agente_seleccionado = 0;
 
+		
         if (this.subObjetivo == null) {
             calcularSubObjetivo();//Analiza los cuadrantes y asigna un subObjetivo que sea un grupo de casillas inexploradas 3x3
         }
@@ -620,6 +621,7 @@ public class Heuristica {
         ArrayList<Integer> indices_posibles = new ArrayList();
         int indice_agente_seleccionado = 0;
 
+		
         ///Elegimos al agente que esté más cerca del objetivo
         minPuntuacion = calcularPuntuacion(estados.get(0), objetivo);
         //Sacamos el agente que este mas cerca del objetivo, es decir, que su distancia hacia el objetivo sea la minima o que haya empatado con otro.
