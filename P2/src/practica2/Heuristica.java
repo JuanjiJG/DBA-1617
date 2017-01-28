@@ -57,7 +57,7 @@ public class Heuristica {
     public Acciones calcularSiguienteMovimiento(Mapa mapa, Pair<Integer, Integer> posicion_coche_aux) {
 
         int pos = 2;
-        double[][] matriz_scanner = mapa.getMatriz_scanner();
+        double[][] matriz_scanner = mapa.getMatrizScanner();
 
         System.out.println("Debug: Voy a imprimir la matriz scanner");
         for (int i = 0; i < 5; i++) {
